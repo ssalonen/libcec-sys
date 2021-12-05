@@ -1,5 +1,5 @@
 TARGETS = aarch64-unknown-linux-gnu arm-unknown-linux-gnueabi armv7-unknown-linux-gnueabihf i686-unknown-linux-gnu i686-unknown-linux-musl mips-unknown-linux-gnu mips64-unknown-linux-gnuabi64 mips64el-unknown-linux-gnuabi64 mipsel-unknown-linux-gnu x86_64-unknown-linux-gnu x86_64-unknown-linux-musl x86_64-pc-windows-gnu
-VERSION = 0.1.16
+VERSION = 0.2.1
 
 
 .PHONY: all
