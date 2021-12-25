@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+- Add missing `links` declaration in crate manifest. This allows downstream crates to avoid compiling vendored `libcec` sources.
+
 ## 1.1.1
 
 - CI improvements: updated cross docker images used in build from version 0.1.16 to 0.2.1. This updates the cmake version used to build libcec as well.

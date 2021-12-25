@@ -14,6 +14,20 @@ FFI bindings for the libcec
   [this](https://www.rust-lang.org/tools/install) guide.
 * run `cargo install libcec-sys`
 
+### Linking of libcec
+
+By default, this crate compiles `libcec` from vendored sources. The vendored sources also facilitate re-generating FFI bindings.
+
+Downstream crates can opt to link to system `libcec` by overriding build script as discussed in [cargo documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html). Minimally, placing the following in workspace's `.cargo/config` will make the resulting crate link to system `cec` library
+
+```toml
+# Replace target-triplet accordingly
+[target.x86_64-unknown-linux-gnu.cec]
+rustc-link-lib = ["cec"]
+```
+
+This will mean that compilation of vendored `libcec` sources in `libcec-sys` is skipped, and build will be generally faster.
+
 ## License
 
 Licensed under GNU General Public License version 2, ([LICENSE](LICENSE) or [https://opensource.org/licenses/GPL-2.0](https://opensource.org/licenses/GPL-2.0))

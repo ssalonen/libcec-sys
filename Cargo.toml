@@ -24,6 +24,7 @@ categories = ['external-ffi-bindings']
 homepage = 'https://github.com/ssalonen/libcec-sys'
 repository = 'https://github.com/ssalonen/libcec-sys'
 build = 'build.rs'
+links = 'cec'
 
 [dependencies]
 
