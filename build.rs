@@ -139,10 +139,9 @@ fn main() {
     if cfg!(feature = "vendored") {
         // vendored build explicitly requested. Build vendored sources
         compile_vendored();
-        return;
     }
     // Try discovery using pkg-config
-    if let Ok(_) = pkg_config::Config::new()
+    else if let Ok(_) = pkg_config::Config::new()
         .atleast_version(MIN_LIBCEC_VERSION)
         .probe("cec")
     {
