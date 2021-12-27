@@ -11,7 +11,7 @@ FFI bindings for the libcec
 ### Linking of libcec
 
 By default, this crate tried to link to `libcec` version >= 4.0.0. `pkg-config` is always preferred when available.
-Alternatively, one can use vendored sources by enabling `vendored` feature.
+Alternatively, one can force the use of vendored sources by enabling `vendored` feature.
 
 ## License
 
