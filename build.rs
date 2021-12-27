@@ -142,10 +142,9 @@ fn main() {
         return;
     }
     // Try discovery using pkg-config
-    if let Ok(pkg_config_ok) = pkg_config::Config::new()
+    if let Ok(_) = pkg_config::Config::new()
         .atleast_version(MIN_LIBCEC_VERSION)
         .probe("cec")
-        .unwrap()
     {
         return;
     }
