@@ -32,7 +32,7 @@ cc = '1.0.72'
 
 [features]
 default = []
-use-pkgconfig = ["pkg-config"]
+use-pkgconfig = []
 vendored = ["cmake", "copy_dir"]
 
 [badges.maintenance]
