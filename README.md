@@ -8,25 +8,10 @@ FFI bindings for the libcec
 
 ## Installation
 
-### Cargo
-
-* Install the rust toolchain in order to have cargo installed by following
-  [this](https://www.rust-lang.org/tools/install) guide.
-* run `cargo install libcec-sys`
-
 ### Linking of libcec
 
-By default, this crate compiles `libcec` from vendored sources. The vendored sources also facilitate re-generating FFI bindings.
-
-Downstream crates can opt to link to system `libcec` by overriding build script as discussed in [cargo documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html). Minimally, placing the following in workspace's `.cargo/config` will make the resulting crate link to system `cec` library
-
-```toml
-# Replace target-triplet accordingly
-[target.x86_64-unknown-linux-gnu.cec]
-rustc-link-lib = ["cec"]
-```
-
-This will mean that compilation of vendored `libcec` sources in `libcec-sys` is skipped, and build will be generally faster.
+By default, this crate tried to link to `libcec` version >= 4.0.0. `pkg-config` is always preferred when available.
+Alternatively, one can use vendored sources by disabling the default features and enabling `vendored` feature.
 
 ## License
 
@@ -48,6 +33,7 @@ for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Releasing
 
 ```cargo release --skip-publish``` and let the github CD pipeline do the rest.

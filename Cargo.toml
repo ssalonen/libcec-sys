@@ -1,6 +1,6 @@
 [package]
 name = 'libcec-sys'
-version = "1.1.2-alpha.0"
+version = "2.0.0-alpha.0"
 authors = ['Sami Salonen']
 edition = '2018'
 license = 'GPL-2.0'
@@ -15,11 +15,7 @@ include = [
     '/vendor',
     '/build.rs',
 ]
-keywords = [
-    'libcec',
-    'cec',
-    'hdmi',
-]
+keywords = ['libcec', 'cec', 'hdmi']
 categories = ['external-ffi-bindings']
 homepage = 'https://github.com/ssalonen/libcec-sys'
 repository = 'https://github.com/ssalonen/libcec-sys'
@@ -29,7 +25,15 @@ links = 'cec'
 [dependencies]
 
 [build-dependencies]
-cmake = '0.1.45'
-copy_dir = '0.1.2'
+cmake = { version = '0.1.45', optional = true }
+copy_dir = { version = '0.1.2', optional = true }
+pkg-config = '0.3.24'
+cc = '1.0.72'
+
+[features]
+default = []
+use-pkgconfig = ["pkg-config"]
+vendored = ["cmake", "copy_dir"]
+
 [badges.maintenance]
 status = 'passively-maintained'

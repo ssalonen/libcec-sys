@@ -1,5 +1,7 @@
-// pro example: https://github.com/rust-lang/git2-rs/blob/master/libgit2-sys/build.rs
-// https://github.com/r-darwish/docker-libcec-rpi/blob/master/Dockerfile
+#![allow(unused_imports, dead_code)] // due to cfg(feature)
+
+use cc;
+#[cfg(feature = "vendored")]
 use copy_dir::copy_dir;
 use std::env;
 use std::fs;
@@ -8,12 +10,17 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use pkg_config;
+
+const MIN_LIBCEC_VERSION: &str = "4.0.0";
+
 const P8_PLATFORM_DIR_ENV: &str = "p8-platform_DIR";
 const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
-fn prepare_build(dst: &Path) {
+#[cfg(feature = "vendored")]
+fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
     if dst_src.exists() && dst_src.is_dir() {
         fs::remove_dir_all(&dst_src).expect("Failed to remove build dir");
@@ -39,8 +46,13 @@ fn prepare_build(dst: &Path) {
         .write_all(b"set(LIB_INFO \"\")")
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
+#[cfg(not(feature = "vendored"))]
+fn prepare_vendored_build(_: &Path) {
+    unimplemented!();
+}
 
-fn compile_platform(dst: &Path) {
+#[cfg(feature = "vendored")]
+fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
     fs::create_dir_all(&platform_build).unwrap();
@@ -54,8 +66,13 @@ fn compile_platform(dst: &Path) {
         .status()
         .expect("failed to make libcec platform!");
 }
+#[cfg(not(feature = "vendored"))]
+fn compile_vendored_platform(_: &Path) {
+    unimplemented!();
+}
 
-fn compile_libcec(dst: &Path) {
+#[cfg(feature = "vendored")]
+fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
@@ -71,8 +88,30 @@ fn compile_libcec(dst: &Path) {
         .expect("failed to make libcec!");
 }
 
-fn main() {
-    println!("cargo:rerun-if-changed=build.rs");
+#[cfg(not(feature = "vendored"))]
+fn compile_vendored_libcec(_: &Path) {
+    unimplemented!();
+}
+
+fn libcec_installed_smoke_test() -> bool {
+    let compiler = cc::Build::new().get_compiler();
+    let compiler_path = compiler.path();
+    let mut cc_cmd = Command::new(compiler_path);
+    let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    cc_cmd
+        .arg("src/smoke.c")
+        .arg("-o")
+        .arg(dst.join("smoke_out"))
+        .arg("-lcec");
+    if let Ok(status) = cc_cmd.status() {
+        if status.success() {
+            return true;
+        }
+    }
+    false
+}
+
+fn compile_vendored() {
     let cmakelists = format!("{}/CMakeLists.txt", LIBCEC_SRC);
     let libcec_git_dir = Path::new(&cmakelists);
     if !libcec_git_dir.exists() {
@@ -85,14 +124,35 @@ fn main() {
         )
     }
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
-
     println!("Building libcec from local source");
-    prepare_build(&dst);
-    compile_platform(&dst);
-    compile_libcec(&dst);
+    prepare_vendored_build(&dst);
+    compile_vendored_platform(&dst);
+    compile_vendored_libcec(&dst);
     println!(
         "cargo:rustc-link-search=native={}",
         dst.join(LIBCEC_BUILD).join("lib").display()
     );
-    println!("cargo:rustc-link-lib=cec");
+}
+
+fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+    if cfg!(feature = "vendored") {
+        // vendored build explicitly requested. Build vendored sources
+        compile_vendored();
+        return;
+    }
+    // Try discovery using pkg-config
+    if let Ok(pkg_config_ok) = pkg_config::Config::new()
+        .atleast_version(MIN_LIBCEC_VERSION)
+        .probe("cec")
+        .unwrap()
+    {
+        return;
+    }
+    // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
+    else if libcec_installed_smoke_test() {
+        println!("cargo:rustc-link-lib=cec");
+    } else {
+        compile_vendored();
+    }
 }
