@@ -1,4 +1,3 @@
-use cc;
 use copy_dir::copy_dir;
 use std::env;
 use std::fs;
