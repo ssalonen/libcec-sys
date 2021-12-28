@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use pkg_config;
-
 const MIN_LIBCEC_VERSION: &str = "4.0.0";
 
 const P8_PLATFORM_DIR_ENV: &str = "p8-platform_DIR";
@@ -121,11 +119,12 @@ fn main() {
         compile_vendored();
     }
     // Try discovery using pkg-config
-    else if let Ok(_) = pkg_config::Config::new()
+    else if pkg_config::Config::new()
         .atleast_version(MIN_LIBCEC_VERSION)
         .probe("libcec")
+        .is_ok()
     {
-        return;
+        // pkg-config found the package and the parameters will be used for linking
     }
     // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
     else if libcec_installed_smoke_test() {
