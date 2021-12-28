@@ -8,11 +8,10 @@ FFI bindings for the libcec
 
 ## Installation
 
-### Cargo
+### Linking of libcec
 
-* Install the rust toolchain in order to have cargo installed by following
-  [this](https://www.rust-lang.org/tools/install) guide.
-* run `cargo install libcec-sys`
+By default, this crate tried to link to `libcec` version >= 4.0.0. `pkg-config` is always preferred when available.
+Alternatively, one can force the use of vendored sources by enabling `vendored` feature.
 
 ## License
 
@@ -34,6 +33,7 @@ for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Releasing
 
 ```cargo release --skip-publish``` and let the github CD pipeline do the rest.
