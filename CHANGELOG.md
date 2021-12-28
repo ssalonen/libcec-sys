@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [2.0.1]
+
 - Add missing `links` declaration in crate manifest.
 - By default, we try to link locally installed `libcec`. See README for details.
+
 
 ## 1.1.1
 
