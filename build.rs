@@ -1,7 +1,4 @@
-#![allow(unused_imports, dead_code)] // due to cfg(feature)
-
 use cc;
-#[cfg(feature = "vendored")]
 use copy_dir::copy_dir;
 use std::env;
 use std::fs;
@@ -19,7 +16,6 @@ const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
-#[cfg(feature = "vendored")]
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
     if dst_src.exists() && dst_src.is_dir() {
@@ -46,12 +42,7 @@ fn prepare_vendored_build(dst: &Path) {
         .write_all(b"set(LIB_INFO \"\")")
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
-#[cfg(not(feature = "vendored"))]
-fn prepare_vendored_build(_: &Path) {
-    unimplemented!();
-}
 
-#[cfg(feature = "vendored")]
 fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
@@ -66,12 +57,7 @@ fn compile_vendored_platform(dst: &Path) {
         .status()
         .expect("failed to make libcec platform!");
 }
-#[cfg(not(feature = "vendored"))]
-fn compile_vendored_platform(_: &Path) {
-    unimplemented!();
-}
 
-#[cfg(feature = "vendored")]
 fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
@@ -86,11 +72,6 @@ fn compile_vendored_libcec(dst: &Path) {
         .env(P8_PLATFORM_DIR_ENV, &platform_build)
         .status()
         .expect("failed to make libcec!");
-}
-
-#[cfg(not(feature = "vendored"))]
-fn compile_vendored_libcec(_: &Path) {
-    unimplemented!();
 }
 
 fn libcec_installed_smoke_test() -> bool {
@@ -143,7 +124,7 @@ fn main() {
     // Try discovery using pkg-config
     else if let Ok(_) = pkg_config::Config::new()
         .atleast_version(MIN_LIBCEC_VERSION)
-        .probe("cec")
+        .probe("libcec")
     {
         return;
     }

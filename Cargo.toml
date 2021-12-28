@@ -25,14 +25,14 @@ links = 'cec'
 [dependencies]
 
 [build-dependencies]
-cmake = { version = '0.1.45', optional = true }
-copy_dir = { version = '0.1.2', optional = true }
+cmake = '0.1.45'
+copy_dir = '0.1.2'
 pkg-config = '0.3.24'
 cc = '1.0.72'
 
 [features]
 default = []
-vendored = ["cmake", "copy_dir"]
+vendored = []
 
 [badges.maintenance]
 status = 'passively-maintained'
