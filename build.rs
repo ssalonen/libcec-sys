@@ -110,6 +110,7 @@ fn compile_vendored() {
         "cargo:rustc-link-search=native={}",
         dst.join(LIBCEC_BUILD).join("lib").display()
     );
+    println!("cargo:rustc-link-lib=cec");
 }
 
 fn main() {
