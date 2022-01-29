@@ -1,17 +1,36 @@
 use copy_dir::copy_dir;
 use std::env;
 use std::fs;
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-
-const MIN_LIBCEC_VERSION: &str = "4.0.0";
 
 const P8_PLATFORM_DIR_ENV: &str = "p8-platform_DIR";
 const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
+
+enum CecVersion {
+    V4,
+    V5,
+    V6,
+}
+
+impl CecVersion {
+    fn major(&self) -> u32 {
+        match self {
+            &Self::V4 => 4,
+            &Self::V5 => 5,
+            &Self::V6 => 6,
+        }
+    }
+}
+
+// libcec versions that are supported when linking dynamically. In preferce order
+const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
@@ -71,36 +90,60 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to make libcec!");
 }
 
-fn libcec_installed_smoke_test() -> bool {
+fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let compiler_path = compiler.path();
     let mut cc_cmd = Command::new(compiler_path);
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
-    cc_cmd
-        .arg("src/smoke.c")
-        .arg("-o")
-        .arg(dst.join("smoke_out"))
-        .arg("-lcec");
-    if let Ok(status) = cc_cmd.status() {
-        if status.success() {
-            return true;
+    for abi in CEC_MAJOR_VERSIONS {
+        cc_cmd
+            .arg(format!("src/smoke_abi{}.c", abi.major()))
+            .arg("-o")
+            .arg(dst.join("smoke_out"))
+            .arg("-lcec");
+        if let Ok(status) = cc_cmd.status() {
+            if status.success() {
+                return Ok(abi);
+            }
         }
     }
-    false
+
+    Err(())
+}
+
+fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
+    for abi in CEC_MAJOR_VERSIONS {
+        if pkg_config::Config::new()
+            .atleast_version(&abi.major().to_string())
+            .probe("libcec")
+            .is_ok()
+        {
+            return Ok(abi);
+        }
+    }
+    Err(())
 }
 
 fn compile_vendored() {
+    println!("cargo:lib_vendored=true");
+
     let cmakelists = format!("{}/CMakeLists.txt", LIBCEC_SRC);
-    let libcec_git_dir = Path::new(&cmakelists);
-    if !libcec_git_dir.exists() {
+    let cmakelists = Path::new(&cmakelists);
+    if !cmakelists.exists() {
         panic!(
             "git submodules (tested {}, working dir {}) are not properly initialized! Aborting.",
-            libcec_git_dir.display(),
+            cmakelists.display(),
             env::current_dir()
                 .expect("Unknown working directory")
                 .display()
         )
     }
+
+    println!(
+        "cargo:libcec_version_major={}",
+        parse_vendored_libcec_major_version(cmakelists)
+    );
+
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
@@ -113,6 +156,26 @@ fn compile_vendored() {
     println!("cargo:rustc-link-lib=cec");
 }
 
+fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
+    let file = File::open(cmakelists).expect("Error opening cmakelists");
+    let reader = BufReader::new(file);
+    // Parse major version from line similar to    set(LIBCEC_VERSION_MAJOR 4)
+    for line in reader.lines() {
+        let line = line.expect("Error reading cmakelists");
+        let mut numbers = String::new();
+        if line.trim().starts_with("set(LIBCEC_VERSION_MAJOR ") {
+            for char in line.chars() {
+                match char {
+                    '0'..='9' => numbers.push(char),
+                    _ => {}
+                }
+            }
+            return numbers.parse().expect("major version parse failed");
+        }
+    }
+    panic!("Could not parse LIBCEC_VERSION_MAJOR from cmakelists");
+}
+
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     if cfg!(feature = "vendored") {
@@ -120,17 +183,23 @@ fn main() {
         compile_vendored();
     }
     // Try discovery using pkg-config
-    else if pkg_config::Config::new()
-        .atleast_version(MIN_LIBCEC_VERSION)
-        .probe("libcec")
-        .is_ok()
-    {
-        // pkg-config found the package and the parameters will be used for linking
-    }
-    // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
-    else if libcec_installed_smoke_test() {
-        println!("cargo:rustc-link-lib=cec");
-    } else {
+    else {
+        let version = libcec_installed_pkg_config();
+        if let Ok(version) = version {
+            // pkg-config found the package and the parameters will be used for linking
+            println!("cargo:libcec_version_major={}", version.major());
+            return;
+        }
+        // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
+        let version = libcec_installed_smoke_test();
+        if let Ok(version) = version {
+            println!("cargo:rustc-link-lib=cec");
+            println!("cargo:libcec_version_major={}", version.major());
+            return;
+        }
+        // Fallback
         compile_vendored();
     }
+
+    // TODO: output lib version even with vendored
 }

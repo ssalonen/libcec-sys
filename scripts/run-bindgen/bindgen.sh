@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-set -ex
+set -xe
 
 OUT=lib.rs
 DEST_DIR=../../src/
 CEC_REGEX='(libcec|cec|CEC|LIBCEC)_.*'
+VENDOR_TMP=../../vendor_tmp
 
 function generate() {
     # bindgen layout tests are disabled for cross-arch compatibility
     # See https://kornel.ski/rust-sys-crate Stable API guidance
     # and https://users.rust-lang.org/t/what-to-do-when-bindgen-tests-fail/23822
     bindgen wrapper.h -o ${OUT}.tmp \
-    --whitelist-type $CEC_REGEX \
-    --whitelist-function $CEC_REGEX \
-    --whitelist-var $CEC_REGEX \
+    --whitelist-type "$CEC_REGEX" \
+    --whitelist-function "$CEC_REGEX" \
+    --whitelist-var "$CEC_REGEX" \
     --blacklist-type cec_boolean \
     --no-layout-tests \
     --no-prepend-enum-name \
@@ -28,30 +29,54 @@ function generate() {
     --raw-line=')]' \
     "$@" \
     -- \
-    -I include_tmp
+    -I vendor_tmp/include
 }
 
-cp -a ../../vendor/include include_tmp
-cp include_tmp/version.h.in include_tmp/version.h
 
-LIBCEC_VERSION_MAJOR=$(grep -E -o 'set\(LIBCEC_VERSION_MAJOR [^)]' ../../vendor/CMakeLists.txt|cut -d ' ' -f2)
-LIBCEC_VERSION_MINOR=$(grep -E -o 'set\(LIBCEC_VERSION_MINOR [^)]' ../../vendor/CMakeLists.txt|cut -d ' ' -f2)
-LIBCEC_VERSION_PATCH=$(grep -E -o 'set\(LIBCEC_VERSION_PATCH [^)]' ../../vendor/CMakeLists.txt|cut -d ' ' -f2)
-sed -i s/@LIBCEC_VERSION_MAJOR@/$LIBCEC_VERSION_MAJOR/ include_tmp/version.h
-sed -i s/@LIBCEC_VERSION_MINOR@/$LIBCEC_VERSION_MINOR/ include_tmp/version.h
-sed -i s/@LIBCEC_VERSION_PATCH@/$LIBCEC_VERSION_PATCH/ include_tmp/version.h
+source ../../abis.env
+#git clone --recursive git@github.com:Pulse-Eight/libcec.git $VENDOR_TMP
 
-# Generate version with enums, and capture the enum definitions
-generate --rustified-enum $CEC_REGEX
-./sed_bindings.py ${OUT}.tmp ${OUT} --outfile_enum ${OUT}.enum
-# Generate (safer) version without enums
-generate --constified-enum $CEC_REGEX
-./sed_bindings.py ${OUT}.tmp ${OUT}
+# TODO: the git checkouts do not work as expected. Perhaps due to submodules??? vendor_tmp/.git 'points' to main git / conflicting with vendor
 
-# Copy enums to cec-rs/src/ crate
-cp ${OUT}.enum ../../../cec-rs/src/enums.rs
+cp -a ../../vendor $VENDOR_TMP
+for ABI in $ABIS; do
+    echo "Generating bindings for ABI=$ABI"
+    ABI_MAJOR=$(echo "$ABI"|cut -d '.' -f1)
 
-# Cleanup
-rm ${OUT}.tmp ${OUT}.enum
-mv ${OUT} ${DEST_DIR}/${OUT}
-rm -rf include_tmp
+    git -C $VENDOR_TMP checkout "libcec-$ABI"
+    cp $VENDOR_TMP/include/version.h.in $VENDOR_TMP/include/version.h
+
+    LIBCEC_VERSION_MAJOR=$(grep -E -o 'set\(LIBCEC_VERSION_MAJOR [^)]' $VENDOR_TMP/CMakeLists.txt|cut -d ' ' -f2)
+    LIBCEC_VERSION_MINOR=$(grep -E -o 'set\(LIBCEC_VERSION_MINOR [^)]' $VENDOR_TMP/CMakeLists.txt|cut -d ' ' -f2)
+    LIBCEC_VERSION_PATCH=$(grep -E -o 'set\(LIBCEC_VERSION_PATCH [^)]' $VENDOR_TMP/CMakeLists.txt|cut -d ' ' -f2)
+
+    if [[ "$LIBCEC_VERSION_MAJOR" != "$ABI_MAJOR" ]]; then
+        echo "LIBCEC_VERSION_MAJOR ($LIBCEC_VERSION_MAJOR) did not match expected ABI_MAJOR ($ABI_MAJOR)"
+        exit 1
+    fi
+
+    sed -i s/@LIBCEC_VERSION_MAJOR@/"$LIBCEC_VERSION_MAJOR"/ $VENDOR_TMP/include/version.h
+    sed -i s/@LIBCEC_VERSION_MINOR@/"$LIBCEC_VERSION_MINOR"/ $VENDOR_TMP/include/version.h
+    sed -i s/@LIBCEC_VERSION_PATCH@/"$LIBCEC_VERSION_PATCH"/ $VENDOR_TMP/include/version.h
+
+    rg CEC_VERSION_  $VENDOR_TMP/include/cectypes.h 
+
+    # Generate version with enums, and capture the enum definitions
+    generate --rustified-enum "$CEC_REGEX"
+    ./sed_bindings.py ${OUT}.tmp ${OUT} --outfile_enum ${OUT}.enum
+    # Generate (safer) version without enums
+    generate --constified-enum "$CEC_REGEX"
+    ./sed_bindings.py ${OUT}.tmp ${OUT}
+
+    # Copy enums to cec-rs/src/ crate
+    cp ${OUT}.enum "../../../cec-rs/src/enums$ABI_MAJOR.rs"
+    # libcec ABI
+    mv ${OUT} "${DEST_DIR}/lib_abi$ABI_MAJOR.rs"
+
+
+    # Cleanup        
+    rm ${OUT}.tmp ${OUT}.enum
+
+done
+
+rm -rf $VENDOR_TMP

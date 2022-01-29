@@ -10,8 +10,8 @@
     clippy::cognitive_complexity
 )]
 
-pub const CEC_LIB_VERSION_MAJOR: u32 = 4;
-pub const CEC_LIB_VERSION_MAJOR_STR: &'static [u8; 2usize] = b"4\0";
+pub const CEC_LIB_VERSION_MAJOR: u32 = 6;
+pub const CEC_LIB_VERSION_MAJOR_STR: &'static [u8; 2usize] = b"6\0";
 pub const CEC_LIB_VERSION_MINOR: u32 = 0;
 pub const CEC_DEFAULT_PHYSICAL_ADDRESS: u32 = 4096;
 pub const CEC_DEFAULT_HDMI_PORT: u32 = 1;
@@ -57,10 +57,15 @@ pub const CEC_TDA995x_VIRTUAL_COM: &'static [u8; 6usize] = b"CuBox\0";
 pub const CEC_EXYNOS_PATH: &'static [u8; 9usize] = b"/dev/CEC\0";
 pub const CEC_EXYNOS_VIRTUAL_COM: &'static [u8; 7usize] = b"Exynos\0";
 pub const CEC_MAX_DATA_PACKET_SIZE: u32 = 64;
+pub const CEC_LINUX_PATH: &'static [u8; 10usize] = b"/dev/cec0\0";
+pub const CEC_LINUX_VIRTUAL_COM: &'static [u8; 6usize] = b"Linux\0";
 pub const CEC_AOCEC_PATH: &'static [u8; 11usize] = b"/dev/aocec\0";
 pub const CEC_AOCEC_VIRTUAL_COM: &'static [u8; 6usize] = b"AOCEC\0";
+pub const CEC_IMX_PATH: &'static [u8; 18usize] = b"/dev/mxc_hdmi_cec\0";
+pub const CEC_IMX_VIRTUAL_COM: &'static [u8; 5usize] = b"i.MX\0";
 pub const CEC_MIN_LIB_VERSION: u32 = 4;
 pub const CEC_FEATURE_CONFIGURABLE_COMBO_KEY: u32 = 1;
+pub const LIBCEC_OSD_NAME_SIZE: u32 = 15;
 pub type __int8_t = ::std::os::raw::c_schar;
 pub type __uint8_t = ::std::os::raw::c_uchar;
 pub type __uint16_t = ::std::os::raw::c_ushort;
@@ -102,6 +107,7 @@ pub const CEC_VERSION_1_2A: cec_version = 2;
 pub const CEC_VERSION_1_3: cec_version = 3;
 pub const CEC_VERSION_1_3A: cec_version = 4;
 pub const CEC_VERSION_1_4: cec_version = 5;
+pub const CEC_VERSION_2_0: cec_version = 6;
 pub type cec_version = u32;
 pub const CEC_CHANNEL_NUMBER_FORMAT_MASK: cec_channel_identifier = 4227858432;
 pub const CEC_1_PART_CHANNEL_NUMBER: cec_channel_identifier = 67108864;
@@ -467,6 +473,8 @@ pub const CEC_OPCODE_SET_SYSTEM_AUDIO_MODE: cec_opcode = 114;
 pub const CEC_OPCODE_SYSTEM_AUDIO_MODE_REQUEST: cec_opcode = 112;
 pub const CEC_OPCODE_SYSTEM_AUDIO_MODE_STATUS: cec_opcode = 126;
 pub const CEC_OPCODE_SET_AUDIO_RATE: cec_opcode = 154;
+pub const CEC_OPCODE_REPORT_SHORT_AUDIO_DESCRIPTORS: cec_opcode = 163;
+pub const CEC_OPCODE_REQUEST_SHORT_AUDIO_DESCRIPTORS: cec_opcode = 164;
 pub const CEC_OPCODE_START_ARC: cec_opcode = 192;
 pub const CEC_OPCODE_REPORT_ARC_STARTED: cec_opcode = 193;
 pub const CEC_OPCODE_REPORT_ARC_ENDED: cec_opcode = 194;
@@ -496,6 +504,7 @@ pub const CEC_VENDOR_LOEWE: cec_vendor_id = 2434;
 pub const CEC_VENDOR_ONKYO: cec_vendor_id = 2480;
 pub const CEC_VENDOR_MEDION: cec_vendor_id = 3256;
 pub const CEC_VENDOR_TOSHIBA2: cec_vendor_id = 3303;
+pub const CEC_VENDOR_APPLE: cec_vendor_id = 4346;
 pub const CEC_VENDOR_PULSE_EIGHT: cec_vendor_id = 5506;
 pub const CEC_VENDOR_HARMAN_KARDON2: cec_vendor_id = 6480;
 pub const CEC_VENDOR_GOOGLE: cec_vendor_id = 6673;
@@ -523,9 +532,11 @@ pub const ADAPTERTYPE_P8_DAUGHTERBOARD: cec_adapter_type = 2;
 pub const ADAPTERTYPE_RPI: cec_adapter_type = 256;
 pub const ADAPTERTYPE_TDA995x: cec_adapter_type = 512;
 pub const ADAPTERTYPE_EXYNOS: cec_adapter_type = 768;
+pub const ADAPTERTYPE_LINUX: cec_adapter_type = 1024;
 pub const ADAPTERTYPE_AOCEC: cec_adapter_type = 1280;
+pub const ADAPTERTYPE_IMX: cec_adapter_type = 1536;
 pub type cec_adapter_type = u32;
-pub const LIBCEC_VERSION_CURRENT: libcec_version = 262149;
+pub const LIBCEC_VERSION_CURRENT: libcec_version = 393218;
 #[doc = " force exporting through swig"]
 pub type libcec_version = u32;
 pub type cec_menu_language = [::std::os::raw::c_char; 4usize];
@@ -632,6 +643,15 @@ pub struct libcec_parameter {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct cec_adapter_stats {
+    pub tx_ack: ::std::os::raw::c_uint,
+    pub tx_nack: ::std::os::raw::c_uint,
+    pub tx_error: ::std::os::raw::c_uint,
+    pub rx_total: ::std::os::raw::c_uint,
+    pub rx_error: ::std::os::raw::c_uint,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct ICECCallbacks {
     #[doc = " @brief Transfer a log message from libCEC to the client."]
     #[doc = " @param cbparam             Callback parameter provided when the callbacks were set up"]
@@ -703,8 +723,8 @@ pub struct ICECCallbacks {
 pub struct libcec_configuration {
     #[doc = "< the version of the client that is connecting"]
     pub clientVersion: u32,
-    #[doc = "< the device name to use on the CEC bus"]
-    pub strDeviceName: [::std::os::raw::c_char; 13usize],
+    #[doc = "< the device name to use on the CEC bus, name + 0 terminator"]
+    pub strDeviceName: [::std::os::raw::c_char; 15usize],
     #[doc = "< the device type(s) to use on the CEC bus for libCEC"]
     pub deviceTypes: cec_device_type_list,
     #[doc = "< (read only) set to 1 by libCEC when the physical address was autodetected"]
@@ -747,7 +767,7 @@ pub struct libcec_configuration {
     pub cecVersion: cec_version,
     #[doc = "< type of the CEC adapter that we're connected to. added in 1.8.2"]
     pub adapterType: cec_adapter_type,
-    #[doc = "< key code that initiates combo keys. defaults to CEC_USER_CONTROL_CODE_F1_BLUE. CEC_USER_CONTROL_CODE_UNKNOWN to disable. added in 2.0.5"]
+    #[doc = "< key code that initiates combo keys. defaults to CEC_USER_CONTROL_CODE_STOP. CEC_USER_CONTROL_CODE_UNKNOWN to disable. added in 2.0.5"]
     pub comboKey: cec_user_control_code,
     #[doc = "< timeout until the combo key is sent as normal keypress"]
     pub iComboKeyTimeoutMs: u32,
@@ -759,6 +779,8 @@ pub struct libcec_configuration {
     pub iDoubleTapTimeoutMs: u32,
     #[doc = "< set to 1 to automatically waking an AVR when the source is activated. added in 4.0.0"]
     pub bAutoWakeAVR: u8,
+    #[doc = "< set to 1 and save eeprom config to wake the tv when usb is powered. added in 5.0.0 / fw v9"]
+    pub bAutoPowerOn: u8,
 }
 pub type libcec_connection_t = *mut ::std::os::raw::c_void;
 extern "C" {
@@ -781,11 +803,14 @@ extern "C" {
     pub fn libcec_clear_configuration(configuration: *mut libcec_configuration);
 }
 extern "C" {
-    pub fn libcec_enable_callbacks(
+    pub fn libcec_set_callbacks(
         connection: libcec_connection_t,
-        cbParam: *mut ::std::os::raw::c_void,
         callbacks: *mut ICECCallbacks,
+        cbParam: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn libcec_disabled_callbacks(connection: libcec_connection_t) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn libcec_find_adapters(
@@ -1005,15 +1030,7 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn libcec_can_persist_configuration(
-        connection: libcec_connection_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn libcec_persist_configuration(
-        connection: libcec_connection_t,
-        configuration: *mut libcec_configuration,
-    ) -> ::std::os::raw::c_int;
+    pub fn libcec_can_save_configuration(connection: libcec_connection_t) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn libcec_set_configuration(
