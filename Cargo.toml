@@ -13,13 +13,14 @@ include = [
     '/Cargo.toml',
     '/src/*.rs',
     '/vendor',
-    '/build.rs',
+    '/build/smoke_abi*.c',
+    '/build/build.rs',
 ]
 keywords = ['libcec', 'cec', 'hdmi']
 categories = ['external-ffi-bindings']
 homepage = 'https://github.com/ssalonen/libcec-sys'
 repository = 'https://github.com/ssalonen/libcec-sys'
-build = 'build.rs'
+build = 'build/build.rs'
 links = 'cec'
 
 [dependencies]

@@ -34,9 +34,7 @@ function generate() {
 
 
 source ../../abis.env
-#git clone --recursive git@github.com:Pulse-Eight/libcec.git $VENDOR_TMP
-
-# TODO: the git checkouts do not work as expected. Perhaps due to submodules??? vendor_tmp/.git 'points' to main git / conflicting with vendor
+git clone --recursive git@github.com:Pulse-Eight/libcec.git $VENDOR_TMP
 
 cp -a ../../vendor $VENDOR_TMP
 for ABI in $ABIS; do
@@ -58,8 +56,6 @@ for ABI in $ABIS; do
     sed -i s/@LIBCEC_VERSION_MAJOR@/"$LIBCEC_VERSION_MAJOR"/ $VENDOR_TMP/include/version.h
     sed -i s/@LIBCEC_VERSION_MINOR@/"$LIBCEC_VERSION_MINOR"/ $VENDOR_TMP/include/version.h
     sed -i s/@LIBCEC_VERSION_PATCH@/"$LIBCEC_VERSION_PATCH"/ $VENDOR_TMP/include/version.h
-
-    rg CEC_VERSION_  $VENDOR_TMP/include/cectypes.h 
 
     # Generate version with enums, and capture the enum definitions
     generate --rustified-enum "$CEC_REGEX"

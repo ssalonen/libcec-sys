@@ -63,10 +63,13 @@ fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
     fs::create_dir_all(&platform_build).unwrap();
+    println!("cmake platform");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
         .out_dir(&platform_build)
         .env(P8_PLATFORM_DIR_ENV, &platform_build)
         .build();
+
+    println!("make platform");
     Command::new("make")
         .current_dir(&platform_build)
         .env(P8_PLATFORM_DIR_ENV, &platform_build)
@@ -78,11 +81,13 @@ fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
+    println!("cmake libcec");
     cmake::Config::new(&dst.join(LIBCEC_SRC))
         .out_dir(&libcec_build)
         .env(P8_PLATFORM_DIR_ENV, &platform_build)
         .build();
 
+    println!("make libcec");
     Command::new("make")
         .current_dir(&libcec_build)
         .env(P8_PLATFORM_DIR_ENV, &platform_build)
@@ -97,7 +102,7 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     for abi in CEC_MAJOR_VERSIONS {
         cc_cmd
-            .arg(format!("src/smoke_abi{}.c", abi.major()))
+            .arg(format!("build/smoke_abi{}.c", abi.major()))
             .arg("-o")
             .arg(dst.join("smoke_out"))
             .arg("-lcec");
@@ -138,11 +143,9 @@ fn compile_vendored() {
                 .display()
         )
     }
-
-    println!(
-        "cargo:libcec_version_major={}",
-        parse_vendored_libcec_major_version(cmakelists)
-    );
+    let abi = parse_vendored_libcec_major_version(cmakelists);
+    println!("cargo:libcec_version_major={}", abi);
+    println!("cargo:rustc-cfg=abi{}", abi);
 
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
@@ -188,6 +191,7 @@ fn main() {
         if let Ok(version) = version {
             // pkg-config found the package and the parameters will be used for linking
             println!("cargo:libcec_version_major={}", version.major());
+            println!("cargo:rustc-cfg=abi{}", version.major());
             return;
         }
         // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
@@ -195,11 +199,10 @@ fn main() {
         if let Ok(version) = version {
             println!("cargo:rustc-link-lib=cec");
             println!("cargo:libcec_version_major={}", version.major());
+            println!("cargo:rustc-cfg=abi{}", version.major());
             return;
         }
-        // Fallback
+        // Could not detect system-installed libcec, fallback to compiling vendored
         compile_vendored();
     }
-
-    // TODO: output lib version even with vendored
 }
