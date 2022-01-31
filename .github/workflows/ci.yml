@@ -9,7 +9,7 @@ name: Continuous Integration
 
 jobs:
     test:
-        name: Test Suite ${{ matrix.job.target }} (${{ libcec }})
+        name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }})
         runs-on: ${{ matrix.job.os }}
         strategy:
             matrix:
