@@ -58,7 +58,7 @@ jobs:
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: true
-                      libcec: libcec6
+                      libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -83,7 +83,14 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
-            - name: Install libcec
+            - name: Install libcec (manually downloaded .deb)
+              if: ${{ !startsWith(matrix.job.libcec, 'vendored') && endsWith(matrix.job.libcec, '.deb') }}
+              run: |
+                  TEMP_DOWNLOAD="$(mktemp)" &&
+                  wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/libcec6_6.0.2-1ubuntu1_amd64.deb' &&
+                  sudo dpkg -i "$TEMP_DOWNLOAD"
+                  rm -f "$TEMP_DOWNLOAD"
+            - name: Install libcec (apt-get)
               if: ${{ !startsWith(matrix.job.libcec, 'vendored') }}
               run: sudo apt-get install ${{ matrix.job.libcec }}
             - name: Cargo test
