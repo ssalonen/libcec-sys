@@ -86,13 +86,14 @@ jobs:
             - name: Install libcec (manually downloaded .deb)
               if: ${{ !startsWith(matrix.job.libcec, 'vendored') && endsWith(matrix.job.libcec, '.deb') }}
               run: |
+                  apt-get install libp8-platform2
                   TEMP_DOWNLOAD="$(mktemp)" &&
                   wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/libcec6_6.0.2-1ubuntu1_amd64.deb' &&
                   sudo dpkg -i "$TEMP_DOWNLOAD"
                   rm -f "$TEMP_DOWNLOAD"
             - name: Install libcec (apt-get)
               if: ${{ !startsWith(matrix.job.libcec, 'vendored') }}
-              run: sudo apt-get install ${{ matrix.job.libcec }}
+              run: sudo apt-get install libp8-platform2 ${{ matrix.job.libcec }}
             - name: Cargo test
               uses: actions-rs/cargo@v1
               with:
