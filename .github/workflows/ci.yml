@@ -1,15 +1,15 @@
 on:
     push:
         branches:
-        - master
+            - master
     pull_request:
         branches:
-        - master
+            - master
 name: Continuous Integration
 
 jobs:
     test:
-        name: Test Suite ${{ matrix.job.target }}
+        name: Test Suite ${{ matrix.job.target }} (${{ libcec }})
         runs-on: ${{ matrix.job.os }}
         strategy:
             matrix:
@@ -18,30 +18,47 @@ jobs:
                     - os: ubuntu-latest
                       target: aarch64-unknown-linux-gnu
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: i686-unknown-linux-gnu
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: arm-unknown-linux-gnueabi
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: armv7-unknown-linux-gnueabihf
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: mips-unknown-linux-gnu
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: mips64-unknown-linux-gnuabi64
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: mips64el-unknown-linux-gnuabi64
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: mipsel-unknown-linux-gnu
                       use-cross: true
+                      libcec: vendored-libcec
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: true
+                      libcec: vendored-libcec
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: true
+                      libcec: libcec4
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: true
+                      libcec: libcec6
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -66,6 +83,9 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
+            - name: Install libcec
+              if: ${{ !startsWith(matrix.job.libcec, 'vendored') }}
+              run: sudo apt-get install ${{ matrix.job.libcec }}
             - name: Cargo test
               uses: actions-rs/cargo@v1
               with:
