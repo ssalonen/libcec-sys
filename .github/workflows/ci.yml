@@ -60,15 +60,39 @@ jobs:
                       use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
                       libcec: vendored-libcec
                       expected_libcec_abi: 4
+                      #
+                      # libcec discovery with pkg config
+                      #
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
                       libcec: libcec4
+                      libcec-dev: libcec-dev
+                      pkg-config: true
                       expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
                       libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
+                      libcec-dev: libcec-dev_6.0.2-1ubuntu1_amd64.deb
+                      pkg-config: true
+                      expected_libcec_abi: 6
+                      #
+                      # libcec discovery without pkg config
+                      #
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Important that we do not run cross so package install shows up
+                      libcec: libcec4
+                      libcec-dev: libcec-dev
+                      pkg-config: false
+                      expected_libcec_abi: 4
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Important that we do not run cross so package install shows up
+                      libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
+                      libcec-dev: libcec-dev_6.0.2-1ubuntu1_amd64.deb
+                      pkg-config: false
                       expected_libcec_abi: 6
         steps:
             - name: Checkout repository
@@ -102,13 +126,21 @@ jobs:
                   wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/${{ matrix.job.libcec }}' &&
                   sudo dpkg -i "$TEMP_DOWNLOAD"
                   rm -f "$TEMP_DOWNLOAD"
+            - if: ${{ endsWith(matrix.job.libcec-dev, '.deb') }}
+              name: Install libcec-dev (manually downloaded .deb)
+              run: |
+                  sudo apt-get install libp8-platform2
+                  TEMP_DOWNLOAD="$(mktemp)" &&
+                  wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/${{ matrix.job.libcec-dev }}' &&
+                  sudo dpkg -i "$TEMP_DOWNLOAD"
+                  rm -f "$TEMP_DOWNLOAD"
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !endsWith(matrix.job.libcec, '.deb') }}
-              name: Install libcec (apt-get)
-              run: sudo apt-get install libp8-platform2 ${{ matrix.job.libcec }}
+              name: Install libcec(-dev) p8-platform (apt-get)
+              run: sudo apt-get install libp8-platform2 ${{ matrix.job.libcec }} ${{ matrix.job.libcec-dev }}
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross }}
               name: Install libudev for non-cross vendored builds as libcec build dependency
               run: sudo apt-get install libudev-dev
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  }}
+            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && matrix.job.pkg-config }}
               name: Install pkg-config for utilizing libcec from apt build dependency
               run: sudo apt-get install pkg-config
             - name: Cargo test
