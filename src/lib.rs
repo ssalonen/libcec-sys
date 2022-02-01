@@ -23,7 +23,7 @@ mod tests {
         let expected_abi = option_env!("EXPECTED_LIBCEC_VERSION_MAJOR");
         if let Some(expected_abi) = expected_abi {
             assert_eq!(
-                CEC_LIB_VERSION_MAJOR,
+                CEC_LIB_VERSION_MAJOR + 1,
                 expected_abi
                     .parse()
                     .expect("Invalid EXPECTED_LIBCEC_VERSION_MAJOR: could not parse to number")
