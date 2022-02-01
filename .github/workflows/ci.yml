@@ -19,46 +19,57 @@ jobs:
                       target: aarch64-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: i686-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: arm-unknown-linux-gnueabi
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: armv7-unknown-linux-gnueabihf
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: mips-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: mips64-unknown-linux-gnuabi64
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: mips64el-unknown-linux-gnuabi64
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: mipsel-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: true
                       libcec: libcec4
+                      expected_libcec_abi: 4
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: true
                       libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
+                      expected_libcec_abi: 6
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -95,6 +106,8 @@ jobs:
               name: Install libcec (apt-get)
               run: sudo apt-get install libp8-platform2 ${{ matrix.job.libcec }}
             - name: Cargo test
+              env:
+                  EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
               uses: actions-rs/cargo@v1
               with:
                   command: test
