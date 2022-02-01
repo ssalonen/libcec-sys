@@ -9,7 +9,7 @@ name: Continuous Integration
 
 jobs:
     test:
-        name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }})
+        name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }} pkg-config=${{ matrix.job.pkg-config }})
         runs-on: ${{ matrix.job.os }}
         strategy:
             matrix:
@@ -138,7 +138,7 @@ jobs:
               name: Install libcec(-dev) p8-platform (apt-get)
               run: sudo apt-get install libp8-platform2 ${{ matrix.job.libcec }} ${{ matrix.job.libcec-dev }}
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross }}
-              name: Install libudev for non-cross vendored builds as libcec build dependency
+              name: Install libudev-dev for non-cross vendored builds as libcec build dependency
               run: sudo apt-get install libudev-dev
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && matrix.job.pkg-config }}
               name: Install pkg-config for utilizing libcec from apt build dependency
