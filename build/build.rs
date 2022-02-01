@@ -108,11 +108,12 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
             .arg("-lcec");
         if let Ok(status) = cc_cmd.status() {
             if status.success() {
+                println!("smoke_abi{} -> ok", abi.major());
                 return Ok(abi);
             }
         }
+        println!("smoke_abi{} -> fail", abi.major());
     }
-
     Err(())
 }
 
@@ -123,7 +124,10 @@ fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
             .probe("libcec")
             .is_ok()
         {
+            println!("pkg_config(>={}) -> found", abi.major());
             return Ok(abi);
+        } else {
+            println!("pkg_config(>={}) -> fail", abi.major())
         }
     }
     Err(())
