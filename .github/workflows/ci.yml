@@ -108,6 +108,9 @@ jobs:
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross }}
               name: Install libudev for non-cross vendored builds as libcec build dependency
               run: sudo apt-get install libudev-dev
+            - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  }}
+              name: Install pkg-config for utilizing libcec from apt build dependency
+              run: sudo apt-get install pkg-config
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
