@@ -21,7 +21,7 @@ mod tests {
 
     #[test]
     fn test_abi_ci() {
-        if (env::var("CI").is_err()) {
+        if env::var("CI").is_err() {
             // Not running in CI
             return;
         }
