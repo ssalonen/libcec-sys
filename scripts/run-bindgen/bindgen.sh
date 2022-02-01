@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -xe
 
+# libcec git tags to use to generate bindings
+LIBCEC_VERSIONS="4.0.5 5.0.0 6.0.2"
+
+
 OUT=lib.rs
 DEST_DIR=../../src/
 CEC_REGEX='(libcec|cec|CEC|LIBCEC)_.*'
@@ -37,11 +41,11 @@ source ../../abis.env
 git clone --recursive git@github.com:Pulse-Eight/libcec.git $VENDOR_TMP
 
 cp -a ../../vendor $VENDOR_TMP
-for ABI in $ABIS; do
+for LIBCEC_VERSION in $LIBCEC_VERSIONS; do
     echo "Generating bindings for ABI=$ABI"
-    ABI_MAJOR=$(echo "$ABI"|cut -d '.' -f1)
+    ABI_MAJOR=$(echo "$LIBCEC_VERSION"|cut -d '.' -f1)
 
-    git -C $VENDOR_TMP checkout "libcec-$ABI"
+    git -C $VENDOR_TMP checkout "libcec-$LIBCEC_VERSION"
     cp $VENDOR_TMP/include/version.h.in $VENDOR_TMP/include/version.h
 
     LIBCEC_VERSION_MAJOR=$(grep -E -o 'set\(LIBCEC_VERSION_MAJOR [^)]' $VENDOR_TMP/CMakeLists.txt|cut -d ' ' -f2)
