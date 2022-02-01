@@ -21,10 +21,10 @@ enum CecVersion {
 
 impl CecVersion {
     fn major(&self) -> u32 {
-        match self {
-            &Self::V4 => 4,
-            &Self::V5 => 5,
-            &Self::V6 => 6,
+        match *self {
+            Self::V4 => 4,
+            Self::V5 => 5,
+            Self::V6 => 6,
         }
     }
 }
@@ -168,9 +168,8 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
         let mut numbers = String::new();
         if line.trim().starts_with("set(LIBCEC_VERSION_MAJOR ") {
             for char in line.chars() {
-                match char {
-                    '0'..='9' => numbers.push(char),
-                    _ => {}
+                if let '0'..='9' = char {
+                    numbers.push(char)
                 }
             }
             return numbers.parse().expect("major version parse failed");
@@ -181,12 +180,8 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
-    if cfg!(feature = "vendored") {
-        // vendored build explicitly requested. Build vendored sources
-        compile_vendored();
-    }
     // Try discovery using pkg-config
-    else {
+    if !cfg!(feature = "vendored") {
         let version = libcec_installed_pkg_config();
         if let Ok(version) = version {
             // pkg-config found the package and the parameters will be used for linking
@@ -202,7 +197,9 @@ fn main() {
             println!("cargo:rustc-cfg=abi{}", version.major());
             return;
         }
-        // Could not detect system-installed libcec, fallback to compiling vendored
-        compile_vendored();
     }
+    // Either vendored build has been explicitly requested (feature=vendored)
+    // or we could not detect system-installed libcec
+    // => fallback to compiling vendored
+    compile_vendored();
 }
