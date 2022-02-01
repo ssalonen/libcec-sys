@@ -112,22 +112,25 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
                 return Ok(abi);
             }
         }
-        println!("smoke_abi{} -> fail", abi.major());
+        println!("smoke_abi{} -> fail: {:?}", abi.major(), cc_cmd.output());
     }
     Err(())
 }
 
 fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
     for abi in CEC_MAJOR_VERSIONS {
-        if pkg_config::Config::new()
+        let pkg_config_result = pkg_config::Config::new()
             .atleast_version(&abi.major().to_string())
-            .probe("libcec")
-            .is_ok()
-        {
+            .probe("libcec");
+        if pkg_config_result.is_ok() {
             println!("pkg_config(>={}) -> found", abi.major());
             return Ok(abi);
         } else {
-            println!("pkg_config(>={}) -> fail", abi.major())
+            println!(
+                "pkg_config(>={}) -> fail: {:?}",
+                abi.major(),
+                pkg_config_result
+            )
         }
     }
     Err(())
