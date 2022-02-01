@@ -17,18 +17,23 @@ compile_error!("BUG: libcec abi not detected");
 mod tests {
 
     use crate::CEC_LIB_VERSION_MAJOR;
+    use std::env;
 
     #[test]
     fn test_abi_ci() {
-        let expected_abi = option_env!("EXPECTED_LIBCEC_VERSION_MAJOR");
-        if let Some(expected_abi) = expected_abi {
-            assert_eq!(
-                CEC_LIB_VERSION_MAJOR + 1,
-                expected_abi
-                    .parse()
-                    .expect("Invalid EXPECTED_LIBCEC_VERSION_MAJOR: could not parse to number")
-            );
+        if (env::var("CI").is_err()) {
+            // Not running in CI
+            return;
         }
+        let expected_abi = env::var("EXPECTED_LIBCEC_VERSION_MAJOR")
+            .expect("CI needs to specify EXPECTED_LIBCEC_VERSION_MAJOR");
+
+        assert_eq!(
+            CEC_LIB_VERSION_MAJOR + 1,
+            expected_abi
+                .parse()
+                .expect("Invalid EXPECTED_LIBCEC_VERSION_MAJOR: could not parse to number")
+        );
     }
 
     #[cfg(abi4)]
