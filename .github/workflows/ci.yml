@@ -79,6 +79,7 @@ jobs:
                       expected_libcec_abi: 6
                     #
                     # libcec discovery without pkg config
+                    # We set LD_LIBRARY_PATH and C_INCLUDE_PATH for compiler to find the preinstalled libcec
                     #
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
@@ -87,6 +88,9 @@ jobs:
                       libcec-dev: libcec-dev
                       pkg-config: false
                       expected_libcec_abi: 4
+                      additional_env:
+                          LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
+                          C_INCLUDE_PATH: "/usr/include/libcec/"
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
@@ -94,6 +98,9 @@ jobs:
                       libcec-dev: libcec-dev_6.0.2-1ubuntu1_amd64.deb
                       pkg-config: false
                       expected_libcec_abi: 6
+                      additional_env:
+                          LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
+                          C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -156,6 +163,8 @@ jobs:
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
+                  LD_LIBRARY_PATH: ${{ matrix.job.additional_env.LD_LIBRARY_PATH }}
+                  C_INCLUDE_PATH: ${{ matrix.job.additional_env.C_INCLUDE_PATH }}
               uses: actions-rs/cargo@v1
               with:
                   command: test
