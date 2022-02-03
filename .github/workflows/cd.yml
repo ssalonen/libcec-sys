@@ -11,6 +11,8 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@master
+            - name: Apt-get update
+              run: sudo apt-get update -yq
             - name: Checkout submodules
               shell: bash
               # basically git submodule update --init --recursive but replacing git@github.com with https

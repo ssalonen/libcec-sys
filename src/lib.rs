@@ -29,7 +29,7 @@ mod tests {
             .expect("CI needs to specify EXPECTED_LIBCEC_VERSION_MAJOR");
 
         assert_eq!(
-            CEC_LIB_VERSION_MAJOR + 1,
+            CEC_LIB_VERSION_MAJOR,
             expected_abi
                 .parse()
                 .expect("Invalid EXPECTED_LIBCEC_VERSION_MAJOR: could not parse to number")
