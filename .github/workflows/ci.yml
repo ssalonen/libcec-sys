@@ -161,7 +161,7 @@ jobs:
                   command: test
                   use-cross: ${{ matrix.job.use-cross }}
                   toolchain: ${{ matrix.rust }}
-                  args: --target ${{ matrix.job.target }}
+                  args: --target ${{ matrix.job.target }} -vv
 
     rustfmt:
         name: Rustfmt
