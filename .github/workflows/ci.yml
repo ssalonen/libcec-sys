@@ -102,24 +102,13 @@ jobs:
                           LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
                           C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
+            - name: Rewrite git submodule URLs with https
+              run: git config --global url."https://github".insteadOf git://github
             - name: Checkout repository
               uses: actions/checkout@v2
+              submodules: recursive
             - name: Apt-get update
               run: sudo apt-get update -yq
-            - name: Checkout submodules
-              shell: bash
-              # basically git submodule update --init --recursive but replacing git@github.com with https
-              # for anonymous checkout
-              run: |
-                  git submodule update --init
-                  git submodule foreach --recursive '
-                  echo "pwd: $(pwd)" ; \
-                  if [ -f .gitmodules ]; then \
-                      ( sed -i "s/git@github.com:/https:\/\/github.com\//" .gitmodules \
-                      && git submodule sync --recursive ) ; \
-                  fi ; \
-                  git submodule update --init \
-                  ;'
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
