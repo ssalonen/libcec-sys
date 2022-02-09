@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [3.0.0]
+
+- Support for libcec major versions 4, 5 and 6
+
 ## [2.0.1]
 
 - Fix missing link statement for libcec when vendored libcec sources were used.
+
 ## [2.0.0]
 
 - Add missing `links` declaration in crate manifest.

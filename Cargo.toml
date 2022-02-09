@@ -1,6 +1,6 @@
 [package]
 name = 'libcec-sys'
-version = "2.0.2-alpha.0"
+version = "3.0.0-alpha.0"
 authors = ['Sami Salonen']
 edition = '2018'
 license = 'GPL-2.0'
@@ -13,13 +13,14 @@ include = [
     '/Cargo.toml',
     '/src/*.rs',
     '/vendor',
-    '/build.rs',
+    '/build/smoke_abi*.c',
+    '/build/build.rs',
 ]
 keywords = ['libcec', 'cec', 'hdmi']
 categories = ['external-ffi-bindings']
 homepage = 'https://github.com/ssalonen/libcec-sys'
 repository = 'https://github.com/ssalonen/libcec-sys'
-build = 'build.rs'
+build = 'build/build.rs'
 links = 'cec'
 
 [dependencies]
