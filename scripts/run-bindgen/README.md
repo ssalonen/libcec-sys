@@ -14,16 +14,13 @@ Run bindgen:
 ./bindgen.sh
 ```
 
-The script generates FFI bindings in `<root>/libcec-sys/src/lib.rs`.
-Bindings are generated from libcec 4.x C API (`cecc.h`).
+The script generates raw FFI bindings in `<root>/libcec-sys/src/lib_abi<ABI>.rs`. 
+`lib.rs` imports the relevant definitions based on detected `libcec` version.
+
+In addition, enums are generated for `cec-rs` in `<root>/cec-rs/src/enums<ABI>.rs`.
 
 ## Updating libcec version
 
-```bash
-cd <root>/libcec-sys/libcec
-git checkout <tag-or-hash>
-cd ../scripts/run-bindgen
-./bindgen.sh
-cd ../..
-cargo build # build
-```
+Check the versions specified in `LIBCEC_VERSIONS` of `bindgen.sh`.
+
+Note that vendored sources in `<root>/libcec-sys/vendor` have no relation how the FFI bindings and enums are generated.

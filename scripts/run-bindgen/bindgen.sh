@@ -37,7 +37,6 @@ function generate() {
 }
 
 
-source ../../abis.env
 git clone --recursive git@github.com:Pulse-Eight/libcec.git $VENDOR_TMP
 
 cp -a ../../vendor $VENDOR_TMP

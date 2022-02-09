@@ -102,11 +102,10 @@ jobs:
                           LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
                           C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
-            - name: Rewrite git submodule URLs with https
-              run: git config --global url."https://github".insteadOf git://github
             - name: Checkout repository
               uses: actions/checkout@v2
-              submodules: recursive
+            - name: Checkout libcec-sys submodules
+              run: git -c "url.https://github.com/.insteadOf=git@github.com:" submodule update --init --recursive
             - name: Apt-get update
               run: sudo apt-get update -yq
             - name: Installing Rust toolchain

@@ -5,13 +5,15 @@
 [![CI](https://github.com/ssalonen/libcec-sys/workflows/Continuous%20Integration/badge.svg)](https://github.com/ssalonen/libcec-sys/actions)
 
 FFI bindings for the libcec
+## Linking to system libcec
 
-## Installation
+This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). As a fallback, vendored `libcec` (v4.x) is used during the build.
 
-### Linking of libcec
+Alternatively, one can the decide to skip logic above and force the use of vendored sources by enabling `vendored` feature.
 
-By default, this crate tried to link to `libcec` version >= 4.0.0. `pkg-config` is always preferred when available.
-Alternatively, one can force the use of vendored sources by enabling `vendored` feature.
+For most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `p8-platform-dev` and `p8-platform` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+
+The crate is tested mainly with linux but could work with other platforms as well. PRs welcome.
 
 ## License
 
