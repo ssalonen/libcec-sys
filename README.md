@@ -7,7 +7,7 @@
 FFI bindings for the libcec
 ## Linking to system libcec
 
-This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). As a fallback, vendored `libcec` (v4.x) is used during the build.
+This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). As a fallback, vendored `libcec` (v6.x) is used during the build.
 
 Alternatively, one can the decide to skip logic above and force the use of vendored sources by enabling `vendored` feature.
 
@@ -19,7 +19,7 @@ The crate is tested mainly with linux but could work with other platforms as wel
 
 Licensed under GNU General Public License version 2, ([LICENSE](LICENSE) or [https://opensource.org/licenses/GPL-2.0](https://opensource.org/licenses/GPL-2.0))
 
-The CI/CD setup in `.github/` is based on [rust-github/template](https://github.com/rust-github/template), and therefore licensed under  either of
+The CI/CD setup in `.github/` is based on [rust-github/template](https://github.com/rust-github/template), and therefore licensed under either of
 
 * Apache License, Version 2.0
    ([LICENSE-CI-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
