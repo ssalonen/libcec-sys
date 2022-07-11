@@ -101,11 +101,18 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let mut cc_cmd = Command::new(compiler_path);
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     for abi in CEC_MAJOR_VERSIONS {
-        cc_cmd
-            .arg(format!("build/smoke_abi{}.c", abi.major()))
-            .arg("-o")
-            .arg(dst.join("smoke_out"))
-            .arg("-lcec");
+        if cfg!(windows) {
+            cc_cmd
+                .arg(format!("build/smoke_abi{}.c", abi.major()))
+                .arg("/Fe")
+                .arg(dst.join("smoke_out.exe"));
+        } else {
+            cc_cmd
+                .arg(format!("build/smoke_abi{}.c", abi.major()))
+                .arg("-o")
+                .arg(dst.join("smoke_out"))
+                .arg("-lcec");
+        }
         if let Ok(status) = cc_cmd.status() {
             if status.success() {
                 println!("smoke_abi{} -> ok", abi.major());
@@ -157,12 +164,32 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    compile_vendored_platform(&dst);
-    compile_vendored_libcec(&dst);
-    println!(
-        "cargo:rustc-link-search=native={}",
-        dst.join(LIBCEC_BUILD).join("lib").display()
-    );
+    if cfg!(windows) {
+        println!("build libcec");
+        // All the compilation steps are combined into one command.
+        Command::new("cmd")
+            .arg("/C")
+            .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
+            .arg("amd64")
+            .arg("Release")
+            .arg("2019")
+            .arg(dst.join(LIBCEC_BUILD))
+            .arg("vs")
+            .status()
+            .expect("failed to build libcec!");
+        println!(
+            "cargo:rustc-link-search=native={}",
+            dst.join(LIBCEC_BUILD).join("amd64").display()
+        );
+    } else {
+        compile_vendored_platform(&dst);
+        compile_vendored_libcec(&dst);
+        println!(
+            "cargo:rustc-link-search=native={}",
+            dst.join(LIBCEC_BUILD).join("lib").display(),
+        );
+    }
+
     println!("cargo:rustc-link-lib=cec");
 }
 
