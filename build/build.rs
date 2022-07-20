@@ -98,13 +98,15 @@ fn compile_vendored_libcec(dst: &Path) {
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let compiler_path = compiler.path();
-    let mut cc_cmd = Command::new(compiler_path);
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    println!("\n\nUsing 'smoke test' to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
+        let mut cc_cmd = Command::new(compiler_path);
+        println!("\n\nSmoke testing with libcec major {}", abi.major());
         cc_cmd
             .arg(format!("build/smoke_abi{}.c", abi.major()))
             .arg("-o")
-            .arg(dst.join("smoke_out"))
+            .arg(dst.join(format!("smoke_abi{}_out", abi.major())))
             .arg("-lcec");
         if let Ok(status) = cc_cmd.status() {
             if status.success() {
@@ -118,7 +120,9 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
 }
 
 fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
+    println!("\n\nUsing pkg-config to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
+        println!("\n\npkg-config with libcec major {}", abi.major());
         let pkg_config_result = pkg_config::Config::new()
             .atleast_version(&abi.major().to_string())
             .probe("libcec");
@@ -137,6 +141,7 @@ fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
 }
 
 fn compile_vendored() {
+    println!("\n\nBuilding vendored libcec");
     println!("cargo:lib_vendored=true");
 
     let cmakelists = format!("{}/CMakeLists.txt", LIBCEC_SRC);
