@@ -85,7 +85,7 @@ jobs:
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
                       libcec: libcec4
-                      libcec-dev: libcec-dev
+                      libcec-dev: libcec4-dev
                       pkg-config: false
                       expected_libcec_abi: 4
                       additional_env:
