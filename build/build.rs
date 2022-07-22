@@ -191,7 +191,7 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
 }
 
 fn main() {
-    println!("cargo:rerun-if-changed=build/build.rs");
+    println!("cargo:rerun-if-changed=build");
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {
         let version = libcec_installed_pkg_config();
