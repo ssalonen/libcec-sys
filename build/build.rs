@@ -8,7 +8,7 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const P8_PLATFORM_DIR_ENV: &str = "p8-platform_DIR";
+const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
@@ -66,13 +66,13 @@ fn compile_vendored_platform(dst: &Path) {
     println!("cmake platform");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
         .out_dir(&platform_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
     println!("make platform");
     Command::new("make")
         .current_dir(&platform_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .status()
         .expect("failed to make libcec platform!");
 }
@@ -84,13 +84,13 @@ fn compile_vendored_libcec(dst: &Path) {
     println!("cmake libcec");
     cmake::Config::new(&dst.join(LIBCEC_SRC))
         .out_dir(&libcec_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
     println!("make libcec");
     Command::new("make")
         .current_dir(&libcec_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .status()
         .expect("failed to make libcec!");
 }
