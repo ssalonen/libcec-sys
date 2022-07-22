@@ -104,7 +104,7 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
         if cfg!(windows) {
             cc_cmd
                 .arg(format!("build/smoke_abi{}.c", abi.major()))
-                .arg("/Fe")
+                .arg("/Fe:")
                 .arg(dst.join("smoke_out.exe"));
         } else {
             cc_cmd
