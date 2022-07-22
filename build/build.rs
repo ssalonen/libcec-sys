@@ -8,7 +8,7 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const P8_PLATFORM_DIR_ENV: &str = "p8-platform_DIR";
+const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
@@ -66,13 +66,13 @@ fn compile_vendored_platform(dst: &Path) {
     println!("cmake platform");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
         .out_dir(&platform_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
     println!("make platform");
     Command::new("make")
         .current_dir(&platform_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .status()
         .expect("failed to make libcec platform!");
 }
@@ -84,13 +84,13 @@ fn compile_vendored_libcec(dst: &Path) {
     println!("cmake libcec");
     cmake::Config::new(&dst.join(LIBCEC_SRC))
         .out_dir(&libcec_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
     println!("make libcec");
     Command::new("make")
         .current_dir(&libcec_build)
-        .env(P8_PLATFORM_DIR_ENV, &platform_build)
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .status()
         .expect("failed to make libcec!");
 }
@@ -98,19 +98,21 @@ fn compile_vendored_libcec(dst: &Path) {
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let compiler_path = compiler.path();
-    let mut cc_cmd = Command::new(compiler_path);
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    println!("\n\nUsing 'smoke test' to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
+        let mut cc_cmd = Command::new(compiler_path);
+        println!("\n\nSmoke testing with libcec major {}", abi.major());
         if cfg!(windows) {
             cc_cmd
                 .arg(format!("build/smoke_abi{}.c", abi.major()))
                 .arg("/Fe:")
-                .arg(dst.join("smoke_out.exe"));
+                .arg(dst.join(format!("smoke_abi{}_out.exe", abi.major())));
         } else {
             cc_cmd
                 .arg(format!("build/smoke_abi{}.c", abi.major()))
                 .arg("-o")
-                .arg(dst.join("smoke_out"))
+                .arg(dst.join(format!("smoke_abi{}_out", abi.major())))
                 .arg("-lcec");
         }
         if let Ok(status) = cc_cmd.status() {
@@ -125,7 +127,9 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
 }
 
 fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
+    println!("\n\nUsing pkg-config to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
+        println!("\n\npkg-config with libcec major {}", abi.major());
         let pkg_config_result = pkg_config::Config::new()
             .atleast_version(&abi.major().to_string())
             .probe("libcec");
@@ -144,6 +148,7 @@ fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
 }
 
 fn compile_vendored() {
+    println!("\n\nBuilding vendored libcec");
     println!("cargo:lib_vendored=true");
 
     let cmakelists = format!("{}/CMakeLists.txt", LIBCEC_SRC);

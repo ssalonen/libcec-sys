@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+- build script: fixes for "smoke testing" (detecting libcec installation with `pkg-config`)
+
 ## [3.0.0]
 
 - Support for libcec major versions 4, 5 and 6
