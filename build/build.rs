@@ -175,8 +175,16 @@ fn compile_vendored() {
         Command::new("cmd")
             .arg("/C")
             .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
-            .arg("amd64")
-            .arg("Release")
+            .arg(if cfg!(target_pointer_width = "64") {
+                "amd64"
+            } else {
+                "x86"
+            })
+            .arg(if cfg!(debug_assertions) {
+                "Debug"
+            } else {
+                "Release"
+            })
             .arg("2019")
             .arg(dst.join(LIBCEC_BUILD))
             .arg("nmake")
@@ -222,6 +230,7 @@ fn main() {
     println!("cargo:rerun-if-changed=vendor");
     println!("cargo:rerun-if-env-changed=LD_LIBRARY_PATH");
     println!("cargo:rerun-if-env-changed=LDFLAGS");
+    println!("cargo:rerun-if-env-changed=INCLUDE");
     println!("cargo:rerun-if-env-changed=PATH");
     println!("cargo:rerun-if-env-changed=PKG_CONFIG_PATH");
     println!("cargo:rerun-if-env-changed=CC");
