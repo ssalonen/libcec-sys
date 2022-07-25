@@ -97,11 +97,10 @@ fn compile_vendored_libcec(dst: &Path) {
 
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
-    let compiler_path = compiler.path();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("\n\nUsing 'smoke test' to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
-        let mut cc_cmd = Command::new(compiler_path);
+        let mut cc_cmd =  compiler.to_command();
         println!("\n\nSmoke testing with libcec major {}", abi.major());
         if cfg!(windows) {
             cc_cmd
