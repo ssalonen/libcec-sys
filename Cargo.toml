@@ -2,19 +2,19 @@
 name = 'libcec-sys'
 version = "3.0.1-alpha.0"
 authors = ['Sami Salonen']
-edition = '2018'
+edition = '2021'
 license = 'GPL-2.0'
 description = 'FFI bindings to libcec'
 documentation = 'https://docs.rs/libcec-sys'
 readme = 'README.md'
 include = [
-    '/README.md',
-    '/LICENSE',
-    '/Cargo.toml',
-    '/src/*.rs',
-    '/vendor',
-    '/build/smoke_abi*.c',
-    '/build/build.rs',
+  '/README.md',
+  '/LICENSE',
+  '/Cargo.toml',
+  '/src/*.rs',
+  '/vendor',
+  '/build/smoke_abi*.c',
+  '/build/build.rs',
 ]
 keywords = ['libcec', 'cec', 'hdmi']
 categories = ['external-ffi-bindings']
@@ -26,10 +26,10 @@ links = 'cec'
 [dependencies]
 
 [build-dependencies]
-cmake = '0.1.45'
-copy_dir = '0.1.2'
-pkg-config = '0.3.24'
-cc = '1.0.72'
+cmake = "0.1.48"
+copy_dir = "0.1.2"
+pkg-config = "0.3.25"
+cc = "1.0.73"
 
 [features]
 default = []
