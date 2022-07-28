@@ -118,7 +118,7 @@ jobs:
             - name: Checkout libcec-sys submodules
               run: git -c "url.https://github.com/.insteadOf=git@github.com:" submodule update --init --recursive
             - name: Apt-get update
-              if: runner.os == "Linux"
+              if: runner.os == 'Linux'
               run: sudo apt-get update -yq
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
@@ -150,11 +150,11 @@ jobs:
               name: Install libcec(-dev) and build dependencies
               run: sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev ${{ matrix.job.libcec }} ${{ matrix.job.libcec-dev }}
             # additional build dependencies for non-cross builds with vendored libcec sources
-            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == "Linux" }}
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
               name: Install libudev-dev for non-cross vendored builds as libcec build dependency
               run: sudo apt-get install -yq libudev-dev
             # setup developer command prompt for Windows
-            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == "Windows" }}
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
               uses: ilammy/msvc-dev-cmd@v1
             # pkg-config install/remove
@@ -164,6 +164,13 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
+            # install Python with debug binaries for Windows
+            - if: runner.os == 'Windows'
+              name: Install python 3.10.5 with debug binaries
+              run: |
+                  $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
+                  curl -o python-3.10.5$arch.exe https://www.python.org/ftp/python/3.10.5/python-3.10.5$arch.exe
+                  Start-Process -FilePath "python-3.10.5$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
@@ -174,7 +181,7 @@ jobs:
                   command: test
                   use-cross: ${{ matrix.job.use-cross }}
                   toolchain: ${{ matrix.rust }}
-                  args: --target ${{ matrix.job.target }} --release -vv
+                  args: --target ${{ matrix.job.target }} -vv
 
     rustfmt:
         name: Rustfmt
