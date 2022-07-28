@@ -100,7 +100,7 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("\n\nUsing 'smoke test' to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
-        let mut cc_cmd =  compiler.to_command();
+        let mut cc_cmd = compiler.to_command();
         println!("\n\nSmoke testing with libcec major {}", abi.major());
         if cfg!(windows) {
             cc_cmd
