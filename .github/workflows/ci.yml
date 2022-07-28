@@ -1,5 +1,4 @@
 on:
-    workflow_dispatch:
     push:
         branches:
             - master
@@ -114,11 +113,10 @@ jobs:
                       C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Checkout libcec-sys submodules
               run: git -c "url.https://github.com/.insteadOf=git@github.com:" submodule update --init --recursive
             - name: Apt-get update
-              if: runner.os == 'Linux'
               run: sudo apt-get update -yq
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
@@ -143,7 +141,7 @@ jobs:
                   apt show '${{ matrix.job.libcec-dev }}'
                   sudo apt install -yq '${{ matrix.job.libcec-dev }}'
             # additional build dependencies for non-cross builds with vendored libcec sources
-            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross }}
               name: Install libudev-dev for non-cross vendored builds as libcec build dependency
               run: sudo apt-get install -yq libudev-dev
             # setup developer command prompt for Windows
@@ -178,15 +176,13 @@ jobs:
                   use-cross: ${{ matrix.job.use-cross }}
                   toolchain: ${{ matrix.rust }}
                   args: --target ${{ matrix.job.target }} -vv
-
-    rustfmt:
-        name: Rustfmt
+    lint:
+        name: Lint
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
             - name: Checkout submodules
-              shell: bash
               # basically git submodule update --init --recursive but replacing git@github.com with https
               # for anonymous checkout
               run: |
@@ -199,47 +195,9 @@ jobs:
                   fi ; \
                   git submodule update --init \
                   ;'
-            - name: Install Rust
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  profile: minimal
-                  override: true
-                  components: rustfmt
-            - name: Check formatting
-              uses: actions-rs/cargo@v1
-              with:
-                  command: fmt
-                  args: --all -- --check
-
-    clippy:
-        name: Clippy
-        runs-on: ubuntu-22.04
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
-            - name: Checkout submodules
-              shell: bash
-              # basically git submodule update --init --recursive but replacing git@github.com with https
-              # for anonymous checkout
-              run: |
-                  git submodule update --init
-                  git submodule foreach --recursive '
-                  echo "pwd: $(pwd)" ; \
-                  if [ -f .gitmodules ]; then \
-                      ( sed -i "s/git@github.com:/https:\/\/github.com\//" .gitmodules \
-                      && git submodule sync --recursive ) ; \
-                  fi ; \
-                  git submodule update --init \
-                  ;'
-            - name: Install Rust
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  profile: minimal
-                  override: true
-                  target: x86_64-unknown-linux-gnu
-                  components: clippy
+            - name: Rustfmt check
+              run: cargo fmt -- --check
+            # need to use cross to setup dependencies
             - name: Clippy Check
               uses: actions-rs/cargo@v1
               with:
