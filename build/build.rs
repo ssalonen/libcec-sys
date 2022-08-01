@@ -102,14 +102,13 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     for abi in CEC_MAJOR_VERSIONS {
         let mut cc_cmd = compiler.to_command();
         println!("\n\nSmoke testing with libcec major {}", abi.major());
+        cc_cmd.arg(format!("build/smoke_abi{}.c", abi.major()))
         if cfg!(windows) {
             cc_cmd
-                .arg(format!("build/smoke_abi{}.c", abi.major()))
                 .arg("/Fe:")
                 .arg(dst.join(format!("smoke_abi{}_out.exe", abi.major())));
         } else {
             cc_cmd
-                .arg(format!("build/smoke_abi{}.c", abi.major()))
                 .arg("-o")
                 .arg(dst.join(format!("smoke_abi{}_out", abi.major())))
                 .arg("-lcec");
