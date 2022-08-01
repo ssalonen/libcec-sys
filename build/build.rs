@@ -235,6 +235,9 @@ fn main() {
     println!("cargo:rerun-if-env-changed=CFLAGS");
     println!("cargo:rerun-if-env-changed=CXX");
     println!("cargo:rerun-if-env-changed=CXXFLAGS");
+    println!("cargo:rerun-if-env-changed=LIB");
+    println!("cargo:rerun-if-env-changed=CL");
+    println!("cargo:rerun-if-env-changed=_CL_");
 
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {
