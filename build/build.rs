@@ -13,6 +13,13 @@ const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
+#[cfg(target_os = "windows")]
+const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
+    "amd64"
+} else {
+    "x86"
+};
+
 enum CecVersion {
     V4,
     V5,
@@ -77,6 +84,7 @@ fn compile_vendored_platform(dst: &Path) {
         .expect("failed to make libcec platform!");
 }
 
+#[cfg(not(target_os = "windows"))]
 fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
@@ -95,6 +103,26 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to make libcec!");
 }
 
+#[cfg(target_os = "windows")]
+fn compile_vendored_libcec(dst: &Path) {
+    // All the compilation steps are combined into one command.
+    println!("build libcec");
+    Command::new("cmd")
+        .arg("/C")
+        .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
+        .arg(ARCHITECTURE)
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(dst.join(LIBCEC_BUILD))
+        .arg("nmake")
+        .status()
+        .expect("failed to build libcec!");
+}
+
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -102,7 +130,7 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     for abi in CEC_MAJOR_VERSIONS {
         let mut cc_cmd = compiler.to_command();
         println!("\n\nSmoke testing with libcec major {}", abi.major());
-        cc_cmd.arg(format!("build/smoke_abi{}.c", abi.major()))
+        cc_cmd.arg(format!("build/smoke_abi{}.c", abi.major()));
         if cfg!(windows) {
             cc_cmd
                 .arg("/Fe:")
@@ -168,29 +196,10 @@ fn compile_vendored() {
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
     if cfg!(windows) {
-        println!("build libcec");
-        // All the compilation steps are combined into one command.
-        Command::new("cmd")
-            .arg("/C")
-            .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
-            .arg(if cfg!(target_pointer_width = "64") {
-                "amd64"
-            } else {
-                "x86"
-            })
-            .arg(if cfg!(debug_assertions) {
-                "Debug"
-            } else {
-                "Release"
-            })
-            .arg("2019")
-            .arg(dst.join(LIBCEC_BUILD))
-            .arg("nmake")
-            .status()
-            .expect("failed to build libcec!");
+        compile_vendored_libcec(&dst);
         println!(
             "cargo:rustc-link-search=native={}",
-            dst.join(LIBCEC_BUILD).join("amd64").display()
+            dst.join(LIBCEC_BUILD).join(ARCHITECTURE).display()
         );
     } else {
         compile_vendored_platform(&dst);
