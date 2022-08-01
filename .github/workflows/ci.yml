@@ -114,6 +114,7 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
+            - uses: Swatinem/rust-cache@v1
             # libcec from apt repo:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && endsWith(matrix.job.libcec, '.deb') }}
               name: Install libcec (manually downloaded .deb)
