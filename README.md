@@ -11,9 +11,20 @@ This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of wr
 
 Alternatively, one can the decide to skip logic above and force the use of vendored sources by enabling `vendored` feature.
 
-For most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `p8-platform-dev` and `p8-platform` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+The crate is tested mainly with Linux and Windows but could work with other platforms as well. PRs welcome.
 
-The crate is tested mainly with linux but could work with other platforms as well. PRs welcome.
+### Linux
+On Linux, for most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `p8-platform-dev` and `p8-platform` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+
+### Windows
+On Windows, it is recommended to install `libcec` via the [installer](https://github.com/Pulse-Eight/libcec/releases/latest) and add `cec.dll` to the `PATH` environment variable.
+
+For a vendored build, `libcec-sys` will dynamically link to the compiled `cec.dll`. This means you must package your standalone executable with the compiled dynamic library.
+
+#### Vendored Build Prerequisites:
+- Visual Studio 2019 w/ `Desktop Development with C++` and `Universal Windows Platform development`
+- CMake 3.12+
+- Python 3.6+ with Debug Binaries
 
 ## License
 
