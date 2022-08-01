@@ -165,6 +165,7 @@ jobs:
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
             # install Python with debug binaries for Windows
+            # Github Workflow runners do not package debug binaries by default
             - if: runner.os == 'Windows'
               name: Install python 3.10.5 with debug binaries
               run: |
