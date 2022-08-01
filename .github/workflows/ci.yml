@@ -113,8 +113,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
-            - name: Checkout libcec-sys submodules
-              run: git -c "url.https://github.com/.insteadOf=git@github.com:" submodule update --init --recursive
+              with:
+                  submodules: recursive
             - name: Apt-get update
               run: sudo apt-get update -yq
             - name: Installing Rust toolchain
@@ -180,19 +180,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
-            - name: Checkout submodules
-              # basically git submodule update --init --recursive but replacing git@github.com with https
-              # for anonymous checkout
-              run: |
-                  git submodule update --init
-                  git submodule foreach --recursive '
-                  echo "pwd: $(pwd)" ; \
-                  if [ -f .gitmodules ]; then \
-                      ( sed -i "s/git@github.com:/https:\/\/github.com\//" .gitmodules \
-                      && git submodule sync --recursive ) ; \
-                  fi ; \
-                  git submodule update --init \
-                  ;'
+              with:
+                  submodules: recursive
             - name: Rustfmt check
               uses: actions-rs/cargo@v1
               with:
