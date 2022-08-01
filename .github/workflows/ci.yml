@@ -13,7 +13,6 @@ jobs:
         runs-on: ${{ matrix.job.os }}
         strategy:
             matrix:
-                rust: [stable]
                 job:
                     - os: windows-latest
                       target: x86_64-pc-windows-msvc
@@ -121,7 +120,7 @@ jobs:
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
-                  toolchain: ${{ matrix.rust }}
+                  toolchain: stable
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
@@ -174,7 +173,6 @@ jobs:
               with:
                   command: test
                   use-cross: ${{ matrix.job.use-cross }}
-                  toolchain: ${{ matrix.rust }}
                   args: --target ${{ matrix.job.target }} -vv
     lint:
         name: Lint
