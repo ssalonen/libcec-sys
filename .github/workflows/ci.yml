@@ -124,6 +124,7 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
+            - uses: Swatinem/rust-cache@v1
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
