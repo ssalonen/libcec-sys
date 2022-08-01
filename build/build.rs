@@ -195,21 +195,17 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    if cfg!(windows) {
-        compile_vendored_libcec(&dst);
-        println!(
-            "cargo:rustc-link-search=native={}",
-            dst.join(LIBCEC_BUILD).join(ARCHITECTURE).display()
-        );
-    } else {
+    if cfg!(linux) {
         compile_vendored_platform(&dst);
-        compile_vendored_libcec(&dst);
-        println!(
-            "cargo:rustc-link-search=native={}",
-            dst.join(LIBCEC_BUILD).join("lib").display(),
-        );
     }
+    compile_vendored_libcec(&dst);
 
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join(LIBCEC_BUILD)
+            .join(if cfg!(windows) { ARCHITECTURE } else { "lib" })
+            .display()
+    );
     println!("cargo:rustc-link-lib=cec");
 }
 
