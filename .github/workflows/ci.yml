@@ -180,7 +180,10 @@ jobs:
                   git submodule update --init \
                   ;'
             - name: Rustfmt check
-              run: cargo fmt -- --check
+              uses: actions-rs/cargo@v1
+              with:
+                  command: fmt
+                  args: -- --check
             # need to use cross to setup dependencies
             - name: Clippy Check
               uses: actions-rs/cargo@v1
