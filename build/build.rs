@@ -13,7 +13,6 @@ const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
-#[cfg(target_os = "windows")]
 const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
     "amd64"
 } else {
@@ -66,6 +65,7 @@ fn prepare_vendored_build(dst: &Path) {
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
 
+#[cfg(not(target_os = "windows"))]
 fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
@@ -195,7 +195,8 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    if cfg!(linux) {
+    #[cfg(not(target_os = "windows"))]
+    {
         compile_vendored_platform(&dst);
     }
     compile_vendored_libcec(&dst);
