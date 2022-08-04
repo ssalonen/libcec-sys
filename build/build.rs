@@ -13,6 +13,7 @@ const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
+#[cfg(target_os = "windows")]
 const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
     "amd64"
 } else {
@@ -123,6 +124,22 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to build libcec!");
 }
 
+#[cfg(not(target_os = "windows"))]
+fn link_libcec(dst: &Path) {
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join(LIBCEC_BUILD).join("lib").display()
+    );
+}
+
+#[cfg(target_os = "windows")]
+fn link_libcec(dst: &Path) {
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join(LIBCEC_BUILD).join(ARCHITECTURE).display()
+    );
+}
+
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -200,13 +217,7 @@ fn compile_vendored() {
         compile_vendored_platform(&dst);
     }
     compile_vendored_libcec(&dst);
-
-    println!(
-        "cargo:rustc-link-search=native={}",
-        dst.join(LIBCEC_BUILD)
-            .join(if cfg!(windows) { ARCHITECTURE } else { "lib" })
-            .display()
-    );
+    link_libcec(&dst);
     println!("cargo:rustc-link-lib=cec");
 }
 
