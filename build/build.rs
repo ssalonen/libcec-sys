@@ -13,6 +13,13 @@ const LIBCEC_BUILD: &str = "libcec_build";
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
+#[cfg(target_os = "windows")]
+const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
+    "amd64"
+} else {
+    "x86"
+};
+
 enum CecVersion {
     V4,
     V5,
@@ -59,6 +66,7 @@ fn prepare_vendored_build(dst: &Path) {
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
 
+#[cfg(not(target_os = "windows"))]
 fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
@@ -77,6 +85,7 @@ fn compile_vendored_platform(dst: &Path) {
         .expect("failed to make libcec platform!");
 }
 
+#[cfg(not(target_os = "windows"))]
 fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
@@ -95,19 +104,60 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to make libcec!");
 }
 
+#[cfg(target_os = "windows")]
+fn compile_vendored_libcec(dst: &Path) {
+    // All the compilation steps are combined into one command.
+    println!("build libcec");
+    Command::new("cmd")
+        .arg("/C")
+        .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
+        .arg(ARCHITECTURE)
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(dst.join(LIBCEC_BUILD))
+        .arg("nmake")
+        .status()
+        .expect("failed to build libcec!");
+}
+
+#[cfg(not(target_os = "windows"))]
+fn link_libcec(dst: &Path) {
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join(LIBCEC_BUILD).join("lib").display()
+    );
+}
+
+#[cfg(target_os = "windows")]
+fn link_libcec(dst: &Path) {
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join(LIBCEC_BUILD).join(ARCHITECTURE).display()
+    );
+}
+
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
-    let compiler_path = compiler.path();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("\n\nUsing 'smoke test' to find out if libcec is installed");
     for abi in CEC_MAJOR_VERSIONS {
-        let mut cc_cmd = Command::new(compiler_path);
+        let mut cc_cmd = compiler.to_command();
         println!("\n\nSmoke testing with libcec major {}", abi.major());
-        cc_cmd
-            .arg(format!("build/smoke_abi{}.c", abi.major()))
-            .arg("-o")
-            .arg(dst.join(format!("smoke_abi{}_out", abi.major())))
-            .arg("-lcec");
+        cc_cmd.arg(format!("build/smoke_abi{}.c", abi.major()));
+        if cfg!(windows) {
+            cc_cmd
+                .arg("/Fe:")
+                .arg(dst.join(format!("smoke_abi{}_out.exe", abi.major())));
+        } else {
+            cc_cmd
+                .arg("-o")
+                .arg(dst.join(format!("smoke_abi{}_out", abi.major())))
+                .arg("-lcec");
+        }
         if let Ok(status) = cc_cmd.status() {
             if status.success() {
                 println!("smoke_abi{} -> ok", abi.major());
@@ -162,12 +212,12 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    compile_vendored_platform(&dst);
+    #[cfg(not(target_os = "windows"))]
+    {
+        compile_vendored_platform(&dst);
+    }
     compile_vendored_libcec(&dst);
-    println!(
-        "cargo:rustc-link-search=native={}",
-        dst.join(LIBCEC_BUILD).join("lib").display()
-    );
+    link_libcec(&dst);
     println!("cargo:rustc-link-lib=cec");
 }
 
@@ -195,12 +245,16 @@ fn main() {
     println!("cargo:rerun-if-changed=vendor");
     println!("cargo:rerun-if-env-changed=LD_LIBRARY_PATH");
     println!("cargo:rerun-if-env-changed=LDFLAGS");
+    println!("cargo:rerun-if-env-changed=INCLUDE");
     println!("cargo:rerun-if-env-changed=PATH");
     println!("cargo:rerun-if-env-changed=PKG_CONFIG_PATH");
     println!("cargo:rerun-if-env-changed=CC");
     println!("cargo:rerun-if-env-changed=CFLAGS");
     println!("cargo:rerun-if-env-changed=CXX");
     println!("cargo:rerun-if-env-changed=CXXFLAGS");
+    println!("cargo:rerun-if-env-changed=LIB");
+    println!("cargo:rerun-if-env-changed=CL");
+    println!("cargo:rerun-if-env-changed=_CL_");
 
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {
