@@ -26,47 +26,47 @@ jobs:
                       use-cross: false
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: aarch64-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: i686-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: arm-unknown-linux-gnueabi
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: armv7-unknown-linux-gnueabihf
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: mips-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: mips64-unknown-linux-gnuabi64
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: mips64el-unknown-linux-gnuabi64
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: mipsel-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
                       libcec: vendored-libcec
@@ -74,44 +74,44 @@ jobs:
                     #
                     # libcec discovery with pkg config
                     #
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
-                      libcec: libcec4
-                      libcec-dev: libcec-dev=4.0.4+dfsg1-4ubuntu3
+                      libcec: "libcec4"
+                      libcec-dev: "libcec-dev=4*"
                       pkg-config: true
                       expected_libcec_abi: 4
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
-                      libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
-                      libcec-dev: libcec-dev_6.0.2-1ubuntu1_amd64.deb
+                      libcec: "libcec6"
+                      libcec-dev: "libcec-dev=6*"
                       pkg-config: true
                       expected_libcec_abi: 6
                     #
                     # libcec discovery without pkg config
                     # We set LD_LIBRARY_PATH and C_INCLUDE_PATH for compiler to find the preinstalled libcec
                     #
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
-                      libcec: libcec4
-                      libcec-dev: libcec-dev=4.0.4+dfsg1-4ubuntu3
+                      libcec: "libcec4"
+                      libcec-dev: "libcec-dev=4*"
                       pkg-config: false
                       expected_libcec_abi: 4
                       additional_env:
                           LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
                           C_INCLUDE_PATH: "/usr/include/libcec/"
-                    - os: ubuntu-latest
+                    - os: ubuntu-22.04
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
-                      libcec: libcec6_6.0.2-1ubuntu1_amd64.deb
-                      libcec-dev: libcec-dev_6.0.2-1ubuntu1_amd64.deb
+                      libcec: "libcec6"
+                      libcec-dev: "libcec-dev=6*"
                       pkg-config: false
                       expected_libcec_abi: 6
                       additional_env:
                           LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
-                          C_INCLUDE_PATH: "/usr/include/libcec/"
+                      C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -127,28 +127,21 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
-            # libcec from apt repo:
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && endsWith(matrix.job.libcec, '.deb') }}
-              name: Install libcec (manually downloaded .deb)
-              run: |
-                  sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
-                  TEMP_DOWNLOAD="$(mktemp)" &&
-                  wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/${{ matrix.job.libcec }}' &&
-                  sudo dpkg -i "$TEMP_DOWNLOAD"
-                  rm -f "$TEMP_DOWNLOAD"
-            # libcec-dev from apt repo:
-            - if: ${{ endsWith(matrix.job.libcec-dev, '.deb') }}
-              name: Install libcec-dev (manually downloaded .deb)
-              run: |
-                  sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
-                  TEMP_DOWNLOAD="$(mktemp)" &&
-                  wget -O "$TEMP_DOWNLOAD" 'http://se.archive.ubuntu.com/ubuntu/pool/universe/libc/libcec/${{ matrix.job.libcec-dev }}' &&
-                  sudo dpkg -i "$TEMP_DOWNLOAD"
-                  rm -f "$TEMP_DOWNLOAD"
-            # libcec from apt repo:
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !endsWith(matrix.job.libcec, '.deb') }}
+            # libcec and p8-platform from apt repo
+            - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
-              run: sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev ${{ matrix.job.libcec }} ${{ matrix.job.libcec-dev }}
+              run: |
+                  set -e
+                  # introduce Ubuntu 20.04 (Focal Fossa) repos as well for easy libcec4 installation
+                  sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list'
+                  sudo apt-get update
+                  sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
+
+                  apt show '${{ matrix.job.libcec }}'
+                  sudo apt install -yq '${{ matrix.job.libcec }}'
+
+                  apt show '${{ matrix.job.libcec-dev }}'
+                  sudo apt install -yq '${{ matrix.job.libcec-dev }}'
             # additional build dependencies for non-cross builds with vendored libcec sources
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
               name: Install libudev-dev for non-cross vendored builds as libcec build dependency
@@ -157,14 +150,15 @@ jobs:
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
               uses: ilammy/msvc-dev-cmd@v1
-            # pkg-config install/remove
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && matrix.job.pkg-config }}
+            # pkg-config install
+            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Install pkg-config for utilizing libcec from apt build dependency
               run: sudo apt-get install -yq pkg-config
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config }}
+            # pkg-config remove
+            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
-            # install Python with debug binaries for Windows
+            # install Python with debug binaries for Windows (needed for debug build of vendored libcec)
             # Github Workflow runners do not package debug binaries by default
             - if: runner.os == 'Windows'
               name: Install python 3.10.5 with debug binaries
@@ -186,7 +180,7 @@ jobs:
 
     rustfmt:
         name: Rustfmt
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -219,7 +213,7 @@ jobs:
 
     clippy:
         name: Clippy
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
