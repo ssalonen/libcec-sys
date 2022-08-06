@@ -16,78 +16,78 @@ jobs:
             matrix:
                 rust: [stable]
                 job:
-                    # - os: windows-latest
-                    #   target: x86_64-pc-windows-msvc
-                    #   use-cross: false
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: windows-latest
-                    #   target: i686-pc-windows-msvc
-                    #   use-cross: false
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: aarch64-unknown-linux-gnu
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: i686-unknown-linux-gnu
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: arm-unknown-linux-gnueabi
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: armv7-unknown-linux-gnueabihf
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: mips-unknown-linux-gnu
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: mips64-unknown-linux-gnuabi64
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: mips64el-unknown-linux-gnuabi64
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: mipsel-unknown-linux-gnu
-                    #   use-cross: true
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # - os: ubuntu-22.04
-                    #   target: x86_64-unknown-linux-gnu
-                    #   use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
-                    #   libcec: vendored-libcec
-                    #   expected_libcec_abi: 6
-                    # #
-                    # # libcec discovery with pkg config
-                    # #
-                    # - os: ubuntu-22.04
-                    #   target: x86_64-unknown-linux-gnu
-                    #   use-cross: false # Important that we do not run cross so package install shows up
-                    #   libcec: "?name(libcec4) ?version(4.*)"
-                    #   libcec-dev: "libcec-dev=4*"
-                    #   pkg-config: true
-                    #   expected_libcec_abi: 4
-                    # - os: ubuntu-22.04
-                    #   target: x86_64-unknown-linux-gnu
-                    #   use-cross: false # Important that we do not run cross so package install shows up
-                    #   libcec: "?name(libcec6) ?version(6.*)"
-                    #   libcec-dev: "libcec-dev=6*"
-                    #   pkg-config: true
-                    #   expected_libcec_abi: 6
+                    - os: windows-latest
+                      target: x86_64-pc-windows-msvc
+                      use-cross: false
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: windows-latest
+                      target: i686-pc-windows-msvc
+                      use-cross: false
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: aarch64-unknown-linux-gnu
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: i686-unknown-linux-gnu
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: arm-unknown-linux-gnueabi
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: armv7-unknown-linux-gnueabihf
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: mips-unknown-linux-gnu
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: mips64-unknown-linux-gnuabi64
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: mips64el-unknown-linux-gnuabi64
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: mipsel-unknown-linux-gnu
+                      use-cross: true
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    - os: ubuntu-22.04
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
+                      libcec: vendored-libcec
+                      expected_libcec_abi: 6
+                    #
+                    # libcec discovery with pkg config
+                    #
+                    - os: ubuntu-22.04
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Important that we do not run cross so package install shows up
+                      libcec: "?name(libcec4) ?version(4.*)"
+                      libcec-dev: "libcec-dev=4*"
+                      pkg-config: true
+                      expected_libcec_abi: 4
+                    - os: ubuntu-22.04
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Important that we do not run cross so package install shows up
+                      libcec: "?name(libcec6) ?version(6.*)"
+                      libcec-dev: "libcec-dev=6*"
+                      pkg-config: true
+                      expected_libcec_abi: 6
                     #
                     # libcec discovery without pkg config
                     # We set LD_LIBRARY_PATH and C_INCLUDE_PATH for compiler to find the preinstalled libcec
@@ -102,16 +102,16 @@ jobs:
                       additional_env:
                           LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
                           C_INCLUDE_PATH: "/usr/include/libcec/"
-                    # - os: ubuntu-22.04
-                    #   target: x86_64-unknown-linux-gnu
-                    #   use-cross: false # Important that we do not run cross so package install shows up
-                    #   libcec: "?name(libcec6) ?version(6.*)"
-                    #   libcec-dev: "libcec-dev=6*"
-                    #   pkg-config: false
-                    #   expected_libcec_abi: 6
-                    #   additional_env:
-                    #       LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
-                    #   C_INCLUDE_PATH: "/usr/include/libcec/"
+                    - os: ubuntu-22.04
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false # Important that we do not run cross so package install shows up
+                      libcec: "?name(libcec6) ?version(6.*)"
+                      libcec-dev: "libcec-dev=6*"
+                      pkg-config: false
+                      expected_libcec_abi: 6
+                      additional_env:
+                          LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
+                      C_INCLUDE_PATH: "/usr/include/libcec/"
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
