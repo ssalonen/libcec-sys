@@ -131,6 +131,8 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
               run: |
+                  # introduce Ubuntu 20.04 (Focal Fossa) repos as well for easy libcec4 installation
+                  sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list'
                   sudo apt-get update
                   sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
                   [[ $(apt list '${{ matrix.job.libcec }}' | grep cec | wc -l) = 0 ]] && echo "ERROR: Could not find libcec" && exit 1
