@@ -76,10 +76,17 @@ fn compile_vendored_platform(dst: &Path) {
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
     fs::create_dir_all(&platform_build).unwrap();
     println!("cmake platform");
-    cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
+    let mut cmake_config = cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"));
+    cmake_config
         .out_dir(&platform_build)
-        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
-        .build();
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build);
+
+    // Pass LIBCEC_SYS_BUILD_CMAKE_{C,CXX}_COMPILER_LAUNCHER env variables to cmake -D calls
+    for lang in ["C", "CXX"] {
+        if let Ok(overriden_launcher) = env::var(format!("LIBCEC_SYS_BUILD_CMAKE_{lang}_COMPILER_LAUNCHER")) {
+            cmake_config.define(format!("CMAKE_{lang}_COMPILER_LAUNCHER"), overriden_launcher);
+        }
+    }
 
     println!("make platform");
     Command::new("make")

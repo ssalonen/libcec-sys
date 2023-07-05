@@ -17,6 +17,8 @@ jobs:
               run: sudo apt-get update -yq
             - name: Install libudev for cargo publish. Needed by libcec build
               run: sudo apt-get install libudev-dev
+            - name: Run sccache-cache
+              uses: mozilla-actions/sccache-action@v0.0.3
             - uses: actions-rs/toolchain@v1
               with:
                   toolchain: stable
@@ -26,3 +28,8 @@ jobs:
               with:
                   command: publish
                   args: --token ${{ secrets.CARGO_API_KEY }} --allow-dirty
+              env:
+                  SCCACHE_GHA_ENABLED: "true"
+                  RUSTC_WRAPPER: "sccache"
+                  LIBCEC_SYS_BUILD_CMAKE_C_COMPILER_LAUNCHER: "sccache"
+                  LIBCEC_SYS_BUILD_CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
