@@ -176,8 +176,8 @@ jobs:
                   C_INCLUDE_PATH: ${{ matrix.job.additional_env.C_INCLUDE_PATH }}
                   SCCACHE_GHA_ENABLED: "true"
                   RUSTC_WRAPPER: "sccache"
-                  LIBCEC_SYS_BUILD_CMAKE_C_COMPILER_LAUNCHER: "sccache"
-                  LIBCEC_SYS_BUILD_CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
+                  CMAKE_C_COMPILER_LAUNCHER: "sccache"
+                  CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
               uses: actions-rs/cargo@v1
               with:
                   command: test
