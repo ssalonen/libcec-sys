@@ -45,7 +45,7 @@ fn prepare_vendored_build(dst: &Path) {
     if dst_src.exists() && dst_src.is_dir() {
         fs::remove_dir_all(&dst_src).expect("Failed to remove build dir");
     }
-    let copy_opts = CopyOptions::new().overwrite(true);
+    let copy_opts = CopyOptions::new().overwrite(true).copy_inside(true);
     copy_dir(LIBCEC_SRC, &dst_src, &copy_opts).unwrap();
 
     // libcec build tries to embed git revision and other details
