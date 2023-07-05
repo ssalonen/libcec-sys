@@ -1,5 +1,5 @@
 use fs_extra::dir::copy as copy_dir;
-use fs_extra::CopyOptions;
+use fs_extra::dir::CopyOptions;
 use std::env;
 use std::fs;
 use std::fs::File;
