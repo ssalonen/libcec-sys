@@ -1,6 +1,6 @@
 [package]
 name = 'libcec-sys'
-version = "4.0.3-alpha"
+version = "4.0.3"
 authors = ['Sami Salonen']
 edition = '2021'
 license = 'GPL-2.0'
