@@ -8,8 +8,10 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+#[cfg(not(target_os = "windows"))]
 const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
+#[cfg(not(target_os = "windows"))]
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
@@ -108,7 +110,9 @@ fn compile_vendored_libcec(dst: &Path) {
 fn compile_vendored_libcec(dst: &Path) {
     // All the compilation steps are combined into one command.
     println!("build libcec");
+    let libcec_build = dst.join(LIBCEC_BUILD);
     Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
         .arg("/C")
         .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
         .arg(ARCHITECTURE)
@@ -118,7 +122,7 @@ fn compile_vendored_libcec(dst: &Path) {
             "Release"
         })
         .arg("2019")
-        .arg(dst.join(LIBCEC_BUILD))
+        .arg(&libcec_build)
         .arg("nmake")
         .status()
         .expect("failed to build libcec!");
