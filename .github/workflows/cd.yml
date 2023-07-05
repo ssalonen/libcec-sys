@@ -10,23 +10,11 @@ jobs:
         name: Publishing to Cargo
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v3
+              with:
+                  submodules: recursive
             - name: Apt-get update
               run: sudo apt-get update -yq
-            - name: Checkout submodules
-              shell: bash
-              # basically git submodule update --init --recursive but replacing git@github.com with https
-              # for anonymous checkout
-              run: |
-                  git submodule update --init
-                  git submodule foreach --recursive '
-                  echo "pwd: $(pwd)" ; \
-                  if [ -f .gitmodules ]; then \
-                      ( sed -i "s/git@github.com:/https:\/\/github.com\//" .gitmodules \
-                      && git submodule sync --recursive ) ; \
-                  fi ; \
-                  git submodule update --init \
-                  ;'
             - name: Install libudev for cargo publish. Needed by libcec build
               run: sudo apt-get install libudev-dev
             - uses: actions-rs/toolchain@v1
