@@ -1,4 +1,4 @@
-use copy_dir::copy_dir;
+use dircpy::copy_dir;
 use std::env;
 use std::fs;
 use std::fs::File;

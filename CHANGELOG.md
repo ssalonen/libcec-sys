@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+- build script to switch to `dircpy`, dropping dependency unmaintaned `copy_dir`
+
 ## 4.0.1
 
 - Linter fixes

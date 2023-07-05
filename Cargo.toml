@@ -27,7 +27,7 @@ links = 'cec'
 
 [build-dependencies]
 cmake = "0.1.48"
-copy_dir = "0.1.2"
+dircpy = "0.3.14"
 pkg-config = "0.3.25"
 cc = "1.0.73"
 
