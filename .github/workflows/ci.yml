@@ -169,6 +169,9 @@ jobs:
                   $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
                   curl -o python-3.11.4$arch.exe https://www.python.org/ftp/python/3.11.4/python-3.11.4$arch.exe
                   Start-Process -FilePath "python-3.11.4$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
+            - if: runner.os == 'Linux'
+              name: cmake version
+              run: cmake --version
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
