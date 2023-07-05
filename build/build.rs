@@ -1,4 +1,5 @@
-use dircpy::copy_dir;
+use fs_extra::dir::copy as copy_dir;
+use fs_extra::dir::CopyOptions;
 use std::env;
 use std::fs;
 use std::fs::File;
@@ -46,7 +47,8 @@ fn prepare_vendored_build(dst: &Path) {
     if dst_src.exists() && dst_src.is_dir() {
         fs::remove_dir_all(&dst_src).expect("Failed to remove build dir");
     }
-    copy_dir(LIBCEC_SRC, &dst_src).unwrap();
+    let copy_opts = CopyOptions::new().overwrite(true).copy_inside(true);
+    copy_dir(LIBCEC_SRC, &dst_src, &copy_opts).unwrap();
 
     // libcec build tries to embed git revision and other details
     // in LIB_INFO variable. This makes the build fail in certain cases.
