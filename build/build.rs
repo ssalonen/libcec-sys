@@ -8,8 +8,10 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+#[cfg(not(target_os = "windows"))]
 const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
+#[cfg(not(target_os = "windows"))]
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
 
