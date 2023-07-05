@@ -92,6 +92,7 @@ fn compile_vendored_platform(dst: &Path) {
             );
         }
     }
+    cmake_config.build();
 
     println!("make platform");
     Command::new("make")
