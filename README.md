@@ -13,8 +13,45 @@ Alternatively, one can the decide to skip logic above and force the use of vendo
 
 The crate is tested mainly with Linux and Windows but could work with other platforms as well. PRs welcome.
 
-### Linux
-On Linux, for most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `p8-platform-dev` and `p8-platform` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+### Linux (general)
+On Linux, for most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `libp8-platform-dev` and `libp8-platform2` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+
+In addition `libudev-dev` might be needed.
+
+With debian based distributions, you can simply
+
+```
+sudo apt-get install libudev-dev libp8-platform2 libp8-platform-dev libcec-dev pkg-config libcec6
+```
+
+### Raspberry Pi OS
+
+If you are using Raspberry Pi OS and want to use the built-in HDMI port CEC, you might need to build the libcec yourself, since the libcec as packaged by debian is not providing the driver (as of 2022)
+
+Adapted from [libcec documentation](https://github.com/Pulse-Eight/libcec/blob/master/docs/README.raspberrypi.md):
+
+```
+# Remove libcec (since we are going to build it ourselves)
+apt-get remove libcec6
+
+# Install libcec build dependencies, but not libcec itself
+sudo apt-get install libp8 platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
+
+# Build libcec 6.0.2 with RPI CEC driver enabled
+sudo rmdir -rf /tmp/libcec-build-tmp
+sudo mkdir /tmp/libcec-build-tmp
+sudo cd /tmp/libcec-build-tmp
+sudo git clone --recursive https://github.com/Pulse-Eight/libcec.git
+sudo cd libcec
+sudo git checkout libcec-6.0.2
+sudo mkdir build
+sudo cd build
+sudo cmake -DRPI_INCLUDE_DIR=/opt/vc/include -DRPI_LIB_DIR=/opt/vc/lib ..
+sudo make -j4
+sudo make install
+sudo ldconfig
+
+```
 
 ### Windows
 On Windows, it is recommended to install `libcec` via the [installer](https://github.com/Pulse-Eight/libcec/releases/latest) and add `cec.dll` to the `PATH` environment variable.
