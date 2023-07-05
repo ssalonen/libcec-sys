@@ -91,7 +91,7 @@ fn compile_vendored_libcec(dst: &Path) {
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
     println!("cmake libcec");
-    cmake::Config::new(&dst.join(LIBCEC_SRC))
+    cmake::Config::new(dst.join(LIBCEC_SRC))
         .out_dir(&libcec_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
@@ -194,7 +194,7 @@ fn compile_vendored() {
     println!("\n\nBuilding vendored libcec");
     println!("cargo:lib_vendored=true");
 
-    let cmakelists = format!("{}/CMakeLists.txt", LIBCEC_SRC);
+    let cmakelists = format!("{LIBCEC_SRC}/CMakeLists.txt");
     let cmakelists = Path::new(&cmakelists);
     if !cmakelists.exists() {
         panic!(
@@ -206,8 +206,8 @@ fn compile_vendored() {
         )
     }
     let abi = parse_vendored_libcec_major_version(cmakelists);
-    println!("cargo:libcec_version_major={}", abi);
-    println!("cargo:rustc-cfg=abi{}", abi);
+    println!("cargo:libcec_version_major={abi}");
+    println!("cargo:rustc-cfg=abi{abi}");
 
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
