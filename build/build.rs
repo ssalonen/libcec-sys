@@ -83,13 +83,8 @@ fn compile_vendored_platform(dst: &Path) {
 
     // Pass LIBCEC_SYS_BUILD_CMAKE_{C,CXX}_COMPILER_LAUNCHER env variables to cmake -D calls
     for lang in ["C", "CXX"] {
-        if let Ok(overriden_launcher) =
-            env::var(format!("LIBCEC_SYS_BUILD_CMAKE_{lang}_COMPILER_LAUNCHER"))
-        {
-            cmake_config.define(
-                format!("CMAKE_{lang}_COMPILER_LAUNCHER"),
-                overriden_launcher,
-            );
+        if let Ok(overriden_launcher) = env::var(format!("LIBCEC_SYS_BUILD_CMAKE_{lang}_COMPILER_LAUNCHER")) {
+            cmake_config.define(format!("CMAKE_{lang}_COMPILER_LAUNCHER"), overriden_launcher);
         }
     }
 
