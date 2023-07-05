@@ -134,12 +134,13 @@ jobs:
                   set -ex
                   # introduce Ubuntu 20.04 (Focal Fossa) repos as well for easy libcec4 installation
                   sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list'
+                  sudo apt get update  # re-loads apt sources
                   sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
 
-                  apt show '${{ matrix.job.libcec }}' || :
+                  apt show '${{ matrix.job.libcec }}'
                   sudo apt install -yq '${{ matrix.job.libcec }}'
 
-                  apt show '${{ matrix.job.libcec-dev }}' || :
+                  apt show '${{ matrix.job.libcec-dev }}'
                   sudo apt install -yq '${{ matrix.job.libcec-dev }}'
             # additional build dependencies for non-cross builds with vendored libcec sources
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
