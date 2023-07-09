@@ -24,7 +24,7 @@ passthrough = [
 ]
 
 [target.x86_64-unknown-linux-gnu]
-dockerfile = "./docker/Dockerfile.cross.sccache-x86_64-unknown-linux-musl"
+dockerfile = "./docker/Dockerfile-x86_64_unknown-linux-gnu.cross.sccache-x86_64-unknown-linux-musl"
 passthrough = [
     "SCCACHE_ERROR_LOG",
     "SCCACHE_LOG",
@@ -35,7 +35,7 @@ passthrough = [
 ]
 
 [target.x86_64-unknown-linux-musl]
-dockerfile = "./docker/Dockerfile.cross.sccache-x86_64-unknown-linux-musl"
+dockerfile = "./docker/Dockerfile-x86_64_unknown-linux-musl.cross.sccache-x86_64-unknown-linux-musl"
 passthrough = [
     "SCCACHE_ERROR_LOG",
     "SCCACHE_LOG",
@@ -46,7 +46,7 @@ passthrough = [
 ]
 
 [target.x86_64-pc-windows-gnu]
-dockerfile = "./docker/Dockerfile.cross.sccache-x86_64-pc-windows-msvc"
+dockerfile = "./docker/Dockerfile-x86_64-pc-windows-gnu.cross.sccache-x86_64-pc-windows-msvc"
 passthrough = [
     "SCCACHE_ERROR_LOG",
     "SCCACHE_LOG",
