@@ -1,0 +1,10 @@
+FROM ghcr.io/cross-rs/x86_64-pc-windows-msvc:latest
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY ./cec_build_prep.sh /
+RUN /cec_build_prep.sh
+
+COPY ./sccache.sh /
+RUN /sccache.sh x86_64-pc-windows-msvc
+
+ENV RUSTC_WRAPPER="/usr/bin/sccache"
