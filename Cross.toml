@@ -6,14 +6,22 @@ default-target = "armv7-unknown-linux-gnueabihf"
 file = "dummy"
 context = "./docker"
 
-[target.aarch64-unknown-linux-gnu]
-dockerfile = "./docker/Dockerfile-aarch64-unknown-linux-gnu.cross"
-
 [target.arm-unknown-linux-gnueabi]
 dockerfile = "./docker/Dockerfile-arm-unknown-linux-gnueabi.cross"
 
 [target.armv7-unknown-linux-gnueabihf]
 dockerfile = "./docker/Dockerfile-armv7-unknown-linux-gnueabihf.cross"
+
+[target.aarch64-unknown-linux-gnu]
+dockerfile = "./docker/Dockerfile.cross.sccache-aarch64-unknown-linux-musl"
+passthrough = [
+    "SCCACHE_ERROR_LOG",
+    "SCCACHE_LOG",
+    "SCCACHE_AZURE_CONNECTION_STRING",
+    "SCCACHE_AZURE_BLOB_CONTAINER",
+    "SCCACHE_DIR",
+    "RUSTC_WRAPPER=/usr/bin/sccache",
+]
 
 [target.x86_64-unknown-linux-gnu]
 dockerfile = "./docker/Dockerfile.cross.sccache-x86_64-unknown-linux-musl"

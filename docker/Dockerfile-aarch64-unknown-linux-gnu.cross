@@ -1,5 +1,0 @@
-FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu:latest
-ARG DEBIAN_FRONTEND=noninteractive
-
-COPY cec_build_prep.sh /
-RUN /cec_build_prep.sh
