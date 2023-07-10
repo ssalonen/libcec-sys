@@ -166,7 +166,8 @@ jobs:
                 echo "Python_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
                 echo "Python_EXECUTABLE=$resolvedPythonPath\Python.exe" >> $Env:GITHUB_ENV
                 # cmake: never use registry to find out python install
-                echo "Python_FIND_REGISTRY=never" >> $Env:GITHUB_ENV   
+                echo "Python_FIND_REGISTRY=NEVER" >> $Env:GITHUB_ENV   
+                echo "Python_FIND_STRATEGY=LOCATION" >> $Env:GITHUB_ENV
                 cat $Env:GITHUB_ENV          
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
