@@ -9,6 +9,7 @@ on:
 name: Continuous Integration
 env:
   PYTHON_DEBUG_VERSION: 3.11.4
+  PYTHON_INSTALL_DIR: ~\AppData\Local\Programs\Python\Python311
 jobs:
     test:
         name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }} pkg-config=${{ matrix.job.pkg-config || false }})
@@ -141,7 +142,7 @@ jobs:
             # install Python with debug binaries for Windows (needed for debug build of vendored libcec)
             # Github Workflow runners do not package debug binaries by default
             # NOTE:
-            - if: runner.os == 'Windows' ### && steps.cache-python-install.outputs.cache-hit != 'true'
+            - if: runner.os == 'Windows' && steps.cache-python-install.outputs.cache-hit != 'true'
               name: Install python with debug binaries
               run: |
                   $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
@@ -158,6 +159,11 @@ jobs:
                 echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> "$GITHUB_ENV"
                 echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> "$GITHUB_ENV"
                 echo "RUSTC_WRAPPER=sccache.exe" >> "$GITHUB_ENV"
+                # help cmake to find cache-restored python install since
+                # normal registry values do not exist
+                echo "Python_ROOT_DIR=${{ PYTHON_INSTALL_DIR }}" >> "$GITHUB_ENV" 
+                # try to use registry after environment variables
+                echo "Python_FIND_REGISTRY=last" >> "$GITHUB_ENV"                
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
               run: |
