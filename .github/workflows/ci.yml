@@ -104,10 +104,10 @@ jobs:
               id: cache-python-install
               uses: actions/cache@v3
               env:
-                cache-name: cache-python-debug
+                cache-name: cache-python-debug-v2
               with:
                 # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python installation goes there
-                path: ~\AppData\Local
+                path: ~\AppData\Local\Programs\Python
                 key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ env.PYTHON_DEBUG_VERSION }}
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
