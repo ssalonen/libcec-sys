@@ -164,6 +164,7 @@ jobs:
                 # We resolve path with ~ to fully specified absolute path
                 $resolvedPythonPath = Resolve-Path ${{ env.PYTHON_INSTALL_DIR }}
                 echo "Python_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
+                echo "Python_EXECUTABLE=$resolvedPythonPath\\Python.exe" >> $Env:GITHUB_ENV
                 # cmake: never use registry to find out python install
                 echo "Python_FIND_REGISTRY=never" >> $Env:GITHUB_ENV   
                 cat $Env:GITHUB_ENV          
