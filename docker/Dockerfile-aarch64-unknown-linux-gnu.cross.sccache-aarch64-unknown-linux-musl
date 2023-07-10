@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY ./cec_build_prep.sh /
 RUN /cec_build_prep.sh
 
-COPY ./sccache.sh /
+COPY ./sccache_from_sources.sh /
 RUN /sccache_from_sources.sh aarch64-unknown-linux-musl
 
 ENV RUSTC_WRAPPER="/usr/bin/sccache"
