@@ -161,7 +161,8 @@ jobs:
                 echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
                 # help cmake to find cache-restored python install since
                 # normal registry values do not exist
-                echo "Python_ROOT_DIR=${{ env.PYTHON_INSTALL_DIR }}" >> $Env:GITHUB_ENV
+                $resolvedPythonPath = Resolve-Path ${{ env.PYTHON_INSTALL_DIR }}
+                echo "Python_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
                 # try to use registry after environment variables
                 echo "Python_FIND_REGISTRY=last" >> $Env:GITHUB_ENV             
             - if: runner.os != 'Windows'
