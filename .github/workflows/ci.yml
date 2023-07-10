@@ -106,7 +106,7 @@ jobs:
               env:
                 cache-name: cache-python-debug
               with:
-                # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python instalation goes there
+                # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python installation goes there
                 path: ~\AppData\Local
                 key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ PYTHON_DEBUG_VERSION }}
             # libcec and p8-platform from apt repo
