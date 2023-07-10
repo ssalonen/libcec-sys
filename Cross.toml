@@ -20,7 +20,6 @@ passthrough = [
     "SCCACHE_AZURE_CONNECTION_STRING",
     "SCCACHE_AZURE_BLOB_CONTAINER",
     "SCCACHE_DIR",
-    "RUSTC_WRAPPER=/usr/bin/sccache",
 ]
 
 [target.x86_64-unknown-linux-gnu]
@@ -31,7 +30,6 @@ passthrough = [
     "SCCACHE_AZURE_CONNECTION_STRING",
     "SCCACHE_AZURE_BLOB_CONTAINER",
     "SCCACHE_DIR",
-    "RUSTC_WRAPPER=/usr/bin/sccache",
 ]
 
 [target.x86_64-unknown-linux-musl]
@@ -42,7 +40,6 @@ passthrough = [
     "SCCACHE_AZURE_CONNECTION_STRING",
     "SCCACHE_AZURE_BLOB_CONTAINER",
     "SCCACHE_DIR",
-    "RUSTC_WRAPPER=/usr/bin/sccache",
 ]
 
 [target.x86_64-pc-windows-gnu]
@@ -53,5 +50,4 @@ passthrough = [
     "SCCACHE_AZURE_CONNECTION_STRING",
     "SCCACHE_AZURE_BLOB_CONTAINER",
     "SCCACHE_DIR",
-    "RUSTC_WRAPPER=/usr/bin/sccache",
 ]
