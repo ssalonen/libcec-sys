@@ -108,7 +108,7 @@ jobs:
               with:
                 # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python installation goes there
                 path: ~\AppData\Local
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ PYTHON_DEBUG_VERSION }}
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ env.PYTHON_DEBUG_VERSION }}
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
@@ -147,8 +147,8 @@ jobs:
               name: Install python with debug binaries
               run: |
                   $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
-                  curl -o python-${{ PYTHON_DEBUG_VERSION }}$arch.exe https://www.python.org/ftp/python/${{ PYTHON_DEBUG_VERSION }}/python-${{ PYTHON_DEBUG_VERSION }}$arch.exe
-                  Start-Process -FilePath "python-${{ PYTHON_DEBUG_VERSION }}$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
+                  curl -o python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe https://www.python.org/ftp/python/${{ env.PYTHON_DEBUG_VERSION }}/python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe
+                  Start-Process -FilePath "python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
