@@ -7,7 +7,8 @@ on:
         branches:
             - master
 name: Continuous Integration
-
+env:
+  PYTHON_DEBUG_VERSION: 3.11.4
 jobs:
     test:
         name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }} pkg-config=${{ matrix.job.pkg-config || false }})
@@ -99,6 +100,15 @@ jobs:
             - name: Run sccache-cache
               uses: mozilla-actions/sccache-action@v0.0.3
             - uses: Swatinem/rust-cache@v2
+            - if: runner.os == 'Windows'
+              id: cache-python-install
+              uses: actions/cache@v3
+              env:
+                cache-name: cache-python-debug
+              with:
+                # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python instalation goes there
+                path: ~\AppData\Local
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ PYTHON_DEBUG_VERSION }}
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
@@ -133,12 +143,12 @@ jobs:
             # install Python with debug binaries for Windows (needed for debug build of vendored libcec)
             # Github Workflow runners do not package debug binaries by default
             # NOTE: 
-            - if: runner.os == 'Windows'
-              name: Install python 3.11.4 with debug binaries
+            - if: runner.os == 'Windows' && steps.cache-python-install.outputs.cache-hit != 'true'
+              name: Install python with debug binaries
               run: |
                   $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
-                  curl -o python-3.11.4$arch.exe https://www.python.org/ftp/python/3.11.4/python-3.11.4$arch.exe
-                  Start-Process -FilePath "python-3.11.4$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
+                  curl -o python-${{ PYTHON_DEBUG_VERSION }}$arch.exe https://www.python.org/ftp/python/${{ PYTHON_DEBUG_VERSION }}/python-${{ PYTHON_DEBUG_VERSION }}$arch.exe
+                  Start-Process -FilePath "python-${{ PYTHON_DEBUG_VERSION }}$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
