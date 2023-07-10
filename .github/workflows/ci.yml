@@ -150,6 +150,11 @@ jobs:
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
+            - if: runner.os == 'Windows'
+              name: Sets additional sccache env vars for windows
+              run: |
+                echo "CC=sccache-cl" >> $GITHUB_ENV              
+                echo "CXX=sccache-cl" >> $GITHUB_ENV              
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
@@ -158,7 +163,7 @@ jobs:
                   SCCACHE_GHA_ENABLED: "true"
                   RUSTC_WRAPPER: "sccache"
                   CMAKE_C_COMPILER_LAUNCHER: "sccache"
-                  CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
+                  CMAKE_CXX_COMPILER_LAUNCHER: "sccache"                  
               uses: actions-rs/cargo@v1
               with:
                   command: test
