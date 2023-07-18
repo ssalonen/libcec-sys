@@ -39,7 +39,7 @@ impl CecVersion {
     }
 }
 
-// libcec versions that are supported when linking dynamically. In preferce order
+// libcec versions that are supported when linking dynamically. In preference order
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
 fn prepare_vendored_build(dst: &Path) {
@@ -116,7 +116,57 @@ fn compile_vendored_libcec(dst: &Path) {
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
         .arg("/C")
-        .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("src")
+                .join("platform")
+                .join("windows")
+                .join("build-lib.cmd"),
+        )
+        .arg(ARCHITECTURE)
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(&libcec_build)
+        .arg("nmake")
+        .status()
+        .expect("failed to build p8 platform!");
+
+    Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
+        .arg("/C")
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("support")
+                .join("windows")
+                .join("cmake")
+                .join("generate.cmd"),
+        )
+        .arg(ARCHITECTURE)
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(&libcec_build)
+        .arg("nmake")
+        .status()
+        .expect("failed to generate libcec build files!");
+
+    Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
+        .arg("/C")
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("support")
+                .join("windows")
+                .join("cmake")
+                .join("build.cmd"),
+        )
         .arg(ARCHITECTURE)
         .arg(if cfg!(debug_assertions) {
             "Debug"

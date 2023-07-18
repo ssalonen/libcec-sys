@@ -101,15 +101,6 @@ jobs:
             - name: Run sccache-cache
               uses: mozilla-actions/sccache-action@v0.0.3
             - uses: Swatinem/rust-cache@v2
-            - if: runner.os == 'Windows'
-              id: cache-python-install
-              uses: actions/cache@v3
-              env:
-                cache-name: cache-python-debug-v2
-              with:
-                # Cache ~\AppData\Local (same as %LOCALAPPDATA%), python installation goes there
-                path: ~\AppData\Local\Programs\Python
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ runner.arch }}-${{ env.PYTHON_DEBUG_VERSION }}
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
@@ -138,16 +129,7 @@ jobs:
             # pkg-config remove
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
-              run: sudo apt-get remove -yq pkg-config
-            # install Python with debug binaries for Windows (needed for debug build of vendored libcec)
-            # Github Workflow runners do not package debug binaries by default
-            # NOTE:
-            - if: runner.os == 'Windows' && steps.cache-python-install.outputs.cache-hit != 'true'
-              name: Install python with debug binaries
-              run: |
-                  $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
-                  curl -o python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe https://www.python.org/ftp/python/${{ env.PYTHON_DEBUG_VERSION }}/python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe
-                  Start-Process -FilePath "python-${{ env.PYTHON_DEBUG_VERSION }}$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
+              run: sudo apt-get remove -yq pkg-config           
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
@@ -159,18 +141,6 @@ jobs:
                 echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
-                # help cmake to find cache-restored python install since
-                # normal registry values do not exist
-                # We resolve path with ~ to fully specified absolute path
-                $resolvedPythonPath = Resolve-Path ${{ env.PYTHON_INSTALL_DIR }}
-                echo "Python_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
-                echo "Python2_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
-                echo "Python3_ROOT_DIR=$resolvedPythonPath" >> $Env:GITHUB_ENV
-                echo "Python_EXECUTABLE=$resolvedPythonPath\Python.exe" >> $Env:GITHUB_ENV
-                # cmake: never use registry to find out python install
-                echo "Python_FIND_REGISTRY=NEVER" >> $Env:GITHUB_ENV   
-                echo "Python_FIND_STRATEGY=LOCATION" >> $Env:GITHUB_ENV
-                cat $Env:GITHUB_ENV          
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
               run: |
