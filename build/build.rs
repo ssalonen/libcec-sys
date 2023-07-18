@@ -146,6 +146,10 @@ fn compile_vendored_libcec(dst: &Path) {
                 .join("generate.cmd"),
         )
         .arg(ARCHITECTURE)
+        .arg("nmake")
+        .arg(dst.join(LIBCEC_SRC))
+        .arg(libcec_build.join("cmake").join(ARCHITECTURE)) // aka "BUILDTARGET" in windows\build-lib.cmd
+        .arg(libcec_build.join(ARCHITECTURE)) // aka "TARGET" in windows\build-lib.cmd
         .arg(if cfg!(debug_assertions) {
             "Debug"
         } else {
@@ -153,7 +157,6 @@ fn compile_vendored_libcec(dst: &Path) {
         })
         .arg("2019")
         .arg(&libcec_build)
-        .arg("nmake")
         .status()
         .expect("failed to generate libcec build files!");
 
@@ -168,14 +171,8 @@ fn compile_vendored_libcec(dst: &Path) {
                 .join("build.cmd"),
         )
         .arg(ARCHITECTURE)
-        .arg(if cfg!(debug_assertions) {
-            "Debug"
-        } else {
-            "Release"
-        })
+        .arg(libcec_build.join("cmake").join(ARCHITECTURE)) // aka "BUILDTARGET" in windows\build-lib.cmd
         .arg("2019")
-        .arg(&libcec_build)
-        .arg("nmake")
         .status()
         .expect("failed to build libcec!");
 }
