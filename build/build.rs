@@ -134,6 +134,9 @@ fn compile_vendored_libcec(dst: &Path) {
         .arg("nmake")
         .status()
         .expect("failed to build p8 platform!");
+    // Remove build target of the p8 platform build
+    // aka "BUILDTARGET" in windows\build-lib.cmd
+    remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE));
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
