@@ -54,6 +54,8 @@ fn prepare_vendored_build(dst: &Path) {
     // libcec build tries to embed git revision and other details
     // in LIB_INFO variable. This makes the build fail in certain cases.
     // Let's disable the complex logic by overriding the variable with a constant
+    //
+    // In addition, we disable building of python wrappers, not needed
     let set_build_info_path = dst_src
         .join("src")
         .join("libcec")
@@ -67,7 +69,11 @@ fn prepare_vendored_build(dst: &Path) {
         .set_len(0)
         .expect("Error truncacting SetBuildInfo.cmake");
     build_info_file
-        .write_all(b"set(LIB_INFO \"\")")
+        .write_all(
+            b"
+            set(LIB_INFO \"\")
+            set(SKIP_PYTHON_WRAPPER \"1\"",
+        )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
 
