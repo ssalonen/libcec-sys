@@ -2,6 +2,7 @@ use fs_extra::dir::copy as copy_dir;
 use fs_extra::dir::CopyOptions;
 use std::env;
 use std::fs;
+use std::fs::remove_dir_all;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
