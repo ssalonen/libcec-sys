@@ -72,7 +72,7 @@ fn prepare_vendored_build(dst: &Path) {
         .write_all(
             b"
             set(LIB_INFO \"\")
-            set(SKIP_PYTHON_WRAPPER \"1\"",
+            set(SKIP_PYTHON_WRAPPER \"1\")",
         )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 }
