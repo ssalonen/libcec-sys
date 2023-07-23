@@ -58,10 +58,10 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
     let mut cmake_defines: String = "-DSKIP_PYTHON_WRAPPER=1".to_owned();
     if env::var("CI").is_ok() {
         if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
+            cmake_defines.push_str(&format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
         }
         if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
+            cmake_defines.push_str(&format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
         }
         return;
     }
