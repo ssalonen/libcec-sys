@@ -15,6 +15,8 @@ const LIBCEC_BUILD: &str = "libcec_build";
 #[cfg(not(target_os = "windows"))]
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
+const CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE : &str= "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER";
+const CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE : &str= "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER";
 
 #[cfg(target_os = "windows")]
 const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
@@ -52,7 +54,17 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
 
     let contents =
         fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-    let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");
+    let mut cmake_defines : String= "-DSKIP_PYTHON_WRAPPER=1".to_owned();
+    if env::var("CI").is_ok() {
+        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_defines.push_str(format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
+        }
+        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_defines.push_str(format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
+        }
+        return;
+    }
+    let new = contents.replace("%CMAKE% ^", format!("%CMAKE%  {cmake_defines}^"));
 
     let mut file = OpenOptions::new()
         .write(true)
@@ -124,11 +136,22 @@ fn compile_vendored_libcec(dst: &Path) {
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
     println!("cmake libcec");
-    cmake::Config::new(dst.join(LIBCEC_SRC))
-        .out_dir(&libcec_build)
+    let mut cmake_builder = cmake::Config::new(dst.join(LIBCEC_SRC));
+    cmake_builder.out_dir(&libcec_build)
         .define("SKIP_PYTHON_WRAPPER", "1")
-        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
-        .build();
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build);
+
+    if env::var("CI").is_ok() {
+        // Running in CI
+        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_builder.define("CMAKE_C_COMPILER_LAUNCHER", c_launcher);
+        }
+        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_builder.define("CMAKE_CXX_COMPILER_LAUNCHER", cxx_launcher);
+        }
+        return;
+    }
+    cmake_builder.build();
 
     println!("make libcec");
     Command::new("make")

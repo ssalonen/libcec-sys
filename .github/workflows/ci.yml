@@ -138,8 +138,8 @@ jobs:
               # See https://github.com/orgs/community/discussions/26641
               # for discussion on the syntax
               run: |
-                echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
-                echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
+                echo "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
+                echo "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
