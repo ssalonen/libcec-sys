@@ -96,7 +96,7 @@ fn prepare_vendored_build(dst: &Path) {
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 
     #[cfg(target_os = "windows")]
-    prepare_windows_cmake_opts(dst_src);
+    prepare_windows_cmake_opts(&dst_src);
 }
 
 #[cfg(not(target_os = "windows"))]
