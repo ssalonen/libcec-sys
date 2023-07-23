@@ -2,7 +2,6 @@ use fs_extra::dir::copy as copy_dir;
 use fs_extra::dir::CopyOptions;
 use std::env;
 use std::fs;
-use std::fs::remove_dir_all;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
@@ -91,7 +90,7 @@ fn prepare_vendored_build(dst: &Path) {
         .truncate(true)
         .open(&windows_cmake_gen_path)
         .expect("Could not open cmake/generate.cmd for writing");
-    file.write(new.as_bytes())
+    file.write_all(new.as_bytes())
         .expect("Could not write cmake/generate.cmd");
 }
 
@@ -162,7 +161,7 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to build p8 platform!");
     // Remove build target of the p8 platform build
     // aka "BUILDTARGET" in windows\build-lib.cmd
-    remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE));
+    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE));
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
