@@ -151,7 +151,6 @@ fn compile_vendored_libcec(dst: &Path) {
         if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
             cmake_builder.define("CMAKE_CXX_COMPILER_LAUNCHER", cxx_launcher);
         }
-        return;
     }
     cmake_builder.build();
 
