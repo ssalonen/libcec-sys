@@ -42,6 +42,27 @@ impl CecVersion {
 // libcec versions that are supported when linking dynamically. In preference order
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
+#[cfg(target_os = "windows")]
+fn prepare_windows_cmake_opts(dst_src: &Path) {
+    let windows_cmake_gen_path = dst_src
+        .join("support")
+        .join("windows")
+        .join("cmake")
+        .join("generate.cmd");
+
+    let contents =
+        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
+    let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&windows_cmake_gen_path)
+        .expect("Could not open cmake/generate.cmd for writing");
+    file.write_all(new.as_bytes())
+        .expect("Could not write cmake/generate.cmd");
+}
+
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
     if dst_src.exists() && dst_src.is_dir() {
@@ -74,24 +95,8 @@ fn prepare_vendored_build(dst: &Path) {
         )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 
-    // Also add -DSKIP_PYTHON_WRAPPER for Windows cmake calls
-    let windows_cmake_gen_path = dst_src
-        .join("support")
-        .join("windows")
-        .join("cmake")
-        .join("generate.cmd");
-
-    let contents =
-        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-    let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");
-
-    let mut file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&windows_cmake_gen_path)
-        .expect("Could not open cmake/generate.cmd for writing");
-    file.write_all(new.as_bytes())
-        .expect("Could not write cmake/generate.cmd");
+    #[cfg(target_os = "windows")]
+    prepare_windows_cmake_opts(dst_src);
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -101,7 +106,6 @@ fn compile_vendored_platform(dst: &Path) {
     fs::create_dir_all(&platform_build).unwrap();
     println!("cmake platform");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
-        .define("SKIP_PYTHON_WRAPPER", "1")
         .out_dir(&platform_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
@@ -122,6 +126,7 @@ fn compile_vendored_libcec(dst: &Path) {
     println!("cmake libcec");
     cmake::Config::new(dst.join(LIBCEC_SRC))
         .out_dir(&libcec_build)
+        .define("SKIP_PYTHON_WRAPPER", "1")
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
