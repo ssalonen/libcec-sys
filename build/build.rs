@@ -71,10 +71,22 @@ fn prepare_vendored_build(dst: &Path) {
     build_info_file
         .write_all(
             b"
-            set(LIB_INFO \"\")
-            set(SKIP_PYTHON_WRAPPER \"1\")",
+            set(LIB_INFO \"\")",
         )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
+
+    // Also add -DSKIP_PYTHON_WRAPPER for Windows cmake calls
+    let windows_cmake_gen_path = dst_src
+        .join("support")
+        .join("windows")
+        .join("cmake")
+        .join("generate.cmd");
+
+        let contents = fs::read_to_string(windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
+        let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");        
+    
+        let mut file = OpenOptions::new().write(true).truncate(true).open(windows_cmake_gen_path)?;
+        file.write(new.as_bytes()).expect("Could not write cmake/generate.cmd");
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -84,6 +96,7 @@ fn compile_vendored_platform(dst: &Path) {
     fs::create_dir_all(&platform_build).unwrap();
     println!("cmake platform");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
+        .define("SKIP_PYTHON_WRAPPER", "1")
         .out_dir(&platform_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
