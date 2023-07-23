@@ -82,11 +82,17 @@ fn prepare_vendored_build(dst: &Path) {
         .join("cmake")
         .join("generate.cmd");
 
-        let contents = fs::read_to_string(windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-        let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");        
-    
-        let mut file = OpenOptions::new().write(true).truncate(true).open(windows_cmake_gen_path)?;
-        file.write(new.as_bytes()).expect("Could not write cmake/generate.cmd");
+    let contents =
+        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
+    let new = contents.replace("%CMAKE% ^", "%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^");
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&windows_cmake_gen_path)
+        .expect("Could not open cmake/generate.cmd for writing");
+    file.write(new.as_bytes())
+        .expect("Could not write cmake/generate.cmd");
 }
 
 #[cfg(not(target_os = "windows"))]
