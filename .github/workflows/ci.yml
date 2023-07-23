@@ -88,9 +88,6 @@ jobs:
               uses: actions/checkout@v3
               with:
                   submodules: recursive
-            - if: runner.os == 'Linux'
-              name: Apt-get update
-              run: sudo apt-get update -yq
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
@@ -117,7 +114,10 @@ jobs:
             # additional build dependencies for non-cross builds with vendored libcec sources
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
               name: Install libudev-dev for non-cross vendored builds as libcec build dependency
-              run: sudo apt-get install -yq libudev-dev
+              run:  |
+                  set -ex
+                  sudo apt-get update -yq
+                  sudo apt-get install -yq libudev-dev
             # setup developer command prompt for Windows
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
