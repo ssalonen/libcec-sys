@@ -15,8 +15,9 @@ const LIBCEC_BUILD: &str = "libcec_build";
 #[cfg(not(target_os = "windows"))]
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
-const CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE : &str= "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER";
-const CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE : &str= "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER";
+const CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE: &str = "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER";
+const CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE: &str =
+    "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER";
 
 #[cfg(target_os = "windows")]
 const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
@@ -54,7 +55,7 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
 
     let contents =
         fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-    let mut cmake_defines : String= "-DSKIP_PYTHON_WRAPPER=1".to_owned();
+    let mut cmake_defines: String = "-DSKIP_PYTHON_WRAPPER=1".to_owned();
     if env::var("CI").is_ok() {
         if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
             cmake_defines.push_str(format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
@@ -137,7 +138,8 @@ fn compile_vendored_libcec(dst: &Path) {
     fs::create_dir_all(&libcec_build).unwrap();
     println!("cmake libcec");
     let mut cmake_builder = cmake::Config::new(dst.join(LIBCEC_SRC));
-    cmake_builder.out_dir(&libcec_build)
+    cmake_builder
+        .out_dir(&libcec_build)
         .define("SKIP_PYTHON_WRAPPER", "1")
         .env(P8_PLATFORM_ROOT_ENV, &platform_build);
 
