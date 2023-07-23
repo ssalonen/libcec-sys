@@ -144,8 +144,8 @@ jobs:
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
               run: |
-                echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-                echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
                 echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
             - name: Cargo test
               env:
