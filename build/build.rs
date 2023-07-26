@@ -45,8 +45,8 @@ impl CecVersion {
 // libcec versions that are supported when linking dynamically. In preference order
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
-#[cfg(target_os = "windows")]
-fn prepare_windows_cmake_opts(dst_src: &Path) {
+//xxxcfg(target_os = "windows")]
+fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
     let windows_cmake_gen_path = dst_src
         .join("support")
         .join("windows")
@@ -66,9 +66,8 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
         return;
     }
     let new = contents.replace("%CMAKE% ^", &format!("%CMAKE%  {cmake_defines}^"));
-    println!("--- generate.cmd start ---");
-    println!(&new);
-    println!("--- generate.cmd end ---");
+    assert!(!contents.contains("%CMAKE% ^"));
+    println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -110,8 +109,8 @@ fn prepare_vendored_build(dst: &Path) {
         )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 
-    #[cfg(target_os = "windows")]
-    prepare_windows_cmake_opts(&dst_src);
+    //xxxcfg(target_os = "windows")]
+    prepare_windows_libcec_cmake_opts(&dst_src);
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -131,6 +130,36 @@ fn compile_vendored_platform(dst: &Path) {
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .status()
         .expect("failed to make libcec platform!");
+}
+
+#[cfg(target_os = "windows")]
+fn compile_vendored_platform(dst: &Path) {
+    let libcec_build = dst.join(LIBCEC_BUILD);
+    Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
+        .arg("/C")
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("src")
+                .join("platform")
+                .join("windows")
+                .join("build-lib.cmd"),
+        )
+        .arg(ARCHITECTURE)
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(&libcec_build)
+        .arg("nmake")
+        .status()
+        .expect("failed to build p8 platform!");
+    // Remove build target of the p8 platform build
+    // aka "BUILDTARGET" in windows\build-lib.cmd
+    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE))
+        .expect("Could not remove built target of p8 build");
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -166,35 +195,6 @@ fn compile_vendored_libcec(dst: &Path) {
 
 #[cfg(target_os = "windows")]
 fn compile_vendored_libcec(dst: &Path) {
-    // All the compilation steps are combined into one command.
-    println!("build libcec");
-    let libcec_build = dst.join(LIBCEC_BUILD);
-    Command::new("cmd")
-        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
-        .arg("/C")
-        .arg(
-            dst.join(LIBCEC_SRC)
-                .join("src")
-                .join("platform")
-                .join("windows")
-                .join("build-lib.cmd"),
-        )
-        .arg(ARCHITECTURE)
-        .arg(if cfg!(debug_assertions) {
-            "Debug"
-        } else {
-            "Release"
-        })
-        .arg("2019")
-        .arg(&libcec_build)
-        .arg("nmake")
-        .status()
-        .expect("failed to build p8 platform!");
-    // Remove build target of the p8 platform build
-    // aka "BUILDTARGET" in windows\build-lib.cmd
-    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE))
-        .expect("Could not remove built target of p8 build");
-
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
         .arg("/C")
@@ -325,10 +325,7 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    #[cfg(not(target_os = "windows"))]
-    {
-        compile_vendored_platform(&dst);
-    }
+    compile_vendored_platform(&dst);
     compile_vendored_libcec(&dst);
     link_libcec(&dst);
     println!("cargo:rustc-link-lib=cec");
