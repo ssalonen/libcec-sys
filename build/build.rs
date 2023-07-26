@@ -66,7 +66,9 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
         return;
     }
     let new = contents.replace("%CMAKE% ^", &format!("%CMAKE%  {cmake_defines}^"));
-
+    dbg!("--- generate.cmd start ---");
+    dbg!(new);
+    dbg!("--- generate.cmd end ---");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
