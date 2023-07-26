@@ -231,6 +231,10 @@ fn compile_vendored_libcec(dst: &Path) {
         "MAKEFILE: {}",
         fs::read_to_string(build_target.join("makefile")).expect("could not read makefile")
     );
+    println!(
+        "CMakeCache.txt: {}",
+        fs::read_to_string(build_target.join("CMakeCache.txt")).expect("could not read ceche")
+    );
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
