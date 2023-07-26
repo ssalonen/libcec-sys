@@ -233,7 +233,13 @@ fn compile_vendored_libcec(dst: &Path) {
     );
     println!(
         "CMakeCache.txt: {}",
-        fs::read_to_string(build_target.join("CMakeCache.txt")).expect("could not read ceche")
+        fs::read_to_string(build_target.join("CMakeCache.txt"))
+            .expect("could not read CMakeCache.txt")
+    );
+    println!(
+        "cmake_install.cmake: {}",
+        fs::read_to_string(build_target.join("cmake_install.cmake"))
+            .expect("could not read cmake_install.cmake")
     );
 
     Command::new("cmd")
