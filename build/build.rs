@@ -45,7 +45,6 @@ impl CecVersion {
 // libcec versions that are supported when linking dynamically. In preference order
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
-//xxxcfg(target_os = "windows")]
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
     if dst_src.exists() && dst_src.is_dir() {
@@ -162,6 +161,7 @@ fn compile_vendored_platform(dst: &Path) {
         .expect("Could not remove built target of p8 build");
 }
 
+//xxxcfg(target_os = "windows")]
 fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
     let windows_cmake_gen_path = dst_src
         .join("support")
@@ -227,8 +227,10 @@ fn compile_vendored_libcec(dst: &Path) {
         .status()
         .expect("failed to generate libcec build files!");
 
-    println!("MAKEFILE: ");
-    println!(fs::read_to_string(build_target.join("makefile")).expect("could not read makefile"));
+    println!(
+        "MAKEFILE: {}",
+        fs::read_to_string(build_target.join("makefile")).expect("could not read makefile")
+    );
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
