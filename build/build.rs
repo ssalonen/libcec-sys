@@ -66,9 +66,9 @@ fn prepare_windows_cmake_opts(dst_src: &Path) {
         return;
     }
     let new = contents.replace("%CMAKE% ^", &format!("%CMAKE%  {cmake_defines}^"));
-    dbg!("--- generate.cmd start ---");
-    dbg!(&new);
-    dbg!("--- generate.cmd end ---");
+    println!("--- generate.cmd start ---");
+    println!(&new);
+    println!("--- generate.cmd end ---");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -192,7 +192,8 @@ fn compile_vendored_libcec(dst: &Path) {
         .expect("failed to build p8 platform!");
     // Remove build target of the p8 platform build
     // aka "BUILDTARGET" in windows\build-lib.cmd
-    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE));
+    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE))
+        .expect("Could not remove built target of p8 build");
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
