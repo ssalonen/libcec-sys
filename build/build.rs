@@ -367,6 +367,9 @@ fn main() {
     println!("cargo:rerun-if-env-changed=LIB");
     println!("cargo:rerun-if-env-changed=CL");
     println!("cargo:rerun-if-env-changed=_CL_");
+    println!("cargo:rerun-if-env-changed={CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE}");
+    println!("cargo:rerun-if-env-changed={CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE}");
+    
 
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {
