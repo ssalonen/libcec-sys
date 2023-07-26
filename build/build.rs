@@ -65,9 +65,9 @@ fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
         }
         return;
     }
-    let new = contents.replace("%CMAKE% ^", &format!("%CMAKE%  {cmake_defines}^"));
-    assert!(!contents.contains("%CMAKE% ^"));
+    let new = contents.replace("%CMAKE% ^", &format!("%CMAKE%  {cmake_defines}^"));    
     println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
+    assert!(!contents.contains("%CMAKE% ^"));
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
