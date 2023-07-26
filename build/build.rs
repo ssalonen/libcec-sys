@@ -179,7 +179,6 @@ fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
         if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
             cmake_defines.push_str(&format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
         }
-        return;
     }
     let new = contents.replace(
         "-DCMAKE_BUILD_TYPE=%BUILDTYPE% ^",
