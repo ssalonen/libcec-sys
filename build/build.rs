@@ -46,39 +46,6 @@ impl CecVersion {
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
 //xxxcfg(target_os = "windows")]
-fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
-    let windows_cmake_gen_path = dst_src
-        .join("support")
-        .join("windows")
-        .join("cmake")
-        .join("generate.cmd");
-
-    let contents =
-        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-    let mut cmake_defines: String = "-DSKIP_PYTHON_WRAPPER=1".to_owned();
-    if env::var("CI").is_ok() {
-        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(&format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
-        }
-        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(&format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
-        }
-        return;
-    }
-    let new = contents.replace("%CMAKE% ^", &format!("%CMAKE% {cmake_defines} ^"));
-    println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
-    // Content should have changed
-    assert!(!new.contains("%CMAKE% ^"));
-    assert_ne!(new, contents);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&windows_cmake_gen_path)
-        .expect("Could not open cmake/generate.cmd for writing");
-    file.write_all(new.as_bytes())
-        .expect("Could not write cmake/generate.cmd");
-}
-
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
     if dst_src.exists() && dst_src.is_dir() {
@@ -195,9 +162,46 @@ fn compile_vendored_platform(dst: &Path) {
         .expect("Could not remove built target of p8 build");
 }
 
+fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
+    let windows_cmake_gen_path = dst_src
+        .join("support")
+        .join("windows")
+        .join("cmake")
+        .join("generate.cmd");
+
+    let contents =
+        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
+    let mut cmake_defines: String = "-DSKIP_PYTHON_WRAPPER=1".to_owned();
+    if env::var("CI").is_ok() {
+        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_defines.push_str(&format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
+        }
+        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
+            cmake_defines.push_str(&format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
+        }
+        return;
+    }
+    let new = contents.replace(
+        "-DCMAKE_BUILD_TYPE=%BUILDTYPE% ^",
+        &format!("-DCMAKE_BUILD_TYPE=%BUILDTYPE% {cmake_defines} ^"),
+    );
+    println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
+    // Content should have changed
+    assert!(new.contains(" -DSKIP_PYTHON_WRAPPER=1 "));
+    assert_ne!(new, contents);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&windows_cmake_gen_path)
+        .expect("Could not open cmake/generate.cmd for writing");
+    file.write_all(new.as_bytes())
+        .expect("Could not write cmake/generate.cmd");
+}
+
 #[cfg(target_os = "windows")]
 fn compile_vendored_libcec(dst: &Path) {
     let libcec_build = dst.join(LIBCEC_BUILD);
+    let build_target = libcec_build.join("cmake").join(ARCHITECTURE);
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
         .arg("/C")
@@ -211,7 +215,7 @@ fn compile_vendored_libcec(dst: &Path) {
         .arg(ARCHITECTURE)
         .arg("nmake")
         .arg(dst.join(LIBCEC_SRC))
-        .arg(libcec_build.join("cmake").join(ARCHITECTURE)) // aka "BUILDTARGET" in windows\build-lib.cmd
+        .arg(&build_target) // aka "BUILDTARGET" in windows\build-lib.cmd
         .arg(libcec_build.join(ARCHITECTURE)) // aka "TARGET" in windows\build-lib.cmd
         .arg(if cfg!(debug_assertions) {
             "Debug"
@@ -222,6 +226,9 @@ fn compile_vendored_libcec(dst: &Path) {
         .arg(&libcec_build)
         .status()
         .expect("failed to generate libcec build files!");
+
+    println!("MAKEFILE: ");
+    println!(fs::read_to_string(build_target.join("makefile")).expect("could not read makefile"));
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
@@ -234,7 +241,7 @@ fn compile_vendored_libcec(dst: &Path) {
                 .join("build.cmd"),
         )
         .arg(ARCHITECTURE)
-        .arg(libcec_build.join("cmake").join(ARCHITECTURE)) // aka "BUILDTARGET" in windows\build-lib.cmd
+        .arg(&build_target) // aka "BUILDTARGET" in windows\build-lib.cmd
         .arg("2019")
         .status()
         .expect("failed to build libcec!");
