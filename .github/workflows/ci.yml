@@ -135,7 +135,7 @@ jobs:
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
               run: |
-                $cmakePaths = "libcec-sys\vendor\support\windows\cmake","libcec-sys\vendor\src\platform\support\windows\cmake"                
+                $cmakePaths = "vendor\support\windows\cmake","vendor\src\platform\support\windows\cmake"                
                 foreach ($cmakePath in $cmakePaths)
                 {
                   foreach ($lang in ("c","cxx"))
