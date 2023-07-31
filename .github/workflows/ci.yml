@@ -130,7 +130,8 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
-            # /Zi flag is to be replaced with /Z7 for compatibility with sccache on Windows
+            # /Zi flag is to be replaced with /Z7 /DEBUG for compatibility with sccache on Windows
+            # Note that /Zi implied /DEBUG
             # https://gitlab.kitware.com/cmake/cmake/-/issues/22529
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
@@ -141,7 +142,7 @@ jobs:
                   foreach ($lang in ("c","cxx"))
                   {
                     $path = "$cmakePath\$lang-flag-overrides.cmake"
-                    ((Get-Content -Path $path -Raw) -replace '/Zi ','/Z7 ') | Set-Content -Path $path
+                    ((Get-Content -Path $path -Raw) -replace '/Zi ','/Z7 /DEBUG ') | Set-Content -Path $path
 
                     # For debugging
                     echo ""
