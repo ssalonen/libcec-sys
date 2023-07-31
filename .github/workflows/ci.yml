@@ -132,7 +132,7 @@ jobs:
               run: sudo apt-get remove -yq pkg-config
             # /Zi flag is to be replaced with /Z7 for compatibility with sccache on Windows
             # https://gitlab.kitware.com/cmake/cmake/-/issues/22529
-            - if: ${{ startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Windows' }}
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
               run: |
                 $cmakePaths = "libcec-sys\vendor\support\windows\cmake","libcec-sys\vendor\src\platform\support\windows\cmake"                
