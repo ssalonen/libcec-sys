@@ -145,6 +145,9 @@ jobs:
                 # Remove pdb references from cmake
                 patch vendor/src/libcec/CMakeLists.txt build/disable_pdb_install_libcec.patch
                 patch vendor/src/platform/CMakeLists.txt build/disable_pdb_install_platform.patch
+
+                # experimental
+                patch vendor/CMakeLists.txt build/cmake_launcher.patch
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
