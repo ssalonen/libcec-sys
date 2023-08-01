@@ -1,5 +1,4 @@
 diff --git a/vendor/src/libcec/CMakeLists.txt b/vendor/src/libcec/CMakeLists.txt
-index 19a070b..9ecf6f2 100644
 --- a/vendor/src/libcec/CMakeLists.txt
 +++ b/vendor/src/libcec/CMakeLists.txt
 @@ -226,11 +226,6 @@ if(WIN32)
@@ -15,7 +14,6 @@ index 19a070b..9ecf6f2 100644
  endif(WIN32)
 
 diff --git a/vendor/src/platform/CMakeLists.txt b/vendor/src/platform/CMakeLists.txt
-index f5b2ff8..22d6607 100644
 --- a/vendor/src/platform/CMakeLists.txt
 +++ b/vendor/src/platform/CMakeLists.txt
 @@ -95,11 +95,6 @@ install(FILES src/util/atomic.h
