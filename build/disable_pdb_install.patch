@@ -1,6 +1,5 @@
-diff --git a/vendor/src/libcec/CMakeLists.txt b/vendor/src/libcec/CMakeLists.txt
---- a/vendor/src/libcec/CMakeLists.txt
-+++ b/vendor/src/libcec/CMakeLists.txt
+--- vendor/src/libcec/CMakeLists.txt
++++ vendor/src/libcec/CMakeLists.txt
 @@ -226,11 +226,6 @@ if(WIN32)
          COMPILE_PDB_NAME_MINSIZEREL cec-static
          COMPILE_PDB_NAME_RELWITHDEBINFO cec-static)
@@ -13,9 +12,8 @@ diff --git a/vendor/src/libcec/CMakeLists.txt b/vendor/src/libcec/CMakeLists.txt
    endif(MSVC)
  endif(WIN32)
 
-diff --git a/vendor/src/platform/CMakeLists.txt b/vendor/src/platform/CMakeLists.txt
---- a/vendor/src/platform/CMakeLists.txt
-+++ b/vendor/src/platform/CMakeLists.txt
+--- vendor/src/platform/CMakeLists.txt
++++ vendor/src/platform/CMakeLists.txt
 @@ -95,11 +95,6 @@ install(FILES src/util/atomic.h
                src/util/util.h
          DESTINATION include/p8-platform/util)

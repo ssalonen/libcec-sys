@@ -153,7 +153,7 @@ jobs:
                 }
 
                 # Remove pdb references from cmake
-                git apply -v build/disable_pdb_install.patch
+                Get-Content build/disable_pdb_install.patch | patch
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
