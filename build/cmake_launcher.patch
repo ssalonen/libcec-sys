@@ -1,11 +1,12 @@
 --- vendor/CMakeLists.txt
 +++ vendor/CMakeLists.txt
-@@ -1,6 +1,9 @@
+@@ -1,6 +1,10 @@
  project(libcec)
  cmake_minimum_required(VERSION 3.12.0)
  
 +set(CMAKE_C_COMPILER_LAUNCHER "sccache.exe" CACHE STRING "C compiler launcher")
 +set(CMAKE_CXX_COMPILER_LAUNCHER "sccache.exe" CACHE STRING "CXX compiler launcher")
++remove_definitions(/Zi)
 +
  set(LIBCEC_VERSION_MAJOR 6)
  set(LIBCEC_VERSION_MINOR 0)
