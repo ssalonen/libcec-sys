@@ -1,0 +1,32 @@
+diff --git a/vendor/src/libcec/CMakeLists.txt b/vendor/src/libcec/CMakeLists.txt
+index 19a070b..9ecf6f2 100644
+--- a/vendor/src/libcec/CMakeLists.txt
++++ b/vendor/src/libcec/CMakeLists.txt
+@@ -226,11 +226,6 @@ if(WIN32)
+         COMPILE_PDB_NAME_MINSIZEREL cec-static
+         COMPILE_PDB_NAME_RELWITHDEBINFO cec-static)
+ 
+-    # install generated pdb
+-    install(FILES $<TARGET_FILE_DIR:cec>/cec.pdb
+-            DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+-    install(FILES $<TARGET_FILE_DIR:cec-static>/cec-static.pdb
+-            DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+   endif(MSVC)
+ endif(WIN32)
+
+diff --git a/vendor/src/platform/CMakeLists.txt b/vendor/src/platform/CMakeLists.txt
+index f5b2ff8..22d6607 100644
+--- a/vendor/src/platform/CMakeLists.txt
++++ b/vendor/src/platform/CMakeLists.txt
+@@ -95,11 +95,6 @@ install(FILES src/util/atomic.h
+               src/util/util.h
+         DESTINATION include/p8-platform/util)
+ 
+-if(MSVC)
+-  # install generated pdb
+-  install(FILES $<TARGET_FILE_DIR:p8-platform>/p8-platform.pdb
+-          DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+-endif(MSVC)
+ 
+ if(NOT WIN32)
+   configure_file(p8-platform.pc.in p8-platform.pc @ONLY)

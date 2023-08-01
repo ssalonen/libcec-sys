@@ -130,9 +130,10 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
-            # /Zi flag is to be replaced with /Z7 /DEBUG for compatibility with sccache on Windows
-            # Note that /Zi implied /DEBUG
-            # https://gitlab.kitware.com/cmake/cmake/-/issues/22529
+            # /Zi (implies also /DEBUG) flag is removed as sccache is not supporting it
+            # Replacing with /Z7 (as in https://gitlab.kitware.com/cmake/cmake/-/issues/22529) is tricky as well
+            # as CMakeLists.txt are referencing .pdb files which would not be generated
+            # We therefore disable pdb generation alltogether, and disable installation of those in cmake
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
               run: |
@@ -142,7 +143,7 @@ jobs:
                   foreach ($lang in ("c","cxx"))
                   {
                     $path = "$cmakePath\$lang-flag-overrides.cmake"
-                    ((Get-Content -Path $path -Raw) -replace '/Zi ','/Z7 /DEBUG ') | Set-Content -Path $path
+                    ((Get-Content -Path $path -Raw) -replace '/Zi ',' ') | Set-Content -Path $path
 
                     # For debugging
                     echo ""
@@ -150,6 +151,9 @@ jobs:
                     Get-Content -path $path
                   }                  
                 }
+
+                # Remove pdb references from cmake
+                git apply -v build/disable_pdb_install.patch
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
