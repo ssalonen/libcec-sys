@@ -3,15 +3,16 @@
 # From Cross repository wiki (https://github.com/cross-rs/cross/wiki/Recipes)
 # 2023-07-10
 #
+# wiki Recipes follow cross-rs repository license, see https://github.com/cross-rs/cross/discussions/1297
+# 
 # Cross repository (https://github.com/cross-rs/) is licensed as follows:
-
+#
 # Licensed under either of
-
+#
 #     Apache License, Version 2.0 (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
 #     MIT License (LICENSE-MIT or http://opensource.org/licenses/MIT)
-
+#
 # at your option.
-
 
 set -x
 set -euo pipefail
