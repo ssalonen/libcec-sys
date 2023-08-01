@@ -136,21 +136,11 @@ jobs:
             # We therefore disable pdb generation alltogether, and disable installation of those in cmake
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
-              run: |
-                $cmakePaths = "vendor\support\windows\cmake","vendor\src\platform\support\windows\cmake"                
-                foreach ($cmakePath in $cmakePaths)
-                {
-                  foreach ($lang in ("c","cxx"))
-                  {
-                    $path = "$cmakePath\$lang-flag-overrides.cmake"
-                    ((Get-Content -Path $path -Raw) -replace '/Zi ',' ') | Set-Content -Path $path
-
-                    # For debugging
-                    echo ""
-                    echo $path
-                    Get-Content -path $path
-                  }                  
-                }
+              run: |                
+                patch vendor/support/windows/cmake/c-flag-overrides.cmake build/disable_debug_c_libcec.patch
+                patch vendor/src/platform/support/windows/cmake/c-flag-overrides.cmake build/disable_debug_c_platform.patch
+                patch vendor/support/windows/cmake/cxx-flag-overrides.cmake build/disable_debug_cxx_libcec.patch
+                patch vendor/src/platform/support/windows/cmake/cxx-flag-overrides.cmake build/disable_debug_cxx_platform.patch
 
                 # Remove pdb references from cmake
                 patch vendor/src/libcec/CMakeLists.txt build/disable_pdb_install_libcec.patch
