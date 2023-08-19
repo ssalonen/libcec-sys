@@ -1,0 +1,13 @@
+--- vendor/src/libcec/CMakeLists.txt
++++ vendor/src/libcec/CMakeLists.txt
+@@ -226,11 +226,6 @@ if(WIN32)
+         COMPILE_PDB_NAME_MINSIZEREL cec-static
+         COMPILE_PDB_NAME_RELWITHDEBINFO cec-static)
+ 
+-    # install generated pdb
+-    install(FILES $<TARGET_FILE_DIR:cec>/cec.pdb
+-            DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+-    install(FILES $<TARGET_FILE_DIR:cec-static>/cec-static.pdb
+-            DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+   endif(MSVC)
+ endif(WIN32)

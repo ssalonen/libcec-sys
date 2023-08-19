@@ -1,37 +1,36 @@
 
-[target.aarch64-unknown-linux-gnu]
-image="ssalonen/aarch64-unknown-linux-gnu-0.2.1"
+[build]
+default-target = "armv7-unknown-linux-gnueabihf"
+
+[build.dockerfile]
+file = "dummy"
+context = "./docker"
 
 [target.arm-unknown-linux-gnueabi]
-image="ssalonen/arm-unknown-linux-gnueabi-0.2.1"
+dockerfile = "./docker/Dockerfile-arm-unknown-linux-gnueabi.cross"
 
 [target.armv7-unknown-linux-gnueabihf]
-image="ssalonen/armv7-unknown-linux-gnueabihf-0.2.1"
+dockerfile = "./docker/Dockerfile-armv7-unknown-linux-gnueabihf.cross"
 
-[target.i686-unknown-linux-gnu]
-image="ssalonen/i686-unknown-linux-gnu-0.2.1"
-
-[target.i686-unknown-linux-musl]
-image="ssalonen/i686-unknown-linux-musl-0.2.1"
-
-[target.mips-unknown-linux-gnu]
-image="ssalonen/mips-unknown-linux-gnu-0.2.1"
-
-[target.mips64-unknown-linux-gnuabi64]
-image="ssalonen/mips64-unknown-linux-gnuabi64-0.2.1"
-
-[target.mips64el-unknown-linux-gnuabi64]
-image="ssalonen/mips64el-unknown-linux-gnuabi64-0.2.1"
-
-[target.mipsel-unknown-linux-gnu]
-image="ssalonen/mipsel-unknown-linux-gnu-0.2.1"
+[target.aarch64-unknown-linux-gnu]
+dockerfile = "./docker/Dockerfile-aarch64-unknown-linux-gnu.cross"
 
 [target.x86_64-unknown-linux-gnu]
-image="ssalonen/x86_64-unknown-linux-gnu-0.2.1"
+dockerfile = "./docker/Dockerfile-x86_64_unknown-linux-gnu.cross.sccache-x86_64-unknown-linux-musl"
+passthrough = [
+    "SCCACHE_ERROR_LOG",
+    "SCCACHE_LOG",
+    "SCCACHE_AZURE_CONNECTION_STRING",
+    "SCCACHE_AZURE_BLOB_CONTAINER",
+    "SCCACHE_DIR",
+]
 
 [target.x86_64-unknown-linux-musl]
-image="ssalonen/x86_64-unknown-linux-musl-0.2.1"
-
-[target.x86_64-pc-windows-gnu]
-image="ssalonen/x86_64-pc-windows-gnu-0.2.1"
-
+dockerfile = "./docker/Dockerfile-x86_64_unknown-linux-musl.cross.sccache-x86_64-unknown-linux-musl"
+passthrough = [
+    "SCCACHE_ERROR_LOG",
+    "SCCACHE_LOG",
+    "SCCACHE_AZURE_CONNECTION_STRING",
+    "SCCACHE_AZURE_BLOB_CONTAINER",
+    "SCCACHE_DIR",
+]

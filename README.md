@@ -65,16 +65,25 @@ For a vendored build, `libcec-sys` will dynamically link to the compiled `cec.dl
 
 ## License
 
-Licensed under GNU General Public License version 2, ([LICENSE](LICENSE) or [https://opensource.org/licenses/GPL-2.0](https://opensource.org/licenses/GPL-2.0))
+This repo contains content distributed under three different licenses.
 
-The CI/CD setup in `.github/` is based on [rust-github/template](https://github.com/rust-github/template), and therefore licensed under either of
+1. Main package, licensed under GNU General Public License version 2, ([LICENSE](LICENSE) or [https://opensource.org/licenses/GPL-2.0](https://opensource.org/licenses/GPL-2.0))
 
-* Apache License, Version 2.0
-   ([LICENSE-CI-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
-* MIT license
-   ([LICENSE-CI-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
+2. The CI/CD setup in `.github/` is based on [rust-github/template](https://github.com/rust-github/template), and therefore licensed under either of
 
-at your option.
+   * Apache License, Version 2.0
+      ([LICENSE-CI-APACHE](LICENSE-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
+   * MIT license
+      ([LICENSE-CI-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
+
+   at your option.
+
+3. The CI uses sccache build cache tooling as shared in [Cross repository wiki](https://github.com/cross-rs/cross/wiki/Recipes). The Cross repo itself is licensed under either of
+
+   * Apache License, Version 2.0
+      ([LICENSE-CI-docker-sscache-APACHE](LICENSE-CI-docker-sscache-APACHE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
+   * MIT license
+      ([LICENSE-CI-docker-sscache-MIT](LICENSE-CI-docker-sscache-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 
 ## Contribution
 

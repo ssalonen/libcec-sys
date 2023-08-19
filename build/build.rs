@@ -39,7 +39,7 @@ impl CecVersion {
     }
 }
 
-// libcec versions that are supported when linking dynamically. In preferce order
+// libcec versions that are supported when linking dynamically. In preference order
 const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
 
 fn prepare_vendored_build(dst: &Path) {
@@ -53,6 +53,8 @@ fn prepare_vendored_build(dst: &Path) {
     // libcec build tries to embed git revision and other details
     // in LIB_INFO variable. This makes the build fail in certain cases.
     // Let's disable the complex logic by overriding the variable with a constant
+    //
+    // In addition, we disable building of python wrappers, not needed
     let set_build_info_path = dst_src
         .join("src")
         .join("libcec")
@@ -66,8 +68,14 @@ fn prepare_vendored_build(dst: &Path) {
         .set_len(0)
         .expect("Error truncacting SetBuildInfo.cmake");
     build_info_file
-        .write_all(b"set(LIB_INFO \"\")")
+        .write_all(
+            b"
+            set(LIB_INFO \"\")",
+        )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
+
+    #[cfg(target_os = "windows")]
+    prepare_windows_libcec_cmake_opts(&dst_src);
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -95,10 +103,12 @@ fn compile_vendored_libcec(dst: &Path) {
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
     println!("cmake libcec");
-    cmake::Config::new(dst.join(LIBCEC_SRC))
+    let mut cmake_builder = cmake::Config::new(dst.join(LIBCEC_SRC));
+    cmake_builder
         .out_dir(&libcec_build)
-        .env(P8_PLATFORM_ROOT_ENV, &platform_build)
-        .build();
+        .define("SKIP_PYTHON_WRAPPER", "1")
+        .env(P8_PLATFORM_ROOT_ENV, &platform_build);
+    cmake_builder.build();
 
     println!("make libcec");
     Command::new("make")
@@ -109,14 +119,18 @@ fn compile_vendored_libcec(dst: &Path) {
 }
 
 #[cfg(target_os = "windows")]
-fn compile_vendored_libcec(dst: &Path) {
-    // All the compilation steps are combined into one command.
-    println!("build libcec");
+fn compile_vendored_platform(dst: &Path) {
     let libcec_build = dst.join(LIBCEC_BUILD);
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
         .arg("/C")
-        .arg(dst.join(LIBCEC_SRC).join("windows").join("build-lib.cmd"))
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("src")
+                .join("platform")
+                .join("windows")
+                .join("build-lib.cmd"),
+        )
         .arg(ARCHITECTURE)
         .arg(if cfg!(debug_assertions) {
             "Debug"
@@ -126,6 +140,103 @@ fn compile_vendored_libcec(dst: &Path) {
         .arg("2019")
         .arg(&libcec_build)
         .arg("nmake")
+        .status()
+        .expect("failed to build p8 platform!");
+    // Remove build target of the p8 platform build
+    // aka "BUILDTARGET" in windows\build-lib.cmd
+    fs::remove_dir_all(libcec_build.join("cmake").join(ARCHITECTURE))
+        .expect("Could not remove built target of p8 build");
+}
+
+#[cfg(target_os = "windows")]
+fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
+    //
+    // We disable Python wrapper builds with vendored builds
+    // It is not needed for the purposes of rust interfacing
+    // and slows the build down.
+    //
+    let windows_cmake_gen_path = dst_src
+        .join("support")
+        .join("windows")
+        .join("cmake")
+        .join("generate.cmd");
+
+    let contents =
+        fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
+    let new = contents.replace(
+        "-DCMAKE_BUILD_TYPE=%BUILDTYPE% ^",
+        &format!("-DCMAKE_BUILD_TYPE=%BUILDTYPE% -DSKIP_PYTHON_WRAPPER=1 ^"),
+    );
+    println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
+    // Content should have changed
+    assert!(new.contains(" -DSKIP_PYTHON_WRAPPER=1 "));
+    assert_ne!(new, contents);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&windows_cmake_gen_path)
+        .expect("Could not open cmake/generate.cmd for writing");
+    file.write_all(new.as_bytes())
+        .expect("Could not write cmake/generate.cmd");
+}
+
+#[cfg(target_os = "windows")]
+fn compile_vendored_libcec(dst: &Path) {
+    let libcec_build = dst.join(LIBCEC_BUILD);
+    let build_target = libcec_build.join("cmake").join(ARCHITECTURE);
+    Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
+        .arg("/C")
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("support")
+                .join("windows")
+                .join("cmake")
+                .join("generate.cmd"),
+        )
+        .arg(ARCHITECTURE)
+        .arg("nmake")
+        .arg(dst.join(LIBCEC_SRC))
+        .arg(&build_target) // aka "BUILDTARGET" in windows\build-lib.cmd
+        .arg(libcec_build.join(ARCHITECTURE)) // aka "TARGET" in windows\build-lib.cmd
+        .arg(if cfg!(debug_assertions) {
+            "Debug"
+        } else {
+            "Release"
+        })
+        .arg("2019")
+        .arg(&libcec_build)
+        .status()
+        .expect("failed to generate libcec build files!");
+
+    // println!(
+    //     "MAKEFILE: {}",
+    //     fs::read_to_string(build_target.join("makefile")).expect("could not read makefile")
+    // );
+    // println!(
+    //     "CMakeCache.txt: {}",
+    //     fs::read_to_string(build_target.join("CMakeCache.txt"))
+    //         .expect("could not read CMakeCache.txt")
+    // );
+    // println!(
+    //     "cmake_install.cmake: {}",
+    //     fs::read_to_string(build_target.join("cmake_install.cmake"))
+    //         .expect("could not read cmake_install.cmake")
+    // );
+
+    Command::new("cmd")
+        .current_dir(&dst.join(LIBCEC_SRC).join("project"))
+        .arg("/C")
+        .arg(
+            dst.join(LIBCEC_SRC)
+                .join("support")
+                .join("windows")
+                .join("cmake")
+                .join("build.cmd"),
+        )
+        .arg(ARCHITECTURE)
+        .arg(&build_target) // aka "BUILDTARGET" in windows\build-lib.cmd
+        .arg("2019")
         .status()
         .expect("failed to build libcec!");
 }
@@ -218,10 +329,7 @@ fn compile_vendored() {
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     println!("Building libcec from local source");
     prepare_vendored_build(&dst);
-    #[cfg(not(target_os = "windows"))]
-    {
-        compile_vendored_platform(&dst);
-    }
+    compile_vendored_platform(&dst);
     compile_vendored_libcec(&dst);
     link_libcec(&dst);
     println!("cargo:rustc-link-lib=cec");
@@ -261,6 +369,8 @@ fn main() {
     println!("cargo:rerun-if-env-changed=LIB");
     println!("cargo:rerun-if-env-changed=CL");
     println!("cargo:rerun-if-env-changed=_CL_");
+    println!("cargo:rerun-if-env-changed=CMAKE_C_COMPILER_LAUNCHER");
+    println!("cargo:rerun-if-env-changed=CMAKE_CXX_COMPILER_LAUNCHER");
 
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {

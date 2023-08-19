@@ -1,0 +1,13 @@
+FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu:latest
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY ./cec_build_prep.sh /
+RUN /cec_build_prep.sh
+
+COPY ./sccache_from_sources.sh /
+RUN /sccache_from_sources.sh aarch64-unknown-linux-gnu
+
+ENV RUSTC_WRAPPER="/usr/bin/sccache"
+ENV CMAKE_C_COMPILER_LAUNCHER="/usr/bin/sccache"
+ENV CMAKE_CXX_COMPILER_LAUNCHER="/usr/bin/sccache"

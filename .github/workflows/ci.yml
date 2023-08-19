@@ -7,7 +7,9 @@ on:
         branches:
             - master
 name: Continuous Integration
-
+env:
+  PYTHON_DEBUG_VERSION: 3.11.4
+  PYTHON_INSTALL_DIR: ~\AppData\Local\Programs\Python\Python311
 jobs:
     test:
         name: Test Suite ${{ matrix.job.target }} (${{ matrix.job.libcec }} pkg-config=${{ matrix.job.pkg-config || false }})
@@ -20,18 +22,8 @@ jobs:
                       use-cross: false
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
-                    - os: windows-latest
-                      target: i686-pc-windows-msvc
-                      use-cross: false
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
                     - os: ubuntu-latest
                       target: aarch64-unknown-linux-gnu
-                      use-cross: true
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
-                    - os: ubuntu-latest
-                      target: i686-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
@@ -42,26 +34,6 @@ jobs:
                       expected_libcec_abi: 6
                     - os: ubuntu-latest
                       target: armv7-unknown-linux-gnueabihf
-                      use-cross: true
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
-                    - os: ubuntu-latest
-                      target: mips-unknown-linux-gnu
-                      use-cross: true
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
-                    - os: ubuntu-latest
-                      target: mips64-unknown-linux-gnuabi64
-                      use-cross: true
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
-                    - os: ubuntu-latest
-                      target: mips64el-unknown-linux-gnuabi64
-                      use-cross: true
-                      libcec: vendored-libcec
-                      expected_libcec_abi: 6
-                    - os: ubuntu-latest
-                      target: mipsel-unknown-linux-gnu
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
@@ -116,9 +88,6 @@ jobs:
               uses: actions/checkout@v3
               with:
                   submodules: recursive
-            - if: runner.os == 'Linux'
-              name: Apt-get update
-              run: sudo apt-get update -yq
             - name: Installing Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
@@ -126,6 +95,8 @@ jobs:
                   profile: minimal
                   target: ${{ matrix.job.target }}
                   override: true
+            - name: Run sccache-cache
+              uses: mozilla-actions/sccache-action@v0.0.3
             - uses: Swatinem/rust-cache@v2
             # libcec and p8-platform from apt repo
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
@@ -135,17 +106,18 @@ jobs:
                   # introduce Ubuntu 20.04 (Focal Fossa) repos as well for easy libcec4 installation
                   sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list'
                   sudo apt-get update  # re-loads apt sources
-                  sudo apt-get install -yq libudev-dev libp8-platform2 libp8-platform-dev
 
                   apt show '${{ matrix.job.libcec }}'
-                  sudo apt install -yq '${{ matrix.job.libcec }}'
-
                   apt show '${{ matrix.job.libcec-dev }}'
-                  sudo apt install -yq '${{ matrix.job.libcec-dev }}'
+
+                  sudo apt install -yq libudev-dev libp8-platform2 libp8-platform-dev '${{ matrix.job.libcec }}' '${{ matrix.job.libcec-dev }}'
             # additional build dependencies for non-cross builds with vendored libcec sources
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Linux' }}
               name: Install libudev-dev for non-cross vendored builds as libcec build dependency
-              run: sudo apt-get install -yq libudev-dev
+              run:  |
+                  set -ex
+                  sudo apt-get update -yq
+                  sudo apt-get install -yq libudev-dev
             # setup developer command prompt for Windows
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
@@ -158,20 +130,35 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
-            # install Python with debug binaries for Windows (needed for debug build of vendored libcec)
-            # Github Workflow runners do not package debug binaries by default
-            # NOTE: 
-            - if: runner.os == 'Windows'
-              name: Install python 3.11.4 with debug binaries
+            # Windows: Patch build files such that they are compatible with sccache
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
+              name: Make libcec build compatible with sccache for faster CI
+              shell: pwsh
               run: |
-                  $arch = '${{ runner.arch }}' -eq 'X86' ? "" : "-amd64"
-                  curl -o python-3.11.4$arch.exe https://www.python.org/ftp/python/3.11.4/python-3.11.4$arch.exe
-                  Start-Process -FilePath "python-3.11.4$arch.exe" -ArgumentList "/quiet Include_debug=1 PrependPath=1 InstallAllUsers=0" -Verb runas -Wait
+                .\scripts\ci\win_patch_sccache.ps1
+            - if: runner.os == 'Linux'
+              name: cmake version
+              run: cmake --version
+            - if: runner.os == 'Windows'
+              name: Sets additional sccache env vars for windows
+              # See https://github.com/orgs/community/discussions/26641
+              # for discussion on the syntax
+              run: |
+                echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
+                echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
+                echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
+            - if: runner.os != 'Windows'
+              name: Sets additional sccache env vars for non-windows
+              run: |
+                echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
             - name: Cargo test
               env:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
                   LD_LIBRARY_PATH: ${{ matrix.job.additional_env.LD_LIBRARY_PATH }}
                   C_INCLUDE_PATH: ${{ matrix.job.additional_env.C_INCLUDE_PATH }}
+                  SCCACHE_GHA_ENABLED: "true"
               uses: actions-rs/cargo@v1
               with:
                   command: test
