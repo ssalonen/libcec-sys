@@ -19,7 +19,7 @@ jobs:
                 job:
                     - os: windows-latest
                       target: x86_64-pc-windows-msvc
-                      use-cross: true
+                      use-cross: false
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
                     - os: ubuntu-latest
