@@ -77,7 +77,7 @@ fn prepare_vendored_build(dst: &Path) {
         )
         .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
 
-    //xxxcfg(target_os = "windows")]
+    #[cfg(target_os = "windows")]
     prepare_windows_libcec_cmake_opts(&dst_src);
 }
 
@@ -111,17 +111,6 @@ fn compile_vendored_libcec(dst: &Path) {
         .out_dir(&libcec_build)
         .define("SKIP_PYTHON_WRAPPER", "1")
         .env(P8_PLATFORM_ROOT_ENV, &platform_build);
-
-    // XXX: remove
-    // if env::var("CI").is_ok() {
-    //     // Running in CI
-    //     if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
-    //         cmake_builder.define("CMAKE_C_COMPILER_LAUNCHER", c_launcher);
-    //     }
-    //     if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
-    //         cmake_builder.define("CMAKE_CXX_COMPILER_LAUNCHER", cxx_launcher);
-    //     }
-    // }
     cmake_builder.build();
 
     println!("make libcec");
@@ -162,8 +151,13 @@ fn compile_vendored_platform(dst: &Path) {
         .expect("Could not remove built target of p8 build");
 }
 
-//xxxcfg(target_os = "windows")]
+#[cfg(target_os = "windows")]
 fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
+    //
+    // We disable Python wrapper builds with vendored builds
+    // It is not needed for the purposes of rust interfacing
+    // and slows the build down.
+    //
     let windows_cmake_gen_path = dst_src
         .join("support")
         .join("windows")
@@ -172,18 +166,9 @@ fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
 
     let contents =
         fs::read_to_string(&windows_cmake_gen_path).expect("Could not read cmake/generate.cmd");
-    let mut cmake_defines: String = "-DSKIP_PYTHON_WRAPPER=1".to_owned();
-    if env::var("CI").is_ok() {
-        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(&format!(" -DCMAKE_C_COMPILER_LAUNCHER={c_launcher}"));
-        }
-        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_defines.push_str(&format!(" -DCMAKE_CXX_COMPILER_LAUNCHER={cxx_launcher}"));
-        }
-    }
     let new = contents.replace(
         "-DCMAKE_BUILD_TYPE=%BUILDTYPE% ^",
-        &format!("-DCMAKE_BUILD_TYPE=%BUILDTYPE% {cmake_defines} ^"),
+        &format!("-DCMAKE_BUILD_TYPE=%BUILDTYPE% -DSKIP_PYTHON_WRAPPER=1 ^"),
     );
     println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
     // Content should have changed

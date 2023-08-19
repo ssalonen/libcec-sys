@@ -16,3 +16,4 @@ patch vendor/src/platform/CMakeLists.txt scripts/ci/win_disable_pdb_install_plat
 # Experimental: try to ensure sccache use with CMAKE_C_COMPILER_LAUNCHER and CMAKE_CXX_COMPILER_LAUNCHER
 # Not sure if this is really needed
 patch vendor/CMakeLists.txt scripts/ci/win_cmake_launcher.patch
+patch vendor/support/windows/cmake/generate.cmd scripts/ci/win_cmake_launcher2.patch
