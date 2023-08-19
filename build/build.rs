@@ -15,9 +15,6 @@ const LIBCEC_BUILD: &str = "libcec_build";
 #[cfg(not(target_os = "windows"))]
 const PLATFORM_BUILD: &str = "platform_build";
 const LIBCEC_SRC: &str = "vendor";
-const CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE: &str = "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER";
-const CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE: &str =
-    "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER";
 
 #[cfg(target_os = "windows")]
 const ARCHITECTURE: &str = if cfg!(target_pointer_width = "64") {
@@ -212,20 +209,20 @@ fn compile_vendored_libcec(dst: &Path) {
         .status()
         .expect("failed to generate libcec build files!");
 
-    println!(
-        "MAKEFILE: {}",
-        fs::read_to_string(build_target.join("makefile")).expect("could not read makefile")
-    );
-    println!(
-        "CMakeCache.txt: {}",
-        fs::read_to_string(build_target.join("CMakeCache.txt"))
-            .expect("could not read CMakeCache.txt")
-    );
-    println!(
-        "cmake_install.cmake: {}",
-        fs::read_to_string(build_target.join("cmake_install.cmake"))
-            .expect("could not read cmake_install.cmake")
-    );
+    // println!(
+    //     "MAKEFILE: {}",
+    //     fs::read_to_string(build_target.join("makefile")).expect("could not read makefile")
+    // );
+    // println!(
+    //     "CMakeCache.txt: {}",
+    //     fs::read_to_string(build_target.join("CMakeCache.txt"))
+    //         .expect("could not read CMakeCache.txt")
+    // );
+    // println!(
+    //     "cmake_install.cmake: {}",
+    //     fs::read_to_string(build_target.join("cmake_install.cmake"))
+    //         .expect("could not read cmake_install.cmake")
+    // );
 
     Command::new("cmd")
         .current_dir(&dst.join(LIBCEC_SRC).join("project"))
@@ -372,8 +369,8 @@ fn main() {
     println!("cargo:rerun-if-env-changed=LIB");
     println!("cargo:rerun-if-env-changed=CL");
     println!("cargo:rerun-if-env-changed=_CL_");
-    println!("cargo:rerun-if-env-changed={CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE}");
-    println!("cargo:rerun-if-env-changed={CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE}");
+    println!("cargo:rerun-if-env-changed=CMAKE_C_COMPILER_LAUNCHER");
+    println!("cargo:rerun-if-env-changed=CMAKE_CXX_COMPILER_LAUNCHER");
 
     // Try discovery using pkg-config
     if !cfg!(feature = "vendored") {
