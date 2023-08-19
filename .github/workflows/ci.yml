@@ -19,7 +19,7 @@ jobs:
                 job:
                     - os: windows-latest
                       target: x86_64-pc-windows-msvc
-                      use-cross: false
+                      use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
                     - os: ubuntu-latest
@@ -130,24 +130,12 @@ jobs:
             - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
-            # /Zi (implies also /DEBUG) flag is removed as sccache is not supporting it
-            # Replacing with /Z7 (as in https://gitlab.kitware.com/cmake/cmake/-/issues/22529) is tricky as well
-            # as CMakeLists.txt are referencing .pdb files which would not be generated
-            # We therefore disable pdb generation alltogether, and disable installation of those in cmake
+            # Windows: Patch build files such that they are compatible with sccache
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Make libcec build compatible with sccache for faster CI
-              run: |                
-                patch vendor/support/windows/cmake/c-flag-overrides.cmake build/disable_debug_c_libcec.patch
-                patch vendor/src/platform/support/windows/cmake/c-flag-overrides.cmake build/disable_debug_c_platform.patch
-                patch vendor/support/windows/cmake/cxx-flag-overrides.cmake build/disable_debug_cxx_libcec.patch
-                patch vendor/src/platform/support/windows/cmake/cxx-flag-overrides.cmake build/disable_debug_cxx_platform.patch
-
-                # Remove pdb references from cmake
-                patch vendor/src/libcec/CMakeLists.txt build/disable_pdb_install_libcec.patch
-                patch vendor/src/platform/CMakeLists.txt build/disable_pdb_install_platform.patch
-
-                # experimental
-                patch vendor/CMakeLists.txt build/cmake_launcher.patch
+              shell: pwsh
+              run: |
+                .\scripts\ci\win_patch_sccache.ps1
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
@@ -156,16 +144,14 @@ jobs:
               # See https://github.com/orgs/community/discussions/26641
               # for discussion on the syntax
               run: |
-                echo "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
-                echo "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
             - if: runner.os != 'Windows'
               name: Sets additional sccache env vars for non-windows
               run: |
-                echo "LIBCEC_SYS_BUILD__CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-                echo "LIBCEC_SYS_BUILD__CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+                echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
                 echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
             - name: Cargo test
               env:

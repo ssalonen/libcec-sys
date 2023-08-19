@@ -112,15 +112,16 @@ fn compile_vendored_libcec(dst: &Path) {
         .define("SKIP_PYTHON_WRAPPER", "1")
         .env(P8_PLATFORM_ROOT_ENV, &platform_build);
 
-    if env::var("CI").is_ok() {
-        // Running in CI
-        if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_builder.define("CMAKE_C_COMPILER_LAUNCHER", c_launcher);
-        }
-        if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
-            cmake_builder.define("CMAKE_CXX_COMPILER_LAUNCHER", cxx_launcher);
-        }
-    }
+    // XXX: remove
+    // if env::var("CI").is_ok() {
+    //     // Running in CI
+    //     if let Ok(c_launcher) = env::var(CMAKE_C_COMPILER_LAUNCHER_ENV_VARIABLE) {
+    //         cmake_builder.define("CMAKE_C_COMPILER_LAUNCHER", c_launcher);
+    //     }
+    //     if let Ok(cxx_launcher) = env::var(CMAKE_CXX_COMPILER_LAUNCHER_ENV_VARIABLE) {
+    //         cmake_builder.define("CMAKE_CXX_COMPILER_LAUNCHER", cxx_launcher);
+    //     }
+    // }
     cmake_builder.build();
 
     println!("make libcec");

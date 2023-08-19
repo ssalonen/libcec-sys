@@ -7,6 +7,6 @@ RUN /cec_build_prep.sh
 COPY ./sccache.sh /
 RUN /sccache.sh x86_64-pc-windows-msvc
 
-ENV RUSTC_WRAPPER="/usr/bin/sccache"
-ENV CMAKE_C_COMPILER_LAUNCHER="/usr/bin/sccache"
-ENV CMAKE_CXX_COMPILER_LAUNCHER="/usr/bin/sccache"
+ENV RUSTC_WRAPPER="sccache.exe"
+ENV CMAKE_C_COMPILER_LAUNCHER="sccache.exe"
+ENV CMAKE_CXX_COMPILER_LAUNCHER="sccache.exe"
