@@ -38,7 +38,7 @@ sudo su
 apt-get remove libcec6
 
 # Install libcec build dependencies, but not libcec itself
-apt-get install libp8-platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
+apt-get install libp8-platform-dev libp8-platform2 cmake libudev-dev libxrandr-dev python3-dev swig git
 
 # Build libcec 6.0.2 with RPI CEC driver enabled
 rm -rf /tmp/libcec-build-tmp
