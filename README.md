@@ -35,7 +35,7 @@ Adapted from [libcec documentation](https://github.com/Pulse-Eight/libcec/blob/m
 apt-get remove libcec6
 
 # Install libcec build dependencies, but not libcec itself
-sudo apt-get install libp8 platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
+sudo apt-get install libp8-platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
 
 # Build libcec 6.0.2 with RPI CEC driver enabled
 sudo rm -rf /tmp/libcec-build-tmp
