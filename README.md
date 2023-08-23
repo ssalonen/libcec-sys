@@ -31,25 +31,31 @@ If you are using Raspberry Pi OS and want to use the built-in HDMI port CEC, you
 Adapted from [libcec documentation](https://github.com/Pulse-Eight/libcec/blob/master/docs/README.raspberrypi.md):
 
 ```sh
+# Become superuser
+sudo su
+
 # Remove libcec (since we are going to build it ourselves)
 apt-get remove libcec6
 
 # Install libcec build dependencies, but not libcec itself
-sudo apt-get install libp8-platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
+apt-get install libp8-platform-dev libp8-platform cmake libudev-dev libxrandr-dev python3-dev swig git
 
 # Build libcec 6.0.2 with RPI CEC driver enabled
-sudo rm -rf /tmp/libcec-build-tmp
-sudo mkdir /tmp/libcec-build-tmp
+rm -rf /tmp/libcec-build-tmp
+mkdir /tmp/libcec-build-tmp
 cd /tmp/libcec-build-tmp
-sudo git clone --recursive https://github.com/Pulse-Eight/libcec.git
+git clone --recursive https://github.com/Pulse-Eight/libcec.git
 cd libcec
-sudo git checkout libcec-6.0.2
-sudo mkdir build
+git checkout libcec-6.0.2
+mkdir build
 cd build
-sudo cmake -DRPI_INCLUDE_DIR=/opt/vc/include -DRPI_LIB_DIR=/opt/vc/lib ..
-sudo make -j4
-sudo make install
-sudo ldconfig
+cmake -DRPI_INCLUDE_DIR=/opt/vc/include -DRPI_LIB_DIR=/opt/vc/lib ..
+make -j4
+make install
+ldconfig
+
+# Leave superuser context
+exit
 ```
 
 ### Windows
