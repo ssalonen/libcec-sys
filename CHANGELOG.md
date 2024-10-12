@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 4.0.4
+
+- linting fixes for check-cfg
+
 ## 4.0.3
 
 - build script to switch to `fs_extra`, `dircpy` seemed to have odd warnings (unused variables)
