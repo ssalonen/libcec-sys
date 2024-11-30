@@ -57,4 +57,4 @@ runs:
       run: gh pr create -B master -H bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }} --title 'Update libcec${{ inputs.libcec_major_version }} bindings ${{ inputs.target }}' --body 'Created by Github action'
       shell: pwsh
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
