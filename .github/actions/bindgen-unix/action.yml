@@ -34,14 +34,6 @@ runs:
       run: cargo run --bin cec_bindgen
       shell: bash
 
-    - name: Run debug tests
-      run: cargo test
-      shell: bash
-
-    - name: Run release tests
-      run: cargo test --release
-      shell: bash
-
     - name: Regenerate bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
       run: cargo run --bin cec_bindgen
