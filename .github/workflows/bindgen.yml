@@ -18,9 +18,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        repository: ${{ github.event.pull_request.head.repo.full_name }}
-        ref: ${{ github.event.pull_request.head.ref }}
-
+        
       - name: Bindgen windows
         uses: ./.github/actions/bindgen-windows
         with:
