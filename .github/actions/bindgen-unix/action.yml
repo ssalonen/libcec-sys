@@ -47,12 +47,12 @@ runs:
       uses: EndBug/add-and-commit@v9
       with:
         add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
-        message: Update ${{ inputs.target }} libcec bindings
+        message: Update ${{ inputs.target }} libcec${{ inputs.libcec_major_version }} bindings
         pathspec_error_handling: exitImmediately
         pull: --rebase --autostash
-        new_branch: bindings_${{ inputs.target }}
+        new_branch: bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}
 
     - name: Create pull request
-      run: gh pr create -B master -H bindings_${{ inputs.target }} --title 'Update bindings ${{ inputs.target }}' --body 'Created by Github action'
+      run: gh pr create -B master -H bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }} --title 'Update libcec${{ inputs.libcec_major_version }} bindings ${{ inputs.target }}' --body 'Created by Github action'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
