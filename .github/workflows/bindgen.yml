@@ -46,6 +46,7 @@ jobs:
     strategy:
       matrix:
         libcec_major_version: ["4", "5", "6"]
+        target_triplet: ["x86_64-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "arm-unknown-linux-gnueabi"]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -53,5 +54,5 @@ jobs:
       - name: Bindgen unix
         uses: ./.github/actions/bindgen-unix
         with:
-          target: x86_64-unknown-linux-gnu
+          target: ${{ matrix.target_triplet }}
           libcec_major_version: ${{ matrix.libcec_major_version }}

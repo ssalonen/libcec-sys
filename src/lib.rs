@@ -1,6 +1,5 @@
-
 mod bindings {
-    
+
     #![allow(non_upper_case_globals, non_camel_case_types, non_snake_case)]
     cfg_if::cfg_if! {
         if #[cfg(all(abi4, target_os = "windows", target_arch = "x86_64", target_env = "msvc"))] {
@@ -9,7 +8,7 @@ mod bindings {
             include!("lib_abi5_x86_64-pc-windows-msvc.rs");
         } else if #[cfg(all(abi6, target_os = "windows", target_arch = "x86_64", target_env = "msvc"))] {
             include!("lib_abi6_x86_64-pc-windows-msvc.rs");
-        } 
+        }
         // Mac not tested/supported
         // else if #[cfg(all(abi4, target_os = "macos", target_arch = "aarch64"))] {
         //     include!("lib_abi4_aarch64-apple-darwin.rs");
@@ -17,21 +16,27 @@ mod bindings {
         //     include!("lib_abi5_aarch64-apple-darwin.rs");
         // } else if #[cfg(all(abi6, target_os = "macos", target_arch = "aarch64"))] {
         //     include!("lib_abi6_aarch64-apple-darwin.rs");
-        // } 
+        // }
         else if #[cfg(all(abi4, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi4_x86_64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi5, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi5_x86_64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi6_x86_64-unknown-linux-gnu.rs");
-        } else {
+        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
+            include!("lib_abi4_armv7-unknown-linux-gnu.rs");
+        } else if #[cfg(all(abi5, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
+            include!("lib_abi5_armv7-unknown-linux-gnu.rs");
+        } else if #[cfg(all(abi6, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
+            include!("lib_abi6_armv7-unknown-linux-gnu.rs");
+        }
+        else {
             compile_error!("unsupported platform");
         }
     }
 }
 
 pub use crate::bindings::*;
-
 
 #[cfg(test)]
 mod tests {
