@@ -28,14 +28,11 @@ jobs:
           target: x86_64-pc-windows-msvc
           libcec_major_version: ${{ matrix.libcec_major_version }}
 
-      - name: Create pull request
-        run: gh pr create -B master -H bindings_abi${{ matrix.libcec_major_version }}_x86_64-pc-windows-msvc --title 'Update libcec${{ matrix.libcec_major_version }} bindings x86_64-pc-windows-msvc' --body 'Created by Github action'
-        shell: pwsh
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 #  bindgen-macos:
 #    runs-on: macos-latest
+#    strategy:
+#      matrix:
+#        libcec_major_version: ["4", "5", "6"]
 #    steps:
 #      - name: Checkout repo
 #        uses: actions/checkout@v4
@@ -44,6 +41,7 @@ jobs:
 #        uses: ./.github/actions/bindgen-unix
 #        with:
 #          target: aarch64-apple-darwin
+#          libcec_major_version: ${{ matrix.libcec_major_version }}
 
   bindgen-linux:
     runs-on: ubuntu-latest
