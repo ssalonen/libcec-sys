@@ -49,7 +49,6 @@ runs:
         add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
         message: Update ${{ inputs.target }} libcec${{ inputs.libcec_major_version }} bindings
         pathspec_error_handling: exitImmediately
-        pull: --rebase --autostash
         push: origin bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }} --set-upstream --force
         new_branch: bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}
 
