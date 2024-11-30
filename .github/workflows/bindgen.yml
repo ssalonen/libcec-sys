@@ -8,7 +8,7 @@ on:
     branches: [main, win-improvements]
 
 jobs:
-  test-windows:
+  bindgen-windows:
     runs-on: windows-latest
     env:
       LIBCLANG_PATH: 'C:\Program Files\LLVM\lib'
@@ -21,7 +21,7 @@ jobs:
         with:
           target: x86_64-pc-windows-msvc
 
-#  test-macos:
+#  bindgen-macos:
 #    runs-on: macos-latest
 #    steps:
 #      - name: Checkout repo
@@ -32,7 +32,7 @@ jobs:
 #        with:
 #          target: aarch64-apple-darwin
 
-  test-linux:
+  bindgen-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

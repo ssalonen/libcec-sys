@@ -1,4 +1,4 @@
-name: test-owl-windows
+name: bindgen-windows
 description: Generates libcec bindings for Windows environments.
 
 inputs:

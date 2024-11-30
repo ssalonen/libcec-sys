@@ -1,4 +1,4 @@
-name: test-owl-unix
+name: bindgen-unix
 description: Generates libcec bindings for nix environments.
 
 inputs:
