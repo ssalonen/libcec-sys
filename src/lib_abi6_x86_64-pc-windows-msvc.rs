@@ -238,7 +238,7 @@ pub struct libcec_configuration {
     pub cecVersion: cec_version,
     #[doc = "< type of the CEC adapter that we're connected to. added in 1.8.2"]
     pub adapterType: cec_adapter_type,
-    #[doc = "< key code that initiates combo keys. defaults to CEC_USER_CONTROL_CODE_F1_BLUE. CEC_USER_CONTROL_CODE_UNKNOWN to disable. added in 2.0.5"]
+    #[doc = "< key code that initiates combo keys. defaults to CEC_USER_CONTROL_CODE_STOP. CEC_USER_CONTROL_CODE_UNKNOWN to disable. added in 2.0.5"]
     pub comboKey: cec_user_control_code,
     #[doc = "< timeout until the combo key is sent as normal keypress"]
     pub iComboKeyTimeoutMs: u32,
@@ -342,6 +342,7 @@ pub const cec_version__1_2A: cec_version = 2;
 pub const cec_version__1_3: cec_version = 3;
 pub const cec_version__1_3A: cec_version = 4;
 pub const cec_version__1_4: cec_version = 5;
+pub const cec_version__2_0: cec_version = 6;
 pub const cec_channel_identifier_CEC_CHANNEL_NUMBER_FORMAT_MASK: cec_channel_identifier = -67108864;
 pub const cec_channel_identifier_CEC_1_PART_CHANNEL_NUMBER: cec_channel_identifier = 67108864;
 pub const cec_channel_identifier_CEC_2_PART_CHANNEL_NUMBER: cec_channel_identifier = 134217728;
@@ -1749,11 +1750,12 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
     pub fn libcec_close(connection: libcec_connection_t);
     pub fn libcec_clear_configuration(configuration: *mut libcec_configuration);
-    pub fn libcec_enable_callbacks(
+    pub fn libcec_set_callbacks(
         connection: libcec_connection_t,
-        cbParam: *mut ::std::os::raw::c_void,
         callbacks: *mut ICECCallbacks,
+        cbParam: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int;
+    pub fn libcec_disabled_callbacks(connection: libcec_connection_t) -> ::std::os::raw::c_int;
     pub fn libcec_find_adapters(
         connection: libcec_connection_t,
         deviceList: *mut cec_adapter,
@@ -1897,13 +1899,7 @@ extern "C" {
         connection: libcec_connection_t,
         configuration: *mut libcec_configuration,
     ) -> ::std::os::raw::c_int;
-    pub fn libcec_can_persist_configuration(
-        connection: libcec_connection_t,
-    ) -> ::std::os::raw::c_int;
-    pub fn libcec_persist_configuration(
-        connection: libcec_connection_t,
-        configuration: *mut libcec_configuration,
-    ) -> ::std::os::raw::c_int;
+    pub fn libcec_can_save_configuration(connection: libcec_connection_t) -> ::std::os::raw::c_int;
     pub fn libcec_set_configuration(
         connection: libcec_connection_t,
         configuration: *const libcec_configuration,
