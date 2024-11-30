@@ -26,7 +26,7 @@ runs:
       id: check_bindings_exist
       shell: bash
       run: |
-        if [ -f 'src/lib_${{ inputs.target }}.rs'  ]; then
+        if [ -f 'src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs'  ]; then
           echo 'bindings_exist=false' >> "$GITHUB_OUTPUT"
         else
           echo 'bindings_exist=true' >> "$GITHUB_OUTPUT"
@@ -46,7 +46,7 @@ runs:
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
       uses: EndBug/add-and-commit@v9
       with:
-        add: src/lib_${{ inputs.target }}.rs
+        add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
         message: Update ${{ inputs.target }} libcec bindings
         pathspec_error_handling: exitImmediately
         pull: --rebase --autostash

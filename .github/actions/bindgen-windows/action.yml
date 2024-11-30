@@ -27,7 +27,7 @@ runs:
       id: check_bindings_exist
       shell: pwsh
       run: |
-        if (Test-Path -path 'src\lib_${{ inputs.target }}.rs' -PathType Leaf) {
+        if (Test-Path -path 'src\lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs' -PathType Leaf) {
           'bindings_exist=true' >> $env:GITHUB_OUTPUT
         } else {
           'bindings_exist=false' >> $env:GITHUB_OUTPUT
@@ -47,7 +47,7 @@ runs:
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
       uses: EndBug/add-and-commit@v9
       with:
-        add: src/lib_${{ inputs.target }}.rs
+        add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
         message: Update ${{ inputs.target }} libcec bindings
         pathspec_error_handling: exitImmediately
         pull: --rebase --autostash
