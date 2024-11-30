@@ -10,8 +10,6 @@ on:
 jobs:
   bindgen-windows:
     runs-on: windows-latest
-    permissions:
-      pull-requests: write
     strategy:
       matrix:
         libcec_major_version: ["4", "5", "6"]
@@ -49,8 +47,6 @@ jobs:
 
   bindgen-linux:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     strategy:
       matrix:
         libcec_major_version: ["4", "5", "6"]
@@ -63,9 +59,3 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
           libcec_major_version: ${{ matrix.libcec_major_version }}
-
-      - name: Create pull request
-        run: gh pr create -B master -H bindings_abi${{ matrix.libcec_major_version }}_x86_64-unknown-linux-gnu --title 'Update libcec${{ matrix.libcec_major_version }} bindings x86_64-unknown-linux-gnu' --body 'Created by Github action'
-        shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
