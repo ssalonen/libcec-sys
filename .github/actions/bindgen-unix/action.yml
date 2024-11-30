@@ -52,8 +52,3 @@ runs:
         push: origin bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }} --set-upstream --force
         new_branch: bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}
 
-    - name: Create pull request
-      run: gh pr create -B master -H bindings_abi${{ inputs.libcec_major_version }}_${{ inputs.target }} --title 'Update libcec${{ inputs.libcec_major_version }} bindings ${{ inputs.target }}' --body 'Created by Github action'
-      shell: bash
-      env:
-          GITHUB_TOKEN: ${{ github.token }}
