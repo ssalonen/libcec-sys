@@ -3,9 +3,7 @@ name: Generate bindings
 permissions:
   contents: write
 
-on:
-  push:
-    branches: [main, win-improvements]
+on: workflow_dispatch
 
 jobs:
   bindgen-windows:

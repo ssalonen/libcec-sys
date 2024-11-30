@@ -4,3 +4,5 @@ Follows the license of opeik/owl, "This project is licensed under GPLv2."
 .github/bindgen-unix
 .github/bindgen-windows
 .github/workflows/bindgen.yml
+cec_bindgen
+cec_bootstrap
