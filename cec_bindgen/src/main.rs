@@ -133,7 +133,6 @@ fn run_bindgen<P: AsRef<Path>>(src_path: P, lib_path: P, out_path: P) -> Result<
         .allowlist_type(ALLOW_REGEX)
         .allowlist_function(ALLOW_REGEX)
         .allowlist_var(ALLOW_REGEX)
-        .prepend_enum_name(false)
         .sort_semantically(true)
         .merge_extern_blocks(true)
         .derive_default(true)
