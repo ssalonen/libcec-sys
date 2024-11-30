@@ -23,13 +23,20 @@ mod bindings {
             include!("lib_abi5_x86_64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi6_x86_64-unknown-linux-gnu.rs");
-        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
-            include!("lib_abi4_armv7-unknown-linux-gnu.rs");
-        } else if #[cfg(all(abi5, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
-            include!("lib_abi5_armv7-unknown-linux-gnu.rs");
-        } else if #[cfg(all(abi6, target_os = "linux", target_arch = "armv7", target_env = "gnu"))] {
-            include!("lib_abi6_armv7-unknown-linux-gnu.rs");
+        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "armv7", target_env = "gnueabihf"))] {
+            include!("lib_abi4_armv7-unknown-linux-gnueabihf.rs");
+        } else if #[cfg(all(abi5, target_os = "linux", target_arch = "armv7", target_env = "gnueabihf"))] {
+            include!("lib_abi5_armv7-unknown-linux-gnueabihf.rs");
+        } else if #[cfg(all(abi6, target_os = "linux", target_arch = "armv7", target_env = "gnueabihf"))] {
+            include!("lib_abi6_armv7-unknown-linux-gnueabihf.rs");
+        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "arm", target_env = "gnueabi"))] {
+            include!("lib_abi4_arm-unknown-linux-gnueabi.rs");
+        } else if #[cfg(all(abi5, target_os = "linux", target_arch = "arm", target_env = "gnueabi"))] {
+            include!("lib_abi5_arm-unknown-linux-gnueabi.rs");
+        } else if #[cfg(all(abi6, target_os = "linux", target_arch = "arm", target_env = "gnueabi"))] {
+            include!("lib_abi6_arm-unknown-linux-gnueabi.rs");
         }
+
         else {
             compile_error!("unsupported platform");
         }
