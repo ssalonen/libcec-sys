@@ -1,6 +1,10 @@
+[workspace]
+resolver = "2"
+members = [".", "cec_bindgen"]
+
 [package]
 name = 'libcec-sys'
-version = "4.0.5-alpha.0"
+version = "5.0.1-alpha.0"
 authors = ['Sami Salonen']
 edition = '2021'
 license = 'GPL-2.0'
@@ -24,6 +28,7 @@ build = 'build/build.rs'
 links = 'cec'
 
 [dependencies]
+cfg-if = "1"
 
 [build-dependencies]
 cmake = "0.1.48"

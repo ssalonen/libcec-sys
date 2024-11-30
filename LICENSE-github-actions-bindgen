@@ -1,0 +1,8 @@
+The below files are adapted from https://github.com/opeik/owl/commit/c01324961e6951cdaf4ccd6820c00cab05304611
+Follows the license of opeik/owl, "This project is licensed under GPLv2."
+
+.github/bindgen-unix
+.github/bindgen-windows
+.github/workflows/bindgen.yml
+cec_bindgen
+cec_bootstrap

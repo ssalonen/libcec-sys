@@ -1,0 +1,57 @@
+name: Generate bindings
+
+permissions:
+  contents: write
+
+on: workflow_dispatch
+
+jobs:
+  bindgen-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        libcec_major_version: ["4", "5", "6"]
+    env:
+      LIBCLANG_PATH: 'C:\Program Files\LLVM\lib'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.push.repository.full_name }}
+          ref: ${{ github.event.push.ref }}
+
+      - name: Bindgen windows
+        uses: ./.github/actions/bindgen-windows
+        with:
+          target: x86_64-pc-windows-msvc
+          libcec_major_version: ${{ matrix.libcec_major_version }}
+
+#  bindgen-macos:
+#    runs-on: macos-latest
+#    strategy:
+#      matrix:
+#        libcec_major_version: ["4", "5", "6"]
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@v4
+#
+#      - name: Bindgen macOS (Apple silicon)
+#        uses: ./.github/actions/bindgen-unix
+#        with:
+#          target: aarch64-apple-darwin
+#          libcec_major_version: ${{ matrix.libcec_major_version }}
+
+  bindgen-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        libcec_major_version: ["4", "5", "6"]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Bindgen unix
+        uses: ./.github/actions/bindgen-unix
+        with:
+          target: x86_64-unknown-linux-gnu
+          libcec_major_version: ${{ matrix.libcec_major_version }}

@@ -1,0 +1,54 @@
+name: bindgen-windows
+description: Generates libcec bindings for Windows environments.
+
+inputs:
+  target:
+    description: The target triple being tested.
+    required: true
+  libcec_major_version:
+    description: Libcec major version to generate bindings for
+    required: true
+
+
+runs:
+  using: composite
+  steps:
+    - name: Installing Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          profile: default
+          override: true
+
+    - name: Setup Rust cache
+      uses: Swatinem/rust-cache@v2
+
+    - name: Check if target bindings exist
+      id: check_bindings_exist
+      shell: pwsh
+      run: |
+        if (Test-Path -path 'src\lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs' -PathType Leaf) {
+          'bindings_exist=true' >> $env:GITHUB_OUTPUT
+        } else {
+          'bindings_exist=false' >> $env:GITHUB_OUTPUT
+        }
+
+    - name: Generate missing bindings
+      if: ${{ ! steps.check_bindings_exist.outputs.bindings_exist }}
+      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+      shell: pwsh
+
+    - name: Regenerate bindings
+      if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
+      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+      shell: pwsh
+
+    - name: Commit bindings
+      if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
+        message: Update ${{ inputs.target }} libcec${{ inputs.libcec_major_version }} bindings
+        pathspec_error_handling: exitImmediately
+        pull: --rebase --autostash
+
