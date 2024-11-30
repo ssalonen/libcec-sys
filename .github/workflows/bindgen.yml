@@ -1,0 +1,44 @@
+name: Generate bindings
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    env:
+      LIBCLANG_PATH: 'C:\Program Files\LLVM\lib'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Bindgen windows
+        uses: ./.github/actions/bindgen-windows
+        with:
+          target: x86_64-pc-windows-msvc
+
+#  test-macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: Checkout repo
+#        uses: actions/checkout@v4
+#
+#      - name: Bindgen macOS (Apple silicon)
+#        uses: ./.github/actions/bindgen-unix
+#        with:
+#          target: aarch64-apple-darwin
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Bindgen unix
+        uses: ./.github/actions/bindgen-unix
+        with:
+          target: x86_64-unknown-linux-gnu
