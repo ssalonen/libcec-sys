@@ -1,12 +1,11 @@
-#![feature(let_chains)]
-
+use std::io::{Cursor};
 use std::path::{Path, PathBuf};
 
 use bcmp::AlgoSpec;
 use bindgen::callbacks::ParseCallbacks;
-use cec_bootstrap::{fetch_libcec, BuildKind};
 use clap::Parser;
 use color_eyre::eyre::{Context, Result};
+use regex::{self, Regex};
 
 #[derive(clap::Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -14,7 +13,87 @@ struct Args {
     #[arg(short, long, default_value = "cec_bindgen")]
     src_path: String,
     #[arg(short, long)]
+    major_version: String,
+    #[arg(short, long)]
     dest_path: Option<String>,
+}
+
+struct CecVersion<'a> {
+    major: u32,
+    minor: u32,
+    patch: u32,
+    git_tag: &'a str,
+}
+
+impl From<&str> for CecVersion<'_> {
+    fn from(major_version: &str) -> Self {
+        match major_version {
+            "4" => Self {
+                major: 4,
+                minor: 0,
+                patch: 5,
+                git_tag: "libcec-4.0.5",
+            },
+            "5" => Self {
+                major: 5,
+                minor: 0,
+                patch: 0,
+                git_tag: "libcec-5.0.0",
+            },
+            "6" => Self {
+                major: 6,
+                minor: 0,
+                patch: 2,
+                git_tag: "libcec-5.0.0",
+            },
+            _ => panic!("Unexpected major version"),
+        }
+    }
+}
+fn create_version_h<P: AsRef<Path>>(path: P, libcec_version_info: CecVersion<'_>) {
+    let version_h_in = path.as_ref().join("include").join("version.h.in");
+    let version_h = path.as_ref().join("include").join("version.h");
+
+    let mut version_h_contents =
+        std::fs::read_to_string(version_h_in).expect("Failed to read version.h.in");
+
+    let re = Regex::new(r"@LIBCEC_VERSION_(MAJOR|MINOR|PATCH)@").unwrap();
+    version_h_contents = re
+        .replace_all(
+            &version_h_contents,
+            |captures: &regex::Captures| match &captures[0] {
+                "@LIBCEC_VERSION_MAJOR@" => libcec_version_info.major.to_string(),
+                "@LIBCEC_VERSION_MINOR@" => libcec_version_info.minor.to_string(),
+                "@LIBCEC_VERSION_PATCH@" => libcec_version_info.patch.to_string(),
+                _ => unreachable!(),
+            },
+        )
+        .into();
+
+    std::fs::write(version_h, version_h_contents).expect("Failed to create version.h");
+}
+
+fn fetch_libcec_source<P: AsRef<Path>>(path: P, major_version: &str) -> Result<()> {
+    let libcec_version_info: CecVersion = major_version.into();
+    let url = format!(
+        "https://github.com/Pulse-Eight/libcec/archive/refs/tags/{}.zip",
+        &libcec_version_info.git_tag
+    );
+    dbg!(major_version, &url);
+
+    if !path.as_ref().exists() {
+        let file = reqwest::blocking::get(&url)?
+            .bytes()
+            .context(format!("failed to download libcec from {url}"))?;
+        zip_extract::extract(Cursor::new(file), path.as_ref(), true).context(format!(
+            "failed to extract libcec archive to `{}`",
+            path.as_ref().to_string_lossy()
+        ))?;
+    }
+
+    create_version_h(path, libcec_version_info);
+
+    Ok(())
 }
 
 fn main() -> Result<()> {
@@ -27,13 +106,17 @@ fn main() -> Result<()> {
     let lib_path = build_path.join("libcec");
     let out_path = PathBuf::from(match args.dest_path {
         Some(x) => x,
-        None => format!("cec_sys/src/bindings/{}.rs", target_lexicon::HOST),
+        None => format!(
+            "src/lib_abi{}_{}.rs",
+            &args.major_version,
+            target_lexicon::HOST
+        ),
     });
 
     dbg!(&lib_path, &out_path, &tmp_dir, target_lexicon::HOST);
 
     // Only the headers are used, so fetch the release version since it's smaller.
-    fetch_libcec(&lib_path, BuildKind::Release).context("failed to fetch libcec")?;
+    fetch_libcec_source(&lib_path, &args.major_version).context("failed to fetch libcec source")?;
     run_bindgen(&src_path, &lib_path, &out_path).context("failed to run bindgen")?;
     dbg!(&out_path);
 

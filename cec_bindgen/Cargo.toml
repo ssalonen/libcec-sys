@@ -11,6 +11,6 @@ clap = { version = "4", features = ["derive"] }
 color-eyre = "0.6"
 target-lexicon = "0.12"
 tempfile = "3"
-
-[lints]
-workspace = true
+zip-extract = "0.1"
+reqwest = { version = "0.12", features = ["blocking"] }
+regex = "1.11.1"

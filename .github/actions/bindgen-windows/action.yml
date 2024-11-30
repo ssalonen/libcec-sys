@@ -5,6 +5,10 @@ inputs:
   target:
     description: The target triple being tested.
     required: true
+  libcec_major_version:
+    description: Libcec major version to generate bindings for
+    required: true
+
 
 runs:
   using: composite
@@ -31,12 +35,12 @@ runs:
 
     - name: Generate missing bindings
       if: ${{ ! steps.check_bindings_exist.outputs.bindings_exist }}
-      run: cargo run --bin cec_bindgen
+      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
       shell: pwsh
 
     - name: Regenerate bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
-      run: cargo run --bin cec_bindgen
+      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
       shell: pwsh
 
     - name: Commit bindings

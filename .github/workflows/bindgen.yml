@@ -10,6 +10,9 @@ on:
 jobs:
   bindgen-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        libcec_major_version: ["4", "5", "6"]
     env:
       LIBCLANG_PATH: 'C:\Program Files\LLVM\lib'
     steps:
@@ -20,6 +23,7 @@ jobs:
         uses: ./.github/actions/bindgen-windows
         with:
           target: x86_64-pc-windows-msvc
+          major_version: ${{ matrix.libcec_major_version }}
 
 #  bindgen-macos:
 #    runs-on: macos-latest
@@ -34,6 +38,9 @@ jobs:
 
   bindgen-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        libcec_major_version: ["4", "5", "6"]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -42,3 +49,4 @@ jobs:
         uses: ./.github/actions/bindgen-unix
         with:
           target: x86_64-unknown-linux-gnu
+          major_version: ${{ matrix.libcec_major_version }}

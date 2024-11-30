@@ -1,3 +1,7 @@
+[workspace]
+resolver = "2"
+members = [".", "cec_bindgen"]
+
 [package]
 name = 'libcec-sys'
 version = "4.0.5-alpha.0"
