@@ -50,3 +50,9 @@ runs:
         message: Update ${{ inputs.target }} libcec bindings
         pathspec_error_handling: exitImmediately
         pull: --rebase --autostash
+        new_branch: bindings_${{ inputs.target }}
+
+    - name: Create pull request
+      run: gh pr create -B master -H bindings_${{ inputs.target }} --title 'Update bindings ${{ inputs.target }}' --body 'Created by Github action'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
