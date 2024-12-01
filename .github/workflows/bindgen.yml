@@ -46,7 +46,8 @@ jobs:
     strategy:
       matrix:
         libcec_major_version: ["4", "5", "6"]
-        target_triplet: ["x86_64-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "arm-unknown-linux-gnueabi"]
+        #target_triplet: ["x86_64-unknown-linux-gnu", "armv7-unknown-linux-gnueabihf", "arm-unknown-linux-gnueabi"]
+        target_triplet: ["armv7-unknown-linux-gnueabihf"]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
