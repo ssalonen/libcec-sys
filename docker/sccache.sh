@@ -26,7 +26,7 @@ main() {
     local td
     local url="https://github.com/mozilla/sccache"
     triple="${1}"
-
+    
     install_packages unzip tar
 
     # Download our package, then install our binary.

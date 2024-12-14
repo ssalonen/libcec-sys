@@ -1,6 +1,5 @@
 # sha matching 2024-12-13
 FROM ghcr.io/cross-rs/arm-unknown-linux-gnueabi:main@sha256:5cf73af8e84f3f65e8c49211ec56aad74dc7405251dac12b1eb61ccce9b338f9
 ARG DEBIAN_FRONTEND=noninteractive
-
 COPY cec_build_prep.sh /
 RUN /cec_build_prep.sh

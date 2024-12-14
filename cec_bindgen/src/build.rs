@@ -10,11 +10,11 @@ use regex::{self, Regex};
 #[derive(clap::Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(short, long, env, default_value = "cec_bindgen")]
+    #[arg(short, env, default_value = "cec_bindgen")]
     src_path: String,
-    #[arg(short, long, env)]
+    #[arg(short, env)]
     major_version: String,
-    #[arg(short, long, env)]
+    #[arg(short, env)]
     dest_path: Option<String>,
 }
 

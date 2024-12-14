@@ -1,11 +1,7 @@
 # sha matching 2024-12-13
 FROM ghcr.io/cross-rs/x86_64-unknown-linux-musl:main@sha256:156254090800669abbf7ae60a10e7371d96582982b5128c9714bd6f5ee5181bb
-
-
 ARG DEBIAN_FRONTEND=noninteractive
-
 COPY ./cec_build_prep.sh /
 RUN /cec_build_prep.sh
-
 COPY ./sccache.sh /
 RUN /sccache.sh x86_64-unknown-linux-musl

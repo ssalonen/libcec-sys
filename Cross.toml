@@ -16,6 +16,7 @@ passthrough = [
     "MAJOR_VERSION",
     "SRC_PATH",
     "DEST_PATH",
+    "RUST_BACKTRACE",
 ]
 
 [target.arm-unknown-linux-gnueabi]
