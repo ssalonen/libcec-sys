@@ -83,13 +83,13 @@ fn compile_vendored_platform(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     // let tmp_libcec_src = dst.join(LIBCEC_SRC);
     fs::create_dir_all(&platform_build).unwrap();
-    println!("cmake platform");
+    println!("==============================================================\ncmake platform\n==============================================================");
     cmake::Config::new(dst.join(LIBCEC_SRC).join("src").join("platform"))
         .out_dir(&platform_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
         .build();
 
-    println!("make platform");
+    println!("==============================================================\nmake platform\n==============================================================");
     Command::new("make")
         .current_dir(&platform_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
@@ -102,15 +102,32 @@ fn compile_vendored_libcec(dst: &Path) {
     let platform_build = dst.join(PLATFORM_BUILD);
     let libcec_build = dst.join(LIBCEC_BUILD);
     fs::create_dir_all(&libcec_build).unwrap();
-    println!("cmake libcec");
+    println!("==============================================================\ncmake libcec\n==============================================================");
     let mut cmake_builder = cmake::Config::new(dst.join(LIBCEC_SRC));
+    dbg!(&platform_build);
     cmake_builder
+        .very_verbose(true)
         .out_dir(&libcec_build)
         .define("SKIP_PYTHON_WRAPPER", "1")
+        // For some reason, with arm architectures we need to manually define
+        // - p8-platform_DIR (folder with p8-platform-config.cmake), 
+        // - p8-platform_INCLUDE_DIRS (folder with include), 
+        // - p8-platform_LIBRARY (location to p8-platform .a archive file)
+        //
+        // Otherwise we get error that p8-platform-config.cmake.
+        //
+        // With x86_64-unknown-linux-gnu platform this work without hassle 
+        // using the p8-platform_ROOT hint
+        .define("p8-platform_DIR", &platform_build.join("build"))
+        .define("p8-platform_INCLUDE_DIRS", &platform_build.join("include"))
+        .define(
+            "p8-platform_LIBRARY",
+            &platform_build.join("build").join("libp8-platform.a"),
+        )
         .env(P8_PLATFORM_ROOT_ENV, &platform_build);
     cmake_builder.build();
 
-    println!("make libcec");
+    println!("==============================================================\nmake libcec\n==============================================================");
     Command::new("make")
         .current_dir(&libcec_build)
         .env(P8_PLATFORM_ROOT_ENV, &platform_build)
@@ -167,7 +184,7 @@ fn prepare_windows_libcec_cmake_opts(dst_src: &Path) {
         "-DCMAKE_BUILD_TYPE=%BUILDTYPE% ^",
         &format!("-DCMAKE_BUILD_TYPE=%BUILDTYPE% -DSKIP_PYTHON_WRAPPER=1 ^"),
     );
-    println!("--- generate.cmd start ---\n{new}\n--- generate.cmd end ---\n");
+    println!("==============================================================\n--- generate.cmd start ---\n==============================================================\n{new}\n==============================================================\n--- generate.cmd end ---\n==============================================================\n");
     // Content should have changed
     assert!(new.contains(" -DSKIP_PYTHON_WRAPPER=1 "));
     assert_ne!(new, contents);
@@ -260,10 +277,10 @@ fn link_libcec(dst: &Path) {
 fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
     let compiler = cc::Build::new().get_compiler();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
-    println!("\n\nUsing 'smoke test' to find out if libcec is installed");
+    println!("\n\n==============================================================\nUsing 'smoke test' to find out if libcec is installed\n==============================================================");
     for abi in CEC_MAJOR_VERSIONS {
         let mut cc_cmd = compiler.to_command();
-        println!("\n\nSmoke testing with libcec major {}", abi.major());
+        println!("\n\n==============================================================\nSmoke testing with libcec major {}\n==============================================================", abi.major());
         cc_cmd.arg(format!("build/smoke_abi{}.c", abi.major()));
         if cfg!(windows) {
             cc_cmd
@@ -281,13 +298,13 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
                 return Ok(abi);
             }
         }
-        println!("smoke_abi{} -> fail: {:?}", abi.major(), cc_cmd.output());
+        println!("==============================================================\nsmoke_abi{} -> fail: {:?}\n==============================================================\n", abi.major(), cc_cmd.output());
     }
     Err(())
 }
 
 fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
-    println!("\n\nUsing pkg-config to find out if libcec is installed");
+    println!("\n\n==============================================================\nUsing pkg-config to find out if libcec is installed\n==============================================================");
     for abi in CEC_MAJOR_VERSIONS {
         println!("\n\npkg-config with libcec major {}", abi.major());
         let pkg_config_result = pkg_config::Config::new()
@@ -308,7 +325,7 @@ fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
 }
 
 fn compile_vendored() {
-    println!("\n\nBuilding vendored libcec");
+    println!("\n\n==============================================================\nBuilding vendored libcec\n==============================================================");
     println!("cargo:lib_vendored=true");
 
     let cmakelists = format!("{LIBCEC_SRC}/CMakeLists.txt");
@@ -327,7 +344,7 @@ fn compile_vendored() {
     println!("cargo:rustc-cfg=abi{abi}");
 
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
-    println!("Building libcec from local source");
+
     prepare_vendored_build(&dst);
     compile_vendored_platform(&dst);
     compile_vendored_libcec(&dst);
