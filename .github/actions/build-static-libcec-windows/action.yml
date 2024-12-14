@@ -81,8 +81,14 @@ runs:
         echo "build output"
         Get-ChildItem -Path ${{ github.workspace }}\libcec -Recurse –File
 
-        echo "makefile output"
+        echo "libcec\build\cmake\amd64\Makefile"
         get-content -Path ${{ github.workspace }}\libcec\build\cmake\amd64\Makefile
+
+        echo "libcec\build\cmake\amd64\src\libcec\CMakeFiles\cec.dir\build.make"
+        get-content -Path ${{ github.workspace }}\libcec\build\cmake\amd64\src\libcec\CMakeFiles\cec.dir\build.make
+
+        echo "libcec\build\cmake\amd64\src\libcec\CMakeFiles\cec.dir\flags.make"
+        get-content -Path ${{ github.workspace }}\libcec\build\cmake\amd64\src\libcec\CMakeFiles\cec.dir\flags.make
 
     - name: Set output
       id: set_output
