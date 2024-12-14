@@ -199,7 +199,7 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/cma
 -endif()
 diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik-static-builds/src/libcec/CMakeLists.txt
 --- cec-upstream/src/libcec/CMakeLists.txt	2022-04-23 12:46:37.904743442 +0300
-+++ libcec-opeik-static-builds/src/libcec/CMakeLists.txt	2024-12-14 23:10:44.544757549 +0200
++++ libcec-opeik-static-builds/src/libcec/CMakeLists.txt	2024-12-14 23:16:24.276841971 +0200
 @@ -1,33 +1,21 @@
 -project(cec)
 -cmake_minimum_required(VERSION 3.12.0)
@@ -248,7 +248,7 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMa
  include(cmake/CheckPlatformSupport.cmake)
  
  ## create project groups
-@@ -190,13 +179,20 @@
+@@ -190,13 +179,22 @@
  # external dependencies
  include(cmake/LinkPlatformSupport.cmake)
  
@@ -267,15 +267,17 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMa
 +install(TARGETS cec DESTINATION ${LIB_DESTINATION})
 +target_link_libraries(cec PRIVATE p8-platform)
 +target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
-+if(WIN32)
-+  target_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform)
-+  target_include_directories("${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform") # hacky but works
++if(WIN32) # hacky but works
++  if("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "x64")
++    target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform)
++    target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform/windows) 
++  endif()
 +endif(WIN32)
 +target_compile_options(cec PRIVATE "-w")
  
  if (MSVC)
    # generate pdb in release mode too
-@@ -209,28 +205,18 @@
+@@ -209,28 +207,18 @@
  endif(MSVC)
  
  if(WIN32)
