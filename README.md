@@ -68,6 +68,15 @@ For a vendored build, `libcec-sys` will dynamically link to the compiled `cec.dl
 - CMake 3.12+
 - Python 3.6+ with Debug Binaries
 
+## Static build of libcec
+
+Static build has been adapted from great work from @opeik in https://github.com/ssalonen/cec-rs/issues/52
+
+```bash
+# cec-upstream is: git clone --recurse-submodules --branch=libcec-6.0.2 https://github.com/Pulse-Eight/libcec.git cec-upstream
+diff -w -x '.git' -ur cec-upstream libcec-opeik > libcec-sys/.github/libcec_static_patch_from_6.0.2.patch
+```
+
 ## License
 
 This repo contains content distributed under three different licenses.

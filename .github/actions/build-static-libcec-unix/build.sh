@@ -21,7 +21,7 @@ case "$build_type" in
 esac
 
 cd "$path"
-cmake -S . -B build -G Ninja -DSKIP_PYTHON_WRAPPER=1 -D "CMAKE_BUILD_TYPE=$cmake_build_type" -D BUILD_STATIC_LIB=True -D CMAKE_CXX_STANDARD=11 -Wno-dev
+cmake -S . -B build -G Ninja -D "CMAKE_BUILD_TYPE=$cmake_build_type" -D BUILD_STATIC_LIB=True -D CMAKE_CXX_STANDARD=11 -Wno-dev
 cmake --build build
 
 mkdir -p dist/include

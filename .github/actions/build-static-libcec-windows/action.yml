@@ -25,16 +25,13 @@ runs:
       with:
         path: libcec
         repository: Pulse-Eight/libcec
-        ref: 6.0.2
+        ref: libcec-6.0.2
         submodules: recursive
 
     - name: Apply patch to codebase for static building
-      shell: bash
-      run: git apply .github/actions/libcec_static_patch_from_6.0.2.patch
-
-    - name: Apply patch to skip python bindings for libcec (to remove build-time need for python)
-      shell: bash
-      run: git apply .github/actions/build-static-libcec-windows/skip_python.patch
+      shell: pwsh
+      run: patch -p1 < .github\libcec_static_patch_from_6.0.2.patch
+      working-directory: ./libcec
 
     - name: Setup developer command prompt
       uses: ilammy/msvc-dev-cmd@v1
