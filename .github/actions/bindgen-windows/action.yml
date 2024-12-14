@@ -35,13 +35,21 @@ runs:
 
     - name: Generate missing bindings
       if: ${{ ! steps.check_bindings_exist.outputs.bindings_exist }}
-      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+      run: cargo build --package cec_bindgen --bin cec_bindgen
       shell: pwsh
+      env:
+        MAJOR_VERSION: ${{ inputs.libcec_major_version }}
+        DEST_PATH: ../src
+        SRC_PATH: .
 
     - name: Regenerate bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
-      run: cargo run --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+      run: cargo build --package cec_bindgen --bin cec_bindgen
       shell: pwsh
+      env:
+        MAJOR_VERSION: ${{ inputs.libcec_major_version }}
+        DEST_PATH: ../src
+        SRC_PATH: .
 
     - name: Commit bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
