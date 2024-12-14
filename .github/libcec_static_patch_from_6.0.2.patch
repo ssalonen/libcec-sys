@@ -1,4 +1,4 @@
-diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
 --- cec-upstream/CMakeLists.txt	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/CMakeLists.txt	2024-12-14 19:27:23.190975565 +0200
 @@ -1,27 +1,19 @@
@@ -34,7 +34,7 @@ diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream
  
  # windows specific files
  if(WIN32)
-diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
 --- cec-upstream/.gitignore	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/.gitignore	2024-12-14 19:27:23.190975565 +0200
 @@ -17,6 +17,7 @@
@@ -45,9 +45,52 @@ diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream
  env.h
  version.h
  .vs
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-opeik/src/cecc-client/CMakeLists.txt
+--- cec-upstream/src/cecc-client/CMakeLists.txt	2022-04-23 12:46:37.901743502 +0300
++++ libcec-opeik/src/cecc-client/CMakeLists.txt	2024-12-14 19:27:23.217641643 +0200
+@@ -1,5 +1,4 @@
+ project(ceccclient)
+-cmake_minimum_required(VERSION 3.12.0)
+ 
+ set(ceccclient_NAME ceccclient)
+ set(ceccclient_DESCRIPTION "libCEC test client")
+@@ -12,16 +11,21 @@
+ include(CheckLibraryExists)
+ include(CheckIncludeFiles)
+ 
+-find_package(p8-platform REQUIRED)
+ find_package(Threads REQUIRED)
+ 
+ set(ceccclient_SOURCES cecc-client.c)
+ 
+ add_executable(cecc-client ${ceccclient_SOURCES})
+ set_target_properties(cecc-client PROPERTIES VERSION ${LIBCEC_VERSION_MAJOR}.${LIBCEC_VERSION_MINOR}.${LIBCEC_VERSION_PATCH})
+-target_link_libraries(cecc-client ${p8-platform_LIBRARIES})
++target_link_libraries(cecc-client p8-platform)
+ target_link_libraries(cecc-client ${CMAKE_THREAD_LIBS_INIT})
+ 
++target_include_directories(cecc-client PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../include)
++
++# include_directories(${p8-platform_INCLUDE_DIRS}
++# ${PROJECT_SOURCE_DIR}
++# ${PROJECT_SOURCE_DIR}/../../include)
++
+ if (NOT WIN32)
+   # check for dlopen
+   check_library_exists(dl dlopen "" HAVE_DLOPEN)
+@@ -42,9 +48,6 @@
+   endif()
+ endif()
+ 
+-include_directories(${p8-platform_INCLUDE_DIRS}
+-                    ${PROJECT_SOURCE_DIR}
+-                    ${PROJECT_SOURCE_DIR}/../../include)
+ 
+ # write env.h
+ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/env.h.in ${CMAKE_CURRENT_SOURCE_DIR}/env.h)
 Only in cec-upstream/src/dotnet/src/CecSharpTester/netfx/Properties: AssemblyInfo.cs
 Only in cec-upstream/src/dotnet/src/LibCecTray/Properties: AssemblyInfo.cs
-diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
 --- cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake	2022-04-23 12:46:37.908743362 +0300
 +++ libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake	2024-12-14 19:27:23.280973578 +0200
 @@ -194,103 +204,3 @@
@@ -154,7 +197,7 @@ diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream
 -    endif()
 -  endif()
 -endif()
-diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
 --- cec-upstream/src/libcec/CMakeLists.txt	2022-04-23 12:46:37.904743442 +0300
 +++ libcec-opeik/src/libcec/CMakeLists.txt	2024-12-14 19:27:23.264307280 +0200
 @@ -1,33 +1,21 @@
@@ -262,7 +305,7 @@ diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream
    endif(MSVC)
  endif(WIN32)
  
-diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
 --- cec-upstream/src/platform/CMakeLists.txt	2023-08-01 20:06:07.011499457 +0300
 +++ libcec-opeik/src/platform/CMakeLists.txt	2024-12-14 19:27:23.300973136 +0200
 @@ -1,20 +1,15 @@

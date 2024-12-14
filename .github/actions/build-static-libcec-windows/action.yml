@@ -78,6 +78,9 @@ runs:
           Copy-Item -Destination '${{ github.workspace }}\libcec\dist'
         Copy-Item -Recurse -Path '${{ github.workspace }}\libcec\include' -Destination '${{ github.workspace }}\libcec\dist'
 
+        echo "build output"
+        Get-ChildItem -Path ${{ github.workspace }}\libcec -Recurse –File
+
     - name: Set output
       id: set_output
       shell: bash
