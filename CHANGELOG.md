@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 6.0.1
+
+- Fixes to architecture detection at runtime
+- CI/CD fixes
+
 ## 6.0.0
 
 - Fixed bindings for other architectures
