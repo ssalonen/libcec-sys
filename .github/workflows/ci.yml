@@ -176,7 +176,18 @@ jobs:
               with:
                   command: fmt
                   args: --all -- --check
-            # need to use cross to setup dependencies
+            - name: Install libcec(-dev) and build dependencies
+              run: |
+                  set -ex
+                  # introduce Ubuntu 20.04 (Focal Fossa) repos as well for easy libcec4 installation
+                  sudo sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list'
+                  sudo apt-get update  # re-loads apt sources
+
+                  apt show 'libcec6'
+                  apt show 'libcec-dev=6*'
+
+                  sudo apt install -yq libudev-dev libp8-platform2 libp8-platform-dev 'libcec6' 'libcec-dev=6*'
+            
             - name: Clippy Check
               uses: actions-rs/cargo@v1
               with:
