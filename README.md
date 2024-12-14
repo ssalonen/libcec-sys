@@ -77,6 +77,12 @@ Please check the patch file for exact diff used. In the diff `cec-upstream` refe
 git clone --recurse-submodules --branch=libcec-6.0.2 https://github.com/Pulse-Eight/libcec.git cec-upstream
 ```
 
+`libcec-opeik-static-builds` is a fork of opeik/libcec:
+
+```bash
+git clone --recurse-submodules https://github.com/ssalonen/libcec-opeik-static-builds.git
+```
+
 ## License
 
 This repo contains content distributed under three different licenses.
