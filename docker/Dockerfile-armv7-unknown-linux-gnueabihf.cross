@@ -1,5 +1,5 @@
-FROM ghcr.io/cross-rs/armv7-unknown-linux-gnueabihf:latest
+# sha matching 2024-12-13
+FROM ghcr.io/cross-rs/armv7-unknown-linux-gnueabihf:main@sha256:256e06ba49e700b2b3e5d5cd966b7bb232560239b63b62ed74b1e032f74db5f6
 ARG DEBIAN_FRONTEND=noninteractive
-
 COPY cec_build_prep.sh /
 RUN /cec_build_prep.sh

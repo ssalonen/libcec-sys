@@ -2,15 +2,17 @@
 name = "cec_bindgen"
 version = "0.1.0"
 edition = "2021"
+build = 'src/build.rs'
 
-[dependencies]
+#[dependencies]
+[build-dependencies]
 bcmp = "0.4"
-bindgen = "0.69"
+bindgen = { version = "0.71.1" }
 #cec_bootstrap = { path = "../cec_bootstrap" }
-clap = { version = "4", features = ["derive"] }
+clap = { version = "4", features = ["derive", "env"] }
 color-eyre = "0.6"
 target-lexicon = "0.12"
 tempfile = "3"
 zip-extract = "0.1"
-reqwest = { version = "0.12", features = ["rustls-tls", "blocking"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "blocking"] }
 regex = "1.11.1"

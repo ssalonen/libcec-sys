@@ -1,4 +1,5 @@
-FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu:latest
+# sha matching 2024-12-13
+FROM ghcr.io/cross-rs/aarch64-unknown-linux-gnu:main@sha256:9808d7b7563a6334042c00555e473d0e0be46a171e3426301030118807280c86
 
 ARG DEBIAN_FRONTEND=noninteractive
 
