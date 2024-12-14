@@ -1,4 +1,4 @@
-diff --color -w -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
+diff --color -B -w -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
 --- cec-upstream/CMakeLists.txt	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/CMakeLists.txt	2024-12-14 19:27:23.190975565 +0200
 @@ -1,27 +1,19 @@
@@ -34,7 +34,7 @@ diff --color -w -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.
  
  # windows specific files
  if(WIN32)
-diff --color -w -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
+diff --color -B -w -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
 --- cec-upstream/.gitignore	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/.gitignore	2024-12-14 19:27:23.190975565 +0200
 @@ -17,6 +17,7 @@
@@ -45,7 +45,7 @@ diff --color -w -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
  env.h
  version.h
  .vs
-diff --color -w -x .git -ur cec-upstream/project/nsis/sections.nsh libcec-opeik/project/nsis/sections.nsh
+diff --color -B -w -x .git -ur cec-upstream/project/nsis/sections.nsh libcec-opeik/project/nsis/sections.nsh
 --- cec-upstream/project/nsis/sections.nsh	2024-12-14 20:40:58.941250573 +0200
 +++ libcec-opeik/project/nsis/sections.nsh	2024-12-14 19:27:23.210975123 +0200
 @@ -211,6 +211,7 @@
@@ -56,7 +56,7 @@ diff --color -w -x .git -ur cec-upstream/project/nsis/sections.nsh libcec-opeik/
    NSISdl::download https://p8.opdenkamp.eu/cec/cec-firmware-latest.exe cec-firmware-latest.exe
  
    CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Firmware Upgrade.lnk" "$INSTDIR\cec-firmware-latest.exe" \
-diff --color -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-opeik/src/cecc-client/CMakeLists.txt
+diff --color -B -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-opeik/src/cecc-client/CMakeLists.txt
 --- cec-upstream/src/cecc-client/CMakeLists.txt	2022-04-23 12:46:37.901743502 +0300
 +++ libcec-opeik/src/cecc-client/CMakeLists.txt	2024-12-14 19:27:23.217641643 +0200
 @@ -1,5 +1,4 @@
@@ -65,7 +65,7 @@ diff --color -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-o
  
  set(ceccclient_NAME ceccclient)
  set(ceccclient_DESCRIPTION "libCEC test client")
-@@ -12,19 +11,25 @@
+@@ -12,16 +11,21 @@
  include(CheckLibraryExists)
  include(CheckIncludeFiles)
  
@@ -89,18 +89,6 @@ diff --color -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-o
  if (NOT WIN32)
    # check for dlopen
    check_library_exists(dl dlopen "" HAVE_DLOPEN)
-+
-   if (HAVE_DLOPEN)
-     target_link_libraries(cecc-client dl)
-   endif()
-@@ -35,6 +40,7 @@
-   endif()
- else()
-   add_definitions(-DTARGET_WINDOWS -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -D_WINSOCKAPI_)
-+
-   if (${WIN64})
-     string(REPLACE "/arch:SSE2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-   else()
 @@ -42,9 +48,6 @@
    endif()
  endif()
@@ -111,7 +99,7 @@ diff --color -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-o
  
  # write env.h
  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/env.h.in ${CMAKE_CURRENT_SOURCE_DIR}/env.h)
-diff --color -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-opeik/src/cec-client/CMakeLists.txt
+diff --color -B -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-opeik/src/cec-client/CMakeLists.txt
 --- cec-upstream/src/cec-client/CMakeLists.txt	2022-04-23 12:46:37.900743523 +0300
 +++ libcec-opeik/src/cec-client/CMakeLists.txt	2024-12-14 19:27:23.214308383 +0200
 @@ -1,5 +1,4 @@
@@ -120,7 +108,7 @@ diff --color -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-op
  
  set(cecclient_NAME cecclient)
  set(cecclient_DESCRIPTION "libCEC test client")
-@@ -14,17 +13,18 @@
+@@ -14,11 +13,11 @@
  include(CheckCXXCompilerFlag)
  
  check_cxx_compiler_flag("-std=c++11" SUPPORTS_CXX11)
@@ -133,14 +121,7 @@ diff --color -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-op
  find_package(Threads REQUIRED)
  
  set(cecclient_SOURCES cec-client.cpp)
- 
- # curses
- check_library_exists(curses initscr "" HAVE_CURSES_API)
-+
- if (HAVE_CURSES_API)
-   list(APPEND cecclient_SOURCES curses/CursesControl.cpp)
- 
-@@ -32,15 +32,17 @@
+@@ -32,12 +32,13 @@
    find_library(HAVE_CURSES_TINFO tinfo)
  endif()
  
@@ -155,34 +136,6 @@ diff --color -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-op
  if (NOT WIN32)
    # check for dlopen
    check_library_exists(dl dlopen "" HAVE_DLOPEN)
-+
-   if (HAVE_DLOPEN)
-     target_link_libraries(cec-client dl)
-   endif()
-@@ -48,6 +50,7 @@
-   # curses
-   if (HAVE_CURSES_API)
-     target_link_libraries(cec-client curses)
-+
-     if (HAVE_CURSES_TINFO)
-       target_link_libraries(cec-client tinfo)
-     endif()
-@@ -55,6 +58,7 @@
- 
-   # rt
-   check_library_exists(rt clock_gettime "" HAVE_RT)
-+
-   if (HAVE_RT)
-     target_link_libraries(cec-client rt)
-   endif()
-@@ -65,6 +69,7 @@
-   endif()
- else()
-   add_definitions(-DTARGET_WINDOWS -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -D_WINSOCKAPI_)
-+
-   if (${WIN64})
-     string(REPLACE "/arch:SSE2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-   else()
 @@ -72,10 +77,6 @@
    endif()
  endif()
@@ -196,79 +149,9 @@ diff --color -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-op
  
 Only in cec-upstream/src/dotnet/src/CecSharpTester/netfx/Properties: AssemblyInfo.cs
 Only in cec-upstream/src/dotnet/src/LibCecTray/Properties: AssemblyInfo.cs
-diff --color -w -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
+diff --color -B -w -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
 --- cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake	2022-04-23 12:46:37.908743362 +0300
 +++ libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake	2024-12-14 19:27:23.280973578 +0200
-@@ -34,10 +34,12 @@
- SET(HAVE_EXYNOS_API      OFF CACHE BOOL "exynos not supported")
- SET(HAVE_LINUX_API       OFF CACHE BOOL "linux not supported")
- SET(HAVE_AOCEC_API       OFF CACHE BOOL "aocec not supported")
-+
- # Pulse-Eight devices are always supported
- set(HAVE_P8_USB          ON  CACHE BOOL "p8 usb-cec supported" FORCE)
- set(HAVE_P8_USB_DETECT   OFF CACHE BOOL "p8 usb-cec detection not supported")
- set(HAVE_DRM_EDID_PARSER OFF CACHE BOOL "drm edid parser not supported")
-+
- # Raspberry Pi libs and headers are in a non-standard path on some distributions
- set(RPI_INCLUDE_DIR      ""  CACHE FILEPATH "root path to Raspberry Pi includes")
- set(RPI_LIB_DIR          ""  CACHE FILEPATH "root path to Raspberry Pi libs")
-@@ -50,11 +52,13 @@
-   if("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "X86")
-     set(LIB_INFO "${LIB_INFO} (x86)")
-     add_definitions(-D_USE_32BIT_TIME_T)
-+
-     # force python2 for eventghost
-     set(PYTHON_USE_VERSION 2)
-   elseif("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "x64")
-     check_symbol_exists(_X64_ Windows.h WIN64)
-     check_symbol_exists(_AMD64_ Windows.h AMD64)
-+
-     if (DEFINED WIN64 OR DEFINED AMD64)
-       set(LIB_INFO "${LIB_INFO} (x64)")
-     endif()
-@@ -91,15 +95,18 @@
- 
-   # udev
-   pkg_check_modules(UDEV udev)
-+
-   if (UDEV_FOUND)
-     set(PLATFORM_LIBREQUIRES "${PLATFORM_LIBREQUIRES} ${UDEV_LIBRARIES}")
-   else()
-     # fall back to finding libudev.pc
-     pkg_check_modules(UDEV libudev)
-+
-     if (UDEV_FOUND)
-       set(PLATFORM_LIBREQUIRES "${PLATFORM_LIBREQUIRES} libudev")
-     endif()
-   endif()
-+
-   if (UDEV_FOUND)
-     SET(HAVE_LIBUDEV ON CACHE BOOL "udev supported" FORCE)
-     set(LIB_INFO "${LIB_INFO}, P8_detect")
-@@ -110,6 +117,7 @@
-   # xrandr
-   check_include_files("X11/Xlib.h;X11/Xatom.h;X11/extensions/Xrandr.h" HAVE_RANDR_HEADERS)
-   check_library_exists(Xrandr XRRGetScreenResources "" HAVE_RANDR_LIB)
-+
-   if (HAVE_RANDR_HEADERS AND HAVE_RANDR_LIB)
-     set(LIB_INFO "${LIB_INFO}, randr")
-     list(APPEND CEC_SOURCES_PLATFORM platform/X11/randr-edid.cpp)
-@@ -119,6 +127,7 @@
-   # raspberry pi
-   find_library(RPI_BCM_HOST bcm_host "${RPI_LIB_DIR}")
-   check_library_exists(bcm_host bcm_host_init "${RPI_LIB_DIR}" HAVE_RPI_LIB)
-+
-   if (HAVE_RPI_LIB)
-     SET(HAVE_RPI_API ON CACHE BOOL "raspberry pi supported" FORCE)
-     find_library(RPI_VCOS vcos "${RPI_LIB_DIR}")
-@@ -135,6 +144,7 @@
- 
-   # TDA995x
-   check_include_files("tda998x_ioctl.h;comps/tmdlHdmiCEC/inc/tmdlHdmiCEC_Types.h" HAVE_TDA995X_API_INC)
-+
-   if (HAVE_TDA995X_API_INC)
-     SET(HAVE_TDA995X_API ON CACHE BOOL "tda995x supported" FORCE)
-     set(LIB_INFO "${LIB_INFO}, TDA995x")
 @@ -194,103 +204,3 @@
  
  # check for dlopen
@@ -373,7 +256,7 @@ diff --color -w -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.c
 -    endif()
 -  endif()
 -endif()
-diff --color -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
+diff --color -B -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
 --- cec-upstream/src/libcec/CMakeLists.txt	2022-04-23 12:46:37.904743442 +0300
 +++ libcec-opeik/src/libcec/CMakeLists.txt	2024-12-14 19:27:23.264307280 +0200
 @@ -1,33 +1,21 @@
@@ -424,20 +307,6 @@ diff --color -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/
  include(cmake/CheckPlatformSupport.cmake)
  
  ## create project groups
-@@ -155,11 +142,13 @@
- # write env.h
- set(LIBCEC_LIBREQUIRES "p8-platform ${PLATFORM_LIBREQUIRES}")
- configure_file(${CMAKE_CURRENT_SOURCE_DIR}/env.h.in ${CMAKE_CURRENT_SOURCE_DIR}/env.h)
-+
- if (WIN32)
-   # write libcec.rc
-   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcec.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/libcec.rc)
-   add_definitions(-DDLL_EXPORT)
-   add_definitions(-DTARGET_WINDOWS -DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -D_WINSOCKAPI_)
-+
-   if (${WIN64})
-     string(REPLACE "/arch:SSE2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-   else()
 @@ -190,13 +179,16 @@
  # external dependencies
  include(cmake/LinkPlatformSupport.cmake)
@@ -495,7 +364,7 @@ diff --color -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/
    endif(MSVC)
  endif(WIN32)
  
-diff --color -w -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
+diff --color -B -w -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
 --- cec-upstream/src/platform/CMakeLists.txt	2023-08-01 20:06:07.011499457 +0300
 +++ libcec-opeik/src/platform/CMakeLists.txt	2024-12-14 19:27:23.300973136 +0200
 @@ -1,20 +1,15 @@
@@ -568,35 +437,6 @@ diff --color -w -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opei
  set_target_properties(p8-platform
      PROPERTIES
      VERSION ${p8-platform_VERSION_MAJOR}.${p8-platform_VERSION_MINOR}.${p8-platform_VERSION_PATCH}
-@@ -57,7 +59,6 @@
-       # default setting that got removed in recent vs versions, generates a warning if set
-       string(REPLACE "/arch:SSE2" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-     endif(${WIN64})
--
-   endif(MSVC)
- 
-   if (NOT ${WIN64})
-@@ -67,6 +68,7 @@
- 
- install(TARGETS p8-platform DESTINATION ${CMAKE_INSTALL_LIBDIR})
- install(FILES src/os.h DESTINATION include/p8-platform)
-+
- if(WIN32)
-   install(FILES src/windows/dlfcn-win32.h
-                 src/windows/os-socket.h
-@@ -79,6 +81,7 @@
-                 src/posix/os-types.h
-           DESTINATION include/p8-platform/posix)
- endif(WIN32)
-+
- install(FILES src/sockets/cdevsocket.h
-               src/sockets/socket.h
-               src/sockets/tcp.h
-@@ -112,4 +115,3 @@
-                 p8-platform-config.cmake @ONLY)
- install(FILES ${CMAKE_BINARY_DIR}/p8-platform-config.cmake
-         DESTINATION ${CMAKE_INSTALL_LIBDIR}/p8-platform)
--
 Only in libcec-opeik/src/platform: p8-platform
 Only in libcec-opeik/src/platform/support: .gitignore
 Only in libcec-opeik/src/platform/support: linux

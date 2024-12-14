@@ -49,7 +49,7 @@ runs:
         mkdir -p '${{ github.workspace }}\libcec\dist'
 
         [string[]] $script_paths = @(
-          '${{ github.workspace }}\libcec\src\platform\windows\build-lib.cmd'
+#          '${{ github.workspace }}\libcec\src\platform\windows\build-lib.cmd'
           '${{ github.workspace }}\libcec\windows\build-lib.cmd'
         )
 

@@ -74,7 +74,7 @@ Static build has been adapted from great work from @opeik in https://github.com/
 
 ```bash
 # cec-upstream is: git clone --recurse-submodules --branch=libcec-6.0.2 https://github.com/Pulse-Eight/libcec.git cec-upstream
-diff -w -x '.git' -ur cec-upstream libcec-opeik > libcec-sys/.github/libcec_static_patch_from_6.0.2.patch
+diff -B -w -x '.git' -ur cec-upstream libcec-opeik > libcec-sys/.github/libcec_static_patch_from_6.0.2.patch
 ```
 
 ## License
