@@ -1,0 +1,86 @@
+name: build-libcec-windows
+description: Builds libcec on Windows environments.
+
+inputs:
+  arch:
+    description: The architecture being built.
+    required: true
+  build_type:
+    description: The build type, either "release" or "debug".
+    required: true
+  visual_studio_version:
+    description: The Visual Studio version to use.
+    required: true
+
+outputs:
+  binary_path:
+    description: The freshly-built binary path.
+    value: ${{ steps.set_output.outputs.binary_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout libcec
+      uses: actions/checkout@v4
+      with:
+        path: libcec
+        repository: Pulse-Eight/libcec
+        ref: 6.0.2
+
+    - name: Apply patch to codebase for static building
+      shell: bash
+      run: git apply .github/actions/libcec_static_patch_from_6.0.2.patch
+
+    - name: Apply patch to skip python bindings for libcec (to remove build-time need for python)
+      shell: bash
+      run: git apply .github/actions/build-static-libcec-windows/skip_python.patch
+
+    - name: Setup developer command prompt
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build libcec
+      shell: pwsh
+      env:
+        CL: /MP
+      run: |
+        Set-PSDebug -Strict
+        Set-PSDebug -Trace 2
+
+        echo 'setting up build environment...'
+        mkdir -p '${{ github.workspace }}\libcec\build'
+        mkdir -p '${{ github.workspace }}\libcec\dist'
+
+        [string[]] $script_paths = @(
+          '${{ github.workspace }}\libcec\src\platform\windows\build-lib.cmd'
+          '${{ github.workspace }}\libcec\windows\build-lib.cmd'
+        )
+
+        [string] $build_type = if ( '${{ inputs.build_type }}' -eq 'debug' ) {
+          'Debug'
+        } elseif ( '${{ inputs.build_type }}' -eq 'release' ) {
+          'RelWithDebInfo'
+        } else {
+          throw "invalid build type"
+        }
+
+        [string[]] $script_args = @(
+          'amd64'
+          $build_type
+          '${{ inputs.visual_studio_version }}'
+          '"${{ github.workspace }}\libcec\build"'
+          'nmake'
+        )
+
+        foreach ($script_path in $script_paths) {
+          &"$script_path" $script_args
+        }
+
+        echo "copying binaries to dist..."
+        Get-ChildItem -Recurse -Path '${{ github.workspace }}\libcec\build' -Include *.lib,*.dll,*.pdb |
+          Copy-Item -Destination '${{ github.workspace }}\libcec\dist'
+        Copy-Item -Recurse -Path '${{ github.workspace }}\libcec\include' -Destination '${{ github.workspace }}\libcec\dist'
+
+    - name: Set output
+      id: set_output
+      shell: bash
+      run: echo "binary_path=${{ github.workspace }}\libcec\dist" >> $GITHUB_OUTPUT

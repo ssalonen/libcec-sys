@@ -1,0 +1,35 @@
+name: build-static-libcec-unix
+description: Builds static libcec on Unix environments.
+
+inputs:
+  build_type:
+    description: The build type, either "release" or "debug".
+    required: true
+
+outputs:
+  binary_path:
+    description: The freshly-built binary path.
+    value: ${{ steps.set_output.outputs.binary_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout upstream libcec 6.0.2
+      uses: actions/checkout@v4
+      with:
+        path: libcec
+        repository: Pulse-Eight/libcec
+        ref: 6.0.2
+
+    - name: Apply patch to codebase for static building
+      shell: bash
+      run: git apply .github/actions/libcec_static_patch_from_6.0.2.patch
+
+    # - name: Build libcec
+    #   shell: bash
+    #   run: nix develop --command $GITHUB_ACTION_PATH/build.sh '${{ github.workspace }}/libcec' '${{ matrix.build_type }}'
+
+    # - name: Set output
+    #   id: set_output
+    #   shell: bash
+    #   run: echo "binary_path=${{ github.workspace }}/libcec/dist" >> $GITHUB_OUTPUT

@@ -1,0 +1,13 @@
+diff --git a/support/windows/cmake/generate.cmd b/support/windows/cmake/generate.cmd
+index 5d40b62..c705a61 100644
+--- a/support/windows/cmake/generate.cmd
++++ b/support/windows/cmake/generate.cmd
+@@ -93,7 +93,7 @@ ECHO.
+ 
+ rem Cmake fails when there are quotes in the project directory path
+ CD "%BUILDDIR%"
+-%CMAKE% ^
++%CMAKE% -DSKIP_PYTHON_WRAPPER=1 ^
+       -G %GEN_PROJECT_TYPE% %CMAKE_A_OPT% ^
+       -DCMAKE_BUILD_TYPE=%BUILDTYPE% ^
+       -DCMAKE_USER_MAKE_RULES_OVERRIDE="%MYDIR%c-flag-overrides.cmake" ^

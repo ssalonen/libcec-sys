@@ -1,0 +1,119 @@
+name: Build static libcec
+
+#permissions:
+#  contents: write
+
+env:
+  visual_studio_version: 2019
+  libcec_version: 6.0.2
+
+on: workflow_dispatch
+
+
+jobs:
+    build-windows:
+      runs-on: windows-latest
+  
+      strategy:
+        fail-fast: false
+        matrix:
+          arch: [x86_64]
+          build_type: [release, debug]
+  
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+  
+        - name: Build libcec
+          id: build_libcec
+          uses: ./.github/actions/build-libcec-windows
+          with:
+            build_type: ${{ matrix.build_type }}
+            visual_studio_version: ${{ env.visual_studio_version }}
+  
+        - name: Upload build artifacts
+          uses: actions/upload-artifact@v4
+          with:
+            name: libcec-v${{ env.libcec_version }}-${{ matrix.arch }}-pc-windows-msvc-${{ matrix.build_type }}
+            path: ${{ steps.build_libcec.outputs.binary_path }}
+            if-no-files-found: error
+  
+    # build-macos:
+    #   runs-on: macos-latest
+  
+    #   strategy:
+    #     fail-fast: false
+    #     matrix:
+    #       arch: [aarch64]
+    #       build_type: [release, debug]
+  
+    #   steps:
+    #     - name: Checkout repo
+    #       uses: actions/checkout@v4
+  
+    #     - name: Build libcec
+    #       id: build_libcec
+    #       uses: ./.github/actions/build-libcec-unix
+    #       with:
+    #         build_type: ${{ matrix.build_type }}
+    #         libcec_version: ${{ env.libcec_version }}
+  
+    #     - name: Upload build artifacts
+    #       uses: actions/upload-artifact@v4
+    #       with:
+    #         name: libcec-v${{ env.libcec_version }}-${{ matrix.arch }}-apple-darwin-${{ matrix.build_type }}
+    #         path: ${{ steps.build_libcec.outputs.binary_path }}
+    #         if-no-files-found: error
+  
+    build-linux:
+      runs-on: ubuntu-latest
+  
+      strategy:
+        fail-fast: false
+        matrix:
+          arch: [x86_64]
+          build_type: [release, debug]
+  
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+  
+        - name: Build libcec
+          id: build_libcec
+          uses: ./.github/actions/build-libcec-unix
+          with:
+            build_type: ${{ matrix.build_type }}
+            libcec_version: ${{ env.libcec_version }}
+  
+    #     - name: Upload build artifacts
+    #       uses: actions/upload-artifact@v4
+    #       with:
+    #         name: libcec-v${{ env.libcec_version }}-${{ matrix.arch }}-unknown-linux-gnu-${{ matrix.build_type }}
+    #         path: ${{ steps.build_libcec.outputs.binary_path }}
+    #         if-no-files-found: error
+  
+    release:
+      runs-on: ubuntu-latest
+      needs: [build-windows, build-macos, build-linux]
+      steps:
+        - name: Fetch build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: assets
+  
+        - name: Compress build artifacts
+          working-directory: assets
+          run: |
+            mkdir --verbose ../release
+            find * -maxdepth 0 -type d  -print -exec zip -vr ../release/{}.zip {} \;
+  
+        - name: Publish release
+          uses: softprops/action-gh-release@v2
+          with:
+            tag_name: libcec-v${{ github.event.inputs.libcec_version }}
+            files: release/*.zip
+            fail_on_unmatched_files: true
+            make_latest: true
+            body: >
+              This release includes automated [libcec](https://github.com/Pulse-Eight/libcec)
+              builds for version ${{ github.event.inputs.libcec_version }}.
