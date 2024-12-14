@@ -1,4 +1,4 @@
-use std::io::{Cursor};
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
 use bcmp::AlgoSpec;
@@ -97,8 +97,6 @@ fn fetch_libcec_source<P: AsRef<Path>>(path: P, major_version: &str) -> Result<(
 }
 
 fn main() -> Result<()> {
-
-
     color_eyre::install()?;
     let args: Args = Args::parse();
 
@@ -121,7 +119,13 @@ fn main() -> Result<()> {
     });
     // foo2
 
-    dbg!(&src_path, &lib_path, &out_path, &tmp_dir, target_lexicon::HOST);
+    dbg!(
+        &src_path,
+        &lib_path,
+        &out_path,
+        &tmp_dir,
+        target_lexicon::HOST
+    );
 
     // Only the headers are used, so fetch the release version since it's smaller.
     fetch_libcec_source(&lib_path, &args.major_version).context("failed to fetch libcec source")?;
