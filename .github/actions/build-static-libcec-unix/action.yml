@@ -24,7 +24,7 @@ runs:
   
     - name: Apply patch to codebase for static building
       shell: bash
-      run: git apply .github/actions/libcec_static_patch_from_6.0.2.patch
+      run: git apply .github/libcec_static_patch_from_6.0.2.patch
 
     # - name: Build libcec
     #   shell: bash
