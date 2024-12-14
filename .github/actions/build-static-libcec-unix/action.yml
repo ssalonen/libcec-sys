@@ -21,7 +21,7 @@ runs:
         repository: Pulse-Eight/libcec
         ref: libcec-6.0.2
         submodules: recursive
-  
+
     - name: Apply patch to codebase for static building
       shell: bash
       run: patch -p1 < ${{ github.workspace }}/.github/libcec_static_patch_from_6.0.2.patch
@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: $GITHUB_ACTION_PATH/build.sh '${{ github.workspace }}/libcec' '${{ matrix.build_type }}'
 
-    # - name: Set output
-    #   id: set_output
-    #   shell: bash
-    #   run: echo "binary_path=${{ github.workspace }}/libcec/dist" >> $GITHUB_OUTPUT
+    - name: Set output
+      id: set_output
+      shell: bash
+      run: echo "binary_path=${{ github.workspace }}/libcec/dist" >> $GITHUB_OUTPUT
