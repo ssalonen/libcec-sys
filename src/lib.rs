@@ -41,7 +41,7 @@ mod bindings {
             include!("lib_abi6_arm-unknown-linux-gnueabi.rs");
         }
 
-        else {          
+        else {
             compile_error!("unsupported platform");
         }
     }
