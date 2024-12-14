@@ -82,9 +82,9 @@ diff --color -B -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libce
  
 +target_include_directories(cecc-client PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../include)
 +
-+# include_directories(${p8-platform_INCLUDE_DIRS}
-+# ${PROJECT_SOURCE_DIR}
-+# ${PROJECT_SOURCE_DIR}/../../include)
++ include_directories(${p8-platform_INCLUDE_DIRS}
++ ${PROJECT_SOURCE_DIR}
++ ${PROJECT_SOURCE_DIR}/../../include)
 +
  if (NOT WIN32)
    # check for dlopen
