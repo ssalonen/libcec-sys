@@ -42,7 +42,7 @@ mod bindings {
         }
 
         else {          
-            //compile_error!("unsupported platform");
+            compile_error!("unsupported platform");
         }
     }
 }

@@ -110,13 +110,13 @@ fn compile_vendored_libcec(dst: &Path) {
         .out_dir(&libcec_build)
         .define("SKIP_PYTHON_WRAPPER", "1")
         // For some reason, with arm architectures we need to manually define
-        // - p8-platform_DIR (folder with p8-platform-config.cmake), 
-        // - p8-platform_INCLUDE_DIRS (folder with include), 
+        // - p8-platform_DIR (folder with p8-platform-config.cmake),
+        // - p8-platform_INCLUDE_DIRS (folder with include),
         // - p8-platform_LIBRARY (location to p8-platform .a archive file)
         //
         // Otherwise we get error that p8-platform-config.cmake.
         //
-        // With x86_64-unknown-linux-gnu platform this work without hassle 
+        // With x86_64-unknown-linux-gnu platform this work without hassle
         // using the p8-platform_ROOT hint
         .define("p8-platform_DIR", &platform_build.join("build"))
         .define("p8-platform_INCLUDE_DIRS", &platform_build.join("include"))
