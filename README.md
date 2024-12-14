@@ -72,9 +72,9 @@ For a vendored build, `libcec-sys` will dynamically link to the compiled `cec.dl
 
 Static build has been adapted from great work from @opeik in https://github.com/ssalonen/cec-rs/issues/52
 
+Please check the patch file for exact diff used. In the diff `cec-upstream` refers to 6.0.2 libcec:
 ```bash
-# cec-upstream is: git clone --recurse-submodules --branch=libcec-6.0.2 https://github.com/Pulse-Eight/libcec.git cec-upstream
-diff -B -w -x '.git' -ur cec-upstream libcec-opeik > libcec-sys/.github/libcec_static_patch_from_6.0.2.patch
+git clone --recurse-submodules --branch=libcec-6.0.2 https://github.com/Pulse-Eight/libcec.git cec-upstream
 ```
 
 ## License

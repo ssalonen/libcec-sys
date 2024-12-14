@@ -48,6 +48,11 @@ runs:
         mkdir -p '${{ github.workspace }}\libcec\build'
         mkdir -p '${{ github.workspace }}\libcec\dist'
 
+        [string[]] $script_paths = @(
+          '${{ github.workspace }}\libcec\src\platform\windows\build-lib.cmd'
+          '${{ github.workspace }}\libcec\windows\build-lib.cmd'
+        )
+
         [string] $build_type = if ( '${{ inputs.build_type }}' -eq 'debug' ) {
           'Debug'
         } elseif ( '${{ inputs.build_type }}' -eq 'release' ) {
@@ -64,8 +69,9 @@ runs:
           'nmake'
         )
 
-        '${{ github.workspace }}\libcec\windows\build-lib.cmd' $script_args
-        
+        foreach ($script_path in $script_paths) {
+          &"$script_path" $script_args
+        }
 
         echo "copying binaries to dist..."
         Get-ChildItem -Recurse -Path '${{ github.workspace }}\libcec\build' -Include *.lib,*.dll,*.pdb |

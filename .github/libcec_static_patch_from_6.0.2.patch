@@ -1,4 +1,4 @@
-diff --color -B -w -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLists.txt
 --- cec-upstream/CMakeLists.txt	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/CMakeLists.txt	2024-12-14 19:27:23.190975565 +0200
 @@ -1,27 +1,19 @@
@@ -34,7 +34,7 @@ diff --color -B -w -x .git -ur cec-upstream/CMakeLists.txt libcec-opeik/CMakeLis
  
  # windows specific files
  if(WIN32)
-diff --color -B -w -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
+diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
 --- cec-upstream/.gitignore	2022-04-23 12:46:37.895743623 +0300
 +++ libcec-opeik/.gitignore	2024-12-14 19:27:23.190975565 +0200
 @@ -17,6 +17,7 @@
@@ -45,111 +45,9 @@ diff --color -B -w -x .git -ur cec-upstream/.gitignore libcec-opeik/.gitignore
  env.h
  version.h
  .vs
-diff --color -B -w -x .git -ur cec-upstream/project/nsis/sections.nsh libcec-opeik/project/nsis/sections.nsh
---- cec-upstream/project/nsis/sections.nsh	2024-12-14 20:40:58.941250573 +0200
-+++ libcec-opeik/project/nsis/sections.nsh	2024-12-14 19:27:23.210975123 +0200
-@@ -211,6 +211,7 @@
-   ExecWait '"$INSTDIR\driver\p8-usbcec-bootloader-driver-installer.exe" /S'
- 
-   SetOutPath "$INSTDIR"
-+  File "..\build\libusb0.dll"
-   NSISdl::download https://p8.opdenkamp.eu/cec/cec-firmware-latest.exe cec-firmware-latest.exe
- 
-   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Firmware Upgrade.lnk" "$INSTDIR\cec-firmware-latest.exe" \
-diff --color -B -w -x .git -ur cec-upstream/src/cecc-client/CMakeLists.txt libcec-opeik/src/cecc-client/CMakeLists.txt
---- cec-upstream/src/cecc-client/CMakeLists.txt	2022-04-23 12:46:37.901743502 +0300
-+++ libcec-opeik/src/cecc-client/CMakeLists.txt	2024-12-14 19:27:23.217641643 +0200
-@@ -1,5 +1,4 @@
- project(ceccclient)
--cmake_minimum_required(VERSION 3.12.0)
- 
- set(ceccclient_NAME ceccclient)
- set(ceccclient_DESCRIPTION "libCEC test client")
-@@ -12,16 +11,21 @@
- include(CheckLibraryExists)
- include(CheckIncludeFiles)
- 
--find_package(p8-platform REQUIRED)
- find_package(Threads REQUIRED)
- 
- set(ceccclient_SOURCES cecc-client.c)
- 
- add_executable(cecc-client ${ceccclient_SOURCES})
- set_target_properties(cecc-client PROPERTIES VERSION ${LIBCEC_VERSION_MAJOR}.${LIBCEC_VERSION_MINOR}.${LIBCEC_VERSION_PATCH})
--target_link_libraries(cecc-client ${p8-platform_LIBRARIES})
-+target_link_libraries(cecc-client p8-platform)
- target_link_libraries(cecc-client ${CMAKE_THREAD_LIBS_INIT})
- 
-+target_include_directories(cecc-client PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../include)
-+
-+ include_directories(${p8-platform_INCLUDE_DIRS}
-+ ${PROJECT_SOURCE_DIR}
-+ ${PROJECT_SOURCE_DIR}/../../include)
-+
- if (NOT WIN32)
-   # check for dlopen
-   check_library_exists(dl dlopen "" HAVE_DLOPEN)
-@@ -42,9 +48,6 @@
-   endif()
- endif()
- 
--include_directories(${p8-platform_INCLUDE_DIRS}
--                    ${PROJECT_SOURCE_DIR}
--                    ${PROJECT_SOURCE_DIR}/../../include)
- 
- # write env.h
- CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/env.h.in ${CMAKE_CURRENT_SOURCE_DIR}/env.h)
-diff --color -B -w -x .git -ur cec-upstream/src/cec-client/CMakeLists.txt libcec-opeik/src/cec-client/CMakeLists.txt
---- cec-upstream/src/cec-client/CMakeLists.txt	2022-04-23 12:46:37.900743523 +0300
-+++ libcec-opeik/src/cec-client/CMakeLists.txt	2024-12-14 19:27:23.214308383 +0200
-@@ -1,5 +1,4 @@
- project(cecclient)
--cmake_minimum_required(VERSION 3.12.0)
- 
- set(cecclient_NAME cecclient)
- set(cecclient_DESCRIPTION "libCEC test client")
-@@ -14,11 +13,11 @@
- include(CheckCXXCompilerFlag)
- 
- check_cxx_compiler_flag("-std=c++11" SUPPORTS_CXX11)
-+
- if (SUPPORTS_CXX11)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
- endif()
- 
--find_package(p8-platform REQUIRED)
- find_package(Threads REQUIRED)
- 
- set(cecclient_SOURCES cec-client.cpp)
-@@ -32,12 +32,13 @@
-   find_library(HAVE_CURSES_TINFO tinfo)
- endif()
- 
--
- add_executable(cec-client ${cecclient_SOURCES})
- set_target_properties(cec-client PROPERTIES VERSION ${LIBCEC_VERSION_MAJOR}.${LIBCEC_VERSION_MINOR}.${LIBCEC_VERSION_PATCH})
- target_link_libraries(cec-client ${p8-platform_LIBRARIES})
- target_link_libraries(cec-client ${CMAKE_THREAD_LIBS_INIT})
- 
-+target_include_directories(cec-client PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../../include)
-+
- if (NOT WIN32)
-   # check for dlopen
-   check_library_exists(dl dlopen "" HAVE_DLOPEN)
-@@ -72,10 +77,6 @@
-   endif()
- endif()
- 
--include_directories(${p8-platform_INCLUDE_DIRS}
--                    ${PROJECT_SOURCE_DIR}
--                    ${PROJECT_SOURCE_DIR}/../../include)
--
- # write env.h
- CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/env.h.in ${CMAKE_CURRENT_SOURCE_DIR}/env.h)
- 
 Only in cec-upstream/src/dotnet/src/CecSharpTester/netfx/Properties: AssemblyInfo.cs
 Only in cec-upstream/src/dotnet/src/LibCecTray/Properties: AssemblyInfo.cs
-diff --color -B -w -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
+diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake
 --- cec-upstream/src/libcec/cmake/CheckPlatformSupport.cmake	2022-04-23 12:46:37.908743362 +0300
 +++ libcec-opeik/src/libcec/cmake/CheckPlatformSupport.cmake	2024-12-14 19:27:23.280973578 +0200
 @@ -194,103 +204,3 @@
@@ -256,7 +154,7 @@ diff --color -B -w -x .git -ur cec-upstream/src/libcec/cmake/CheckPlatformSuppor
 -    endif()
 -  endif()
 -endif()
-diff --color -B -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik/src/libcec/CMakeLists.txt
 --- cec-upstream/src/libcec/CMakeLists.txt	2022-04-23 12:46:37.904743442 +0300
 +++ libcec-opeik/src/libcec/CMakeLists.txt	2024-12-14 19:27:23.264307280 +0200
 @@ -1,33 +1,21 @@
@@ -364,7 +262,7 @@ diff --color -B -w -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-ope
    endif(MSVC)
  endif(WIN32)
  
-diff --color -B -w -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
+diff --color -B -w -x nsis -x cec-client -x cecc-client -x .git -ur cec-upstream/src/platform/CMakeLists.txt libcec-opeik/src/platform/CMakeLists.txt
 --- cec-upstream/src/platform/CMakeLists.txt	2023-08-01 20:06:07.011499457 +0300
 +++ libcec-opeik/src/platform/CMakeLists.txt	2024-12-14 19:27:23.300973136 +0200
 @@ -1,20 +1,15 @@
