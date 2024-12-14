@@ -36,17 +36,25 @@ runs:
       if: ${{ ! steps.check_bindings_exist.outputs.bindings_exist }}
       uses: actions-rs/cargo@v1
       with:
-          command: run
+          command: build
           use-cross: ${{ inputs.target != 'x86_64-unknown-linux-gnu' }}
-          args: --target ${{ inputs.target }} --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+          args: --target ${{ inputs.target }} --package cec_bindgen --bin cec_bindgen
+      env:
+        MAJOR_VERSION: ${{ inputs.libcec_major_version }}
+        DEST_PATH: ../src
+        SRC_PATH: .
 
     - name: Regenerate bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
       uses: actions-rs/cargo@v1
       with:
-          command: run
+          command: build
           use-cross: ${{ inputs.target != 'x86_64-unknown-linux-gnu' }}
-          args: --target ${{ inputs.target }} --package cec_bindgen --bin cec_bindgen -- --major-version=${{ inputs.libcec_major_version }}
+          args: --target ${{ inputs.target }} --package cec_bindgen --bin cec_bindgen
+      env:
+        MAJOR_VERSION: ${{ inputs.libcec_major_version }}
+        DEST_PATH: ../src
+        SRC_PATH: .
 
     - name: Commit bindings
       if: ${{ steps.check_bindings_exist.outputs.bindings_exist }}
