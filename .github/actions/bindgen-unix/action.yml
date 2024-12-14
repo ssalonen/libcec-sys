@@ -80,11 +80,11 @@ runs:
         pathspec_error_handling: exitImmediately
         pull: --rebase --autostash
 
-      - name: Commit bindings (retry 2)
-        if: ${{ steps.commitStep2.outcome == 'failure' && steps.check_bindings_exist.outputs.bindings_exist }}
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
-          message: Update ${{ inputs.target }} libcec${{ inputs.libcec_major_version }} bindings
-          pathspec_error_handling: exitImmediately
-          pull: --rebase --autostash
+    - name: Commit bindings (retry 2)
+      if: ${{ steps.commitStep2.outcome == 'failure' && steps.check_bindings_exist.outputs.bindings_exist }}
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: src/lib_abi${{ inputs.libcec_major_version }}_${{ inputs.target }}.rs
+        message: Update ${{ inputs.target }} libcec${{ inputs.libcec_major_version }} bindings
+        pathspec_error_handling: exitImmediately
+        pull: --rebase --autostash
