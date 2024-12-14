@@ -26,11 +26,11 @@ runs:
       shell: bash
       run: patch -p1 < ${{ github.workspace }}/.github/libcec_static_patch_from_6.0.2.patch
       working-directory: ./libcec
-    
+
     - name: Build libcec
       shell: bash
       run: $GITHUB_ACTION_PATH/build.sh '${{ github.workspace }}/libcec' '${{ matrix.build_type }}'
-    
+
     - name: Set output
       id: set_output
       shell: bash
