@@ -1,0 +1,8 @@
+The below files are adapted from https://github.com/opeik/owl/commit/c01324961e6951cdaf4ccd6820c00cab05304611
+Follows the license of opeik/owl, "This project is licensed under GPLv2."
+
+
+.github/actions/build-static-libcec-unix adapted from owl project .github/actions/build-libcec-unix 
+ - except .github/actions/build-static-libcec-unix/libcec_static_patch_from_6.0.2.patch generated from https://github.com/opeik/libcec/commit/0ec03471eb71f3b70b7b7cb1a381bd81bd9200bf against https://github.com/Pulse-Eight/libcec/tree/libcec-6.0.2
+.github/actions/build-static-libcec-windows adapted from owl project .github/actions/build-libcec-windows 
+.github/workflows/libcec.yml adapted from owl project .github/workflows/libcec.yml
