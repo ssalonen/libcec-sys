@@ -199,7 +199,7 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/cma
 -endif()
 diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMakeLists.txt libcec-opeik-static-builds/src/libcec/CMakeLists.txt
 --- cec-upstream/src/libcec/CMakeLists.txt	2022-04-23 12:46:37.904743442 +0300
-+++ libcec-opeik-static-builds/src/libcec/CMakeLists.txt	2024-12-14 22:26:31.726802500 +0200
++++ libcec-opeik-static-builds/src/libcec/CMakeLists.txt	2024-12-14 22:29:56.445078240 +0200
 @@ -1,33 +1,21 @@
 -project(cec)
 -cmake_minimum_required(VERSION 3.12.0)
@@ -266,7 +266,7 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMa
 +
 +install(TARGETS cec DESTINATION ${LIB_DESTINATION})
 +target_link_libraries(cec PRIVATE p8-platform)
-+target_include_directories(cec PRIVATE ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include  ${CMAKE_CURRENT_SOURCE_DIR}/../platform/p8)
++target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 +target_compile_options(cec PRIVATE "-w")
  
  if (MSVC)

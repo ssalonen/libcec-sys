@@ -81,6 +81,9 @@ runs:
         echo "build output"
         Get-ChildItem -Path ${{ github.workspace }}\libcec -Recurse –File
 
+        echo "makefile output"
+        get-content -Path ${{ github.workspace }}\libcec\build\cmake\amd64\Makefile
+
     - name: Set output
       id: set_output
       shell: bash
