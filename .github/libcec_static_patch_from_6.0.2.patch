@@ -266,7 +266,12 @@ diff --color -B -w -x nsis -x cec-client -x .git -ur cec-upstream/src/libcec/CMa
 +
 +install(TARGETS cec DESTINATION ${LIB_DESTINATION})
 +target_link_libraries(cec PRIVATE p8-platform)
-+target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
++target_include_directories(cec PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include 
++ ${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform   # hacky but works
++ )
++if(WIN32)
++  target_include_directories("${CMAKE_CURRENT_SOURCE_DIR}/build/amd64/include/p8-platform") # hacky but works
++endif(WIN32)
 +target_compile_options(cec PRIVATE "-w")
  
  if (MSVC)
