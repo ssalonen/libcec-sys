@@ -118,11 +118,11 @@ fn compile_vendored_libcec(dst: &Path) {
         //
         // With x86_64-unknown-linux-gnu platform this work without hassle
         // using the p8-platform_ROOT hint
-        .define("p8-platform_DIR", &platform_build.join("build"))
-        .define("p8-platform_INCLUDE_DIRS", &platform_build.join("include"))
+        .define("p8-platform_DIR", platform_build.join("build"))
+        .define("p8-platform_INCLUDE_DIRS", platform_build.join("include"))
         .define(
             "p8-platform_LIBRARY",
-            &platform_build.join("build").join("libp8-platform.a"),
+            platform_build.join("build").join("libp8-platform.a"),
         )
         .env(P8_PLATFORM_ROOT_ENV, &platform_build);
     cmake_builder.build();
