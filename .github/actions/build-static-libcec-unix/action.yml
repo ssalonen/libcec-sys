@@ -19,9 +19,9 @@ runs:
       with:
         path: libcec
         repository: Pulse-Eight/libcec
-        ref: 6.0.2
+        ref: libcec-6.0.2
         submodules: recursive
-
+  
     - name: Apply patch to codebase for static building
       shell: bash
       run: git apply .github/actions/libcec_static_patch_from_6.0.2.patch
