@@ -399,7 +399,7 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
                 path.as_ref().to_string_lossy()
             )
         });
-    }    
+    }
 }
 
 fn link_to_static() {
