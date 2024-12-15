@@ -145,7 +145,7 @@ jobs:
               run:  |
                   set -ex
                   sudo apt-get update -yq
-                  sudo apt-get install -yq libudev
+                  sudo apt-get install -yq libudev1
             # setup developer command prompt for Windows
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
