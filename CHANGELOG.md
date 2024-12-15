@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 7.0.2
 
 - udev link type corrected
-- fixed handling of empty `LIBCEC_VENDORED` and `LIBCEC_NO_VENDOR` environment variables
+- fixed handling of empty `LIBCEC_VENDORED`, `LIBCEC_NO_VENDOR` and `LIBCEC_STATIC` environment variables
 
 ## 7.0.1
 
