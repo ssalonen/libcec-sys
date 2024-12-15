@@ -466,13 +466,13 @@ fn find_using_smoke_test() -> bool {
 fn determine_mode() -> BuildMode {
     let vendored_explicitly_via_env =
         env::var("LIBCEC_VENDORED").map_or(false, |s| s != "0" && !s.is_empty());
-    let vendored_not_forbidden_explicitly_via_env =
-        env::var("LIBCEC_NO_VENDOR").map_or(true, |s| s == "0" || s.is_empty());
+    let vendored_forbidden_explicitly_via_env =
+        env::var("LIBCEC_NO_VENDOR").map_or(false, |s| s != "0" && !s.is_empty());
     let static_explicitly_via_env =
         !env::var("LIBCEC_STATIC").map_or(false, |s| s != "0" && !s.is_empty());
 
     if (cfg!(feature = "vendored") || vendored_explicitly_via_env)
-        && vendored_not_forbidden_explicitly_via_env
+        && !vendored_forbidden_explicitly_via_env
     {
         println!("Build mode: 'vendored' asked via feature or LIBCEC_VENDORED={:?} env, and not explicitly disabled via LIBCEC_NO_VENDOR={:?} env", env::var("LIBCEC_VENDORED"), env::var("LIBCEC_NO_VENDOR"));
         BuildMode::Vendored
