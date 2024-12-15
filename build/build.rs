@@ -6,8 +6,9 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::{io::Cursor, Path, PathBuf};
 use std::process::Command;
+use target_lexicon::OperatingSystem;
 
 #[cfg(not(target_os = "windows"))]
 const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
@@ -37,6 +38,12 @@ impl CecVersion {
             Self::V6 => 6,
         }
     }
+}
+
+enum BuildMode {
+    Vendored,
+    DownloadStaticPrebuilt,
+    Dynamic,
 }
 
 // libcec versions that are supported when linking dynamically. In preference order
@@ -371,6 +378,107 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
     panic!("Could not parse LIBCEC_VERSION_MAJOR from cmakelists");
 }
 
+pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
+    let target = target_lexicon::HOST.to_string();
+    let kind = if debug_build { "debug" } else { "release" };
+    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2/libcec-v6.0.2-{target}-{kind}.zip");
+    dbg!(target, kind, &url);
+
+    if !path.as_ref().exists() {
+        let file = reqwest::blocking::get(&url)
+            .expect(&format!("failed to download libcec from {url}"))
+            .bytes()
+            .expect(&format!("failed to download libcec from {url}"));
+        zip_extract::extract(Cursor::new(file), path.as_ref(), true).expect(&format!(
+            "failed to extract libcec archive to `{}`",
+            path.as_ref().to_string_lossy()
+        ));
+    }
+}
+
+fn link_to_static<'a>() {
+    let lib_path = PathBuf::from(env::var_os("OUT_DIR").unwrap()).join("libcec");
+    let lib_path_str = lib_path.to_string_lossy();
+    let debug_build = cfg!(debug_assertions);
+
+    dbg!(&lib_path, target_lexicon::HOST, debug_build);
+    println!("cargo:rustc-link-search=native={lib_path_str}");
+    println!("cargo:rustc-link-lib=static=cec");
+    println!("cargo:rustc-link-lib=static=p8-platform");
+
+    match (target_lexicon::HOST.operating_system, debug_build) {
+        (OperatingSystem::Windows, true) => {
+            println!("cargo:rustc-link-lib=dylib=msvcrtd");
+        }
+        (OperatingSystem::Windows, false) => {
+            println!("cargo:rustc-link-lib=dylib=msvcrt");
+        }
+        (OperatingSystem::Darwin, _) => {
+            println!("cargo:rustc-link-search=framework=/Library/Frameworks");
+            println!("cargo:rustc-link-lib=dylib=c++");
+            println!("cargo:rustc-link-lib=framework=CoreVideo");
+            println!("cargo:rustc-link-lib=framework=IOKit");
+        }
+        (OperatingSystem::Linux, _) => {
+            println!("cargo:rustc-link-lib=dylib=stdc++");
+        }
+        _ => panic!("unsupported target"),
+    };
+
+    // Building libcec from source is _painful_, so we don't!
+    fetch_static_libcec(&lib_path, debug_build);
+}
+
+fn find_using_pkg_config() -> bool {
+    let version = libcec_installed_pkg_config();
+    if let Ok(version) = version {
+        // pkg-config found the package and the parameters will be used for linking
+        println!("cargo:libcec_version_major={}", version.major());
+        println!("cargo:rustc-cfg=abi{}", version.major());
+        true
+    } else {
+        false
+    }
+}
+
+fn find_using_smoke_test() -> bool {
+    // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
+    let version = libcec_installed_smoke_test();
+    if let Ok(version) = version {
+        println!("cargo:rustc-link-lib=cec");
+        println!("cargo:libcec_version_major={}", version.major());
+        println!("cargo:rustc-cfg=abi{}", version.major());
+        true
+    } else {
+        false
+    }
+}
+
+fn determine_mode() -> BuildMode {
+    let vendored_explicitly_via_env = !env::var("LIBCEC_VENDORED").map_or(false, |s| s == "0");
+    let vendored_not_forbidden_explicitly_via_env =
+        env::var("LIBCEC_NO_VENDOR").map_or(true, |s| s != "0");
+    let static_explicitly_via_env = !env::var("LIBCEC_STATIC").map_or(false, |s| s == "0");
+
+    if (cfg!(feature = "vendored") || vendored_explicitly_via_env)
+        && vendored_not_forbidden_explicitly_via_env
+    {
+        BuildMode::Vendored
+    } else if cfg!(feature = "static") || static_explicitly_via_env {
+        BuildMode::DownloadStaticPrebuilt
+    } else if find_using_pkg_config() {
+        // Found using pkg-config
+        BuildMode::Dynamic
+    } else if find_using_smoke_test() {
+        // Found the library using smoke-test build using -lcec
+        BuildMode::Dynamic
+    } else {
+        // Could not detect system-installed libcec
+        // => fallback to compiling static
+        BuildMode::DownloadStaticPrebuilt
+    }
+}
+
 fn main() {
     println!("cargo:rerun-if-changed=build");
     println!("cargo:rerun-if-changed=vendor");
@@ -388,27 +496,18 @@ fn main() {
     println!("cargo:rerun-if-env-changed=_CL_");
     println!("cargo:rerun-if-env-changed=CMAKE_C_COMPILER_LAUNCHER");
     println!("cargo:rerun-if-env-changed=CMAKE_CXX_COMPILER_LAUNCHER");
+    println!("cargo:rerun-if-env-changed=LIBCEC_VENDORED");
+    println!("cargo:rerun-if-env-changed=LIBCEC_NO_VENDOR");
+    println!("cargo:rerun-if-env-changed=LIBCEC_STATIC");
+    
 
-    // Try discovery using pkg-config
-    if !cfg!(feature = "vendored") {
-        let version = libcec_installed_pkg_config();
-        if let Ok(version) = version {
-            // pkg-config found the package and the parameters will be used for linking
-            println!("cargo:libcec_version_major={}", version.major());
-            println!("cargo:rustc-cfg=abi{}", version.major());
-            return;
-        }
-        // Try smoke-test build using -lcec. If unsuccessful, revert to vendored sources
-        let version = libcec_installed_smoke_test();
-        if let Ok(version) = version {
-            println!("cargo:rustc-link-lib=cec");
-            println!("cargo:libcec_version_major={}", version.major());
-            println!("cargo:rustc-cfg=abi{}", version.major());
-            return;
-        }
+    let build_mode = determine_mode();
+
+    match build_mode {
+        BuildMode::Vendored => compile_vendored(),
+        BuildMode::DownloadStaticPrebuilt => panic!("not implemented!"),
+        BuildMode::Dynamic =>
+            /* no building needed */
+            {}
     }
-    // Either vendored build has been explicitly requested (feature=vendored)
-    // or we could not detect system-installed libcec
-    // => fallback to compiling vendored
-    compile_vendored();
 }

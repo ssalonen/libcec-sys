@@ -17,6 +17,9 @@ passthrough = [
     "SRC_PATH",
     "DEST_PATH",
     "RUST_BACKTRACE",
+    "LIBCEC_VENDORED",
+    "LIBCEC_NO_VENDOR",
+    "LIBCEC_STATIC",
 ]
 
 [target.arm-unknown-linux-gnueabi]

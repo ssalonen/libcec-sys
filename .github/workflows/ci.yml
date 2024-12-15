@@ -22,6 +22,13 @@ jobs:
                       use-cross: false
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
+                    - os: windows-latest
+                      target: x86_64-pc-windows-msvc
+                      use-cross: false
+                      libcec: static-libcec
+                      expected_libcec_abi: 6
+                      additional_env:
+                          LIBCEC_STATIC: "1"
                     - os: ubuntu-latest
                       target: arm-unknown-linux-gnueabi
                       use-cross: true
@@ -66,8 +73,8 @@ jobs:
                       pkg-config: false
                       expected_libcec_abi: 4
                       additional_env:
-                          LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
-                          C_INCLUDE_PATH: "/usr/include/libcec/"
+                        LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
+                        C_INCLUDE_PATH: "/usr/include/libcec/"
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Important that we do not run cross so package install shows up
@@ -76,8 +83,24 @@ jobs:
                       pkg-config: false
                       expected_libcec_abi: 6
                       additional_env:
-                          LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
-                      C_INCLUDE_PATH: "/usr/include/libcec/"
+                        LD_LIBRARY_PATH: "/usr/lib/x86_64-linux-gnu/"
+                        C_INCLUDE_PATH: "/usr/include/libcec/"
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                      use-cross: false
+                      libcec: "static-libcec"
+                      pkg-config: false
+                      expected_libcec_abi: 6
+                      additional_env:
+                          LIBCEC_STATIC: "1"
+                    - os: macos-latest
+                      target: macos-latest
+                      use-cross: false
+                      libcec: "static-libcec"
+                      pkg-config: false
+                      expected_libcec_abi: 6
+                      additional_env:
+                          LIBCEC_STATIC: "1"
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -98,7 +121,7 @@ jobs:
                 # ensure cache separation
                 key: ${{ matrix.job.target }}-${{ matrix.job.libcec }}-${{ matrix.job.pkg-config }}
             # libcec and p8-platform from apt repo
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored')  && runner.os == 'Linux' }}
+            - if: ${{ startsWith(matrix.job.libcec, 'libcec') && runner.os == 'Linux' }}
               name: Install libcec(-dev) and build dependencies
               run: |
                   set -ex
@@ -122,11 +145,11 @@ jobs:
               name: Setup developer command prompt
               uses: ilammy/msvc-dev-cmd@v1
             # pkg-config install
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && matrix.job.pkg-config && runner.os == 'Linux' }}
+            - if: ${{ startsWith(matrix.job.libcec, 'libcec') && matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Install pkg-config for utilizing libcec from apt build dependency
               run: sudo apt-get install -yq pkg-config
             # pkg-config remove
-            - if: ${{ !startsWith(matrix.job.libcec, 'vendored') && !matrix.job.pkg-config && runner.os == 'Linux' }}
+            - if: ${{ startsWith(matrix.job.libcec, 'libcec') && !matrix.job.pkg-config && runner.os == 'Linux' }}
               name: Remove pkg-config
               run: sudo apt-get remove -yq pkg-config
             # Windows: Patch build files such that they are compatible with sccache
@@ -138,7 +161,7 @@ jobs:
             - if: runner.os == 'Linux'
               name: cmake version
               run: cmake --version
-            - if: runner.os == 'Windows'
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && runner.os == 'Windows' }}
               name: Sets additional sccache env vars for windows
               # See https://github.com/orgs/community/discussions/26641
               # for discussion on the syntax
@@ -146,7 +169,7 @@ jobs:
                 echo "CMAKE_C_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache.exe" >> $Env:GITHUB_ENV
                 echo "RUSTC_WRAPPER=sccache.exe" >> $Env:GITHUB_ENV
-            - if: runner.os != 'Windows'
+            - if: ${{ startsWith(matrix.job.libcec, 'vendored') && runner.os != 'Windows' }}
               name: Sets additional sccache env vars for non-windows
               run: |
                 echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
@@ -157,6 +180,7 @@ jobs:
                   EXPECTED_LIBCEC_VERSION_MAJOR: ${{ matrix.job.expected_libcec_abi }}
                   LD_LIBRARY_PATH: ${{ matrix.job.additional_env.LD_LIBRARY_PATH }}
                   C_INCLUDE_PATH: ${{ matrix.job.additional_env.C_INCLUDE_PATH }}
+                  LIBCEC_STATIC: ${{ matrix.job.additional_env.LIBCEC_STATIC }}
                   SCCACHE_GHA_ENABLED: "true"
               uses: actions-rs/cargo@v1
               with:
