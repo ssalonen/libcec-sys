@@ -461,10 +461,10 @@ fn find_using_smoke_test() -> bool {
 }
 
 fn determine_mode() -> BuildMode {
-    let vendored_explicitly_via_env = !env::var("LIBCEC_VENDORED").map_or(false, |s| s == "0");
+    let vendored_explicitly_via_env = env::var("LIBCEC_VENDORED").map_or(false, |s| s != "0");
     let vendored_not_forbidden_explicitly_via_env =
-        env::var("LIBCEC_NO_VENDOR").map_or(true, |s| s != "0");
-    let static_explicitly_via_env = !env::var("LIBCEC_STATIC").map_or(false, |s| s == "0");
+        env::var("LIBCEC_NO_VENDOR").map_or(true, |s| s == "0");
+    let static_explicitly_via_env = !env::var("LIBCEC_STATIC").map_or(false, |s| s != "0");
 
     if (cfg!(feature = "vendored") || vendored_explicitly_via_env)
         && vendored_not_forbidden_explicitly_via_env
