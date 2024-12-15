@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 7.0.2
+
+- udev link type corrected
+- fixed handling of empty `LIBCEC_VENDORED` and `LIBCEC_NO_VENDOR` environment variables
+
 ## 7.0.1
 
 - Static builds now correctly add hint they link to udev
