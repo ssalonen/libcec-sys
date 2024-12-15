@@ -499,7 +499,6 @@ fn main() {
     println!("cargo:rerun-if-env-changed=LIBCEC_VENDORED");
     println!("cargo:rerun-if-env-changed=LIBCEC_NO_VENDOR");
     println!("cargo:rerun-if-env-changed=LIBCEC_STATIC");
-    
 
     let build_mode = determine_mode();
 
