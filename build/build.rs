@@ -6,7 +6,8 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::path::{io::Cursor, Path, PathBuf};
+use std::io::Cursor;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use target_lexicon::OperatingSystem;
 
