@@ -380,6 +380,9 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
 }
 
 pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
+    println!("\n\n==============================================================\nFetching pre-built static libcec\n==============================================================");
+    println!("cargo:lib_static=true");
+    println!("cargo:libcec_version_major=6");
     let target = target_lexicon::HOST.to_string();
     let kind = if debug_build { "debug" } else { "release" };
     let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2/libcec-v6.0.2-{target}-{kind}.zip");
@@ -387,17 +390,19 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
 
     if !path.as_ref().exists() {
         let file = reqwest::blocking::get(&url)
-            .expect(&format!("failed to download libcec from {url}"))
+            .unwrap_or_else(|_| panic!("failed to download libcec from {url}"))
             .bytes()
-            .expect(&format!("failed to download libcec from {url}"));
-        zip_extract::extract(Cursor::new(file), path.as_ref(), true).expect(&format!(
-            "failed to extract libcec archive to `{}`",
-            path.as_ref().to_string_lossy()
-        ));
-    }
+            .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
+        zip_extract::extract(Cursor::new(file), path.as_ref(), true).unwrap_or_else(|_| {
+            panic!(
+                "failed to extract libcec archive to `{}`",
+                path.as_ref().to_string_lossy()
+            )
+        });
+    }    
 }
 
-fn link_to_static<'a>() {
+fn link_to_static() {
     let lib_path = PathBuf::from(env::var_os("OUT_DIR").unwrap()).join("libcec");
     let lib_path_str = lib_path.to_string_lossy();
     let debug_build = cfg!(debug_assertions);
@@ -505,7 +510,7 @@ fn main() {
 
     match build_mode {
         BuildMode::Vendored => compile_vendored(),
-        BuildMode::DownloadStaticPrebuilt => panic!("not implemented!"),
+        BuildMode::DownloadStaticPrebuilt => link_to_static(),
         BuildMode::Dynamic =>
             /* no building needed */
             {}
