@@ -11,6 +11,9 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use target_lexicon::OperatingSystem;
 
+// injects link hint to libudev if found
+use libudev_sys as _;
+
 #[cfg(not(target_os = "windows"))]
 const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
@@ -429,7 +432,6 @@ fn link_to_static() {
         }
         (OperatingSystem::Linux, _) => {
             println!("cargo:rustc-link-lib=dylib=stdc++");
-            println!("cargo:rustc-link-lib=udev");
         }
         _ => panic!("unsupported target"),
     };

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 7.0.5
+
+- udev link added only if found
+
 ## 7.0.4
 
 - debug environment variables when falling back to static
