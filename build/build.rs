@@ -429,7 +429,7 @@ fn link_to_static() {
         }
         (OperatingSystem::Linux, _) => {
             println!("cargo:rustc-link-lib=dylib=stdc++");
-            println!("cargo:rustc-link-lib=udev1");
+            println!("cargo:rustc-link-lib=udev");
         }
         _ => panic!("unsupported target"),
     };
