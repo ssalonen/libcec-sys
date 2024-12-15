@@ -492,7 +492,7 @@ fn determine_mode() -> BuildMode {
         BuildMode::Dynamic
     } else {
         // => fallback to compiling static
-        println!("Build mode: static (fallback");
+        println!("Build mode: static (fallback). LIBCEC_VENDORED={:?}, LIBCEC_NO_VENDOR={:?}, LIBCEC_STATIC={:?}", env::var("LIBCEC_VENDORED"), env::var("LIBCEC_NO_VENDOR"), env::var("LIBCEC_STATIC"));
         BuildMode::DownloadStaticPrebuilt
     }
 }
