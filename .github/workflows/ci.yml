@@ -34,16 +34,22 @@ jobs:
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
+                      additional_env:
+                        LIBCEC_VENDORED: "1"
                     - os: ubuntu-latest
                       target: armv7-unknown-linux-gnueabihf
                       use-cross: true
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
+                      additional_env:
+                        LIBCEC_VENDORED: "1"
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
                       libcec: vendored-libcec
                       expected_libcec_abi: 6
+                      additional_env:
+                        LIBCEC_VENDORED: "1"
                     #
                     # libcec discovery with pkg config
                     #
@@ -182,6 +188,7 @@ jobs:
                   LD_LIBRARY_PATH: ${{ matrix.job.additional_env.LD_LIBRARY_PATH }}
                   C_INCLUDE_PATH: ${{ matrix.job.additional_env.C_INCLUDE_PATH }}
                   LIBCEC_STATIC: ${{ matrix.job.additional_env.LIBCEC_STATIC }}
+                  LIBCEC_VENDORED: ${{ matrix.job.additional_env.LIBCEC_VENDORED }}
                   SCCACHE_GHA_ENABLED: "true"
               uses: actions-rs/cargo@v1
               with:
