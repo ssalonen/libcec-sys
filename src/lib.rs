@@ -1,5 +1,4 @@
 mod bindings {
-
     // for target_X values, refer to https://doc.rust-lang.org/reference/conditional-compilation.html#target_arch
     //
     // Note how armv7 is coalesced to arm, and gnueabihf and gnueabi is coalesced to gnu
@@ -42,6 +41,8 @@ mod bindings {
         }
     }
 }
+
+pub use crate::bindings::*;
 
 #[cfg(test)]
 mod tests {
