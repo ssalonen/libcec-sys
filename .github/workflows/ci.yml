@@ -140,6 +140,12 @@ jobs:
                   set -ex
                   sudo apt-get update -yq
                   sudo apt-get install -yq libudev-dev
+            - if: ${{ startsWith(matrix.job.libcec, 'static') && !matrix.job.use-cross && runner.os == 'Linux' }}
+              name: libudev needed with static builds
+              run:  |
+                  set -ex
+                  sudo apt-get update -yq
+                  sudo apt-get install -yq libudev
             # setup developer command prompt for Windows
             - if: ${{ startsWith(matrix.job.libcec, 'vendored') && !matrix.job.use-cross && runner.os == 'Windows' }}
               name: Setup developer command prompt
