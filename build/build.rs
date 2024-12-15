@@ -11,9 +11,6 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use target_lexicon::OperatingSystem;
 
-// injects link hint to libudev if found
-use libudev_sys as _;
-
 #[cfg(not(target_os = "windows"))]
 const P8_PLATFORM_ROOT_ENV: &str = "p8-platform_ROOT";
 const LIBCEC_BUILD: &str = "libcec_build";
@@ -521,6 +518,9 @@ fn main() {
     println!("cargo:rerun-if-env-changed=LIBCEC_STATIC");
 
     let build_mode = determine_mode();
+
+    // add hint to link to libudev if found
+    let _ = pkg_config::find_library("libudev");
 
     match build_mode {
         BuildMode::Vendored => compile_vendored(),
