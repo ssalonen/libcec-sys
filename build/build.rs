@@ -383,6 +383,8 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
     println!("\n\n==============================================================\nFetching pre-built static libcec\n==============================================================");
     println!("cargo:lib_static=true");
     println!("cargo:libcec_version_major=6");
+    println!("cargo:rustc-cfg=abi6");
+
     let target = target_lexicon::HOST.to_string();
     let kind = if debug_build { "debug" } else { "release" };
     let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2/libcec-v6.0.2-{target}-{kind}.zip");
