@@ -30,11 +30,11 @@ mod bindings {
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi6_arm-unknown-linux-gnueabi.rs");
         } else if #[cfg(all(abi4, target_os = "macos", target_arch = "aarch64"))] {
-            include!("bindings/lib_abi4_aarch64-apple-darwin.rs");
+            include!("lib_abi4_aarch64-apple-darwin.rs");
         } else if #[cfg(all(abi5, target_os = "macos", target_arch = "aarch64"))] {
-            include!("bindings/lib_abi5_aarch64-apple-darwin.rs");
+            include!("lib_abi5_aarch64-apple-darwin.rs");
         } else if #[cfg(all(abi6, target_os = "macos", target_arch = "aarch64"))] {
-            include!("bindings/lib_abi6_aarch64-apple-darwin.rs");
+            include!("lib_abi6_aarch64-apple-darwin.rs");
         }
         else {
             compile_error!("unsupported platform");
