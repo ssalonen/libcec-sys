@@ -469,18 +469,22 @@ fn determine_mode() -> BuildMode {
     if (cfg!(feature = "vendored") || vendored_explicitly_via_env)
         && vendored_not_forbidden_explicitly_via_env
     {
+        println!("Build mode: 'vendored' asked via feature or LIBCEC_VENDORED env, and not explicitly disabled via LIBCEC_NO_VENDOR env");
         BuildMode::Vendored
     } else if cfg!(feature = "static") || static_explicitly_via_env {
+        println!("Build mode: 'static' asked via feature or LIBCEC_STATIC env");
         BuildMode::DownloadStaticPrebuilt
     } else if find_using_pkg_config() {
+        println!("Build mode: dynamic, found via pkg-config");
         // Found using pkg-config
         BuildMode::Dynamic
     } else if find_using_smoke_test() {
         // Found the library using smoke-test build using -lcec
+        println!("Build mode: dynamic, found via smoke test");
         BuildMode::Dynamic
     } else {
-        // Could not detect system-installed libcec
         // => fallback to compiling static
+        println!("Build mode: static (fallback");
         BuildMode::DownloadStaticPrebuilt
     }
 }
