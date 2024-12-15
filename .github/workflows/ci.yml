@@ -94,7 +94,7 @@ jobs:
                       additional_env:
                           LIBCEC_STATIC: "1"
                     - os: macos-latest
-                      target: macos-latest
+                      target: aarch64-apple-darwin
                       use-cross: false
                       libcec: "static-libcec"
                       pkg-config: false
