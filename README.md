@@ -10,7 +10,7 @@ FFI bindings for the libcec
 
 This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). 
 
-As a fallback, static `libcec` (v6.0.2) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v6.0.2). Note that the supported targets is more limited with static builds. It might also might not have the relevant libcec features enabled, e.g. Raspberry Pi native CEC module support.
+As a fallback, static pre-built `libcec` (v6.0.2) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v6.0.2-202412-1). Most common targets are supported.
 
 There are `vendored` and `static` feature to allow more explicit control. There are also `LIBCEC_VENDORED` and `LIBCEC_STATIC` environment variables, just set them to value `1`.
 
@@ -28,41 +28,11 @@ With debian based distributions, you can simply
 sudo apt-get install libudev-dev libp8-platform2 libp8-platform-dev libcec-dev pkg-config libcec6
 ```
 
-If your environment lacks the needed depencies, most easy option might be to fallback to `static` build.
+If your environment lacks the needed dependencies, most easy option might be to fallback to `static` build.
 
 ### Raspberry Pi OS
 
-If you are using Raspberry Pi OS and want to use the built-in HDMI port CEC, you might need to build the libcec yourself, since the libcec as packaged by debian is not providing the driver (as of 2022)
-
-Adapted from [libcec documentation](https://github.com/Pulse-Eight/libcec/blob/master/docs/README.raspberrypi.md):
-
-```sh
-# Become superuser
-sudo su
-
-# Remove libcec (since we are going to build it ourselves)
-apt-get remove libcec6
-
-# Install libcec build dependencies, but not libcec itself
-apt-get install libp8-platform-dev libp8-platform2 cmake libudev-dev libxrandr-dev python3-dev swig git
-
-# Build libcec 6.0.2 with RPI CEC driver enabled
-rm -rf /tmp/libcec-build-tmp
-mkdir /tmp/libcec-build-tmp
-cd /tmp/libcec-build-tmp
-git clone --recursive https://github.com/Pulse-Eight/libcec.git
-cd libcec
-git checkout libcec-6.0.2
-mkdir build
-cd build
-cmake -DRPI_INCLUDE_DIR=/opt/vc/include -DRPI_LIB_DIR=/opt/vc/lib ..
-make -j4
-make install
-ldconfig
-
-# Leave superuser context
-exit
-```
+**NOTE:** new versions of Raspberry Pi OS should support standard linux API for CEC control. Static builds used by this library have the linux API enabled.
 
 ### Windows
 

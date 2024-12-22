@@ -307,7 +307,7 @@ fn libcec_installed_smoke_test() -> Result<CecVersion, ()> {
                 return Ok(abi);
             }
         }
-        println!("==============================================================\nsmoke_abi{} -> fail: {:?}\n==============================================================\n", abi.major(), cc_cmd.output());
+        println!("==============================================================\nsmoke_abi{} -> fail: {:?}\n==============================================================\n", abi.major(), cc_cmd.output().is_err());
     }
     Err(())
 }
@@ -388,20 +388,22 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
 
     let target = env::var("TARGET").expect("Must have TARGET env variable in build.rs");
     let kind = if debug_build { "debug" } else { "release" };
-    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2-202412-1/libcec-v6.0.2-{target}-{kind}.zip");
+    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2-202412-1/libcec-v6.0.2-static-{target}-{kind}.zip");
     dbg!(target, kind, &url);
 
-    if !path.as_ref().exists() {
-        let file = reqwest::blocking::get(&url)
-            .unwrap_or_else(|_| panic!("failed to download libcec from {url}"))
-            .bytes()
-            .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
-        zip_extract::extract(Cursor::new(file), path.as_ref(), true).unwrap_or_else(|_| {
-            panic!(
-                "failed to extract libcec archive to `{}`",
-                path.as_ref().to_string_lossy()
-            )
-        });
+    let file = reqwest::blocking::get(&url)
+        .unwrap_or_else(|_| panic!("failed to download libcec from {url}"))
+        .bytes()
+        .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
+    zip_extract::extract(Cursor::new(file), path.as_ref(), true).unwrap_or_else(|_| {
+        panic!(
+            "failed to extract libcec archive to `{}`",
+            path.as_ref().to_string_lossy()
+        )
+    });
+    let paths = std::fs::read_dir(path).unwrap();
+    for path in paths {
+        println!("Extracted: {}", path.unwrap().path().display())
     }
 }
 
