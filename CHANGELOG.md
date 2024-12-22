@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 7.0.6
+
+- Support for `aarch64-unknown-linux-gnu`
+- Switch to newly built static libcec https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v6.0.2-202412-1
+
 ## 7.0.5
 
 - udev link added only if found
