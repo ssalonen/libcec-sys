@@ -9,6 +9,7 @@ use std::io::BufReader;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::str::FromStr;
 use target_lexicon::OperatingSystem;
 
 #[cfg(not(target_os = "windows"))]
@@ -385,9 +386,9 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
     println!("cargo:libcec_version_major=6");
     println!("cargo:rustc-cfg=abi6");
 
-    let target = target_lexicon::HOST.to_string();
+    let target = env::var("TARGET").expect("Must have TARGET env variable in build.rs");
     let kind = if debug_build { "debug" } else { "release" };
-    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2/libcec-v6.0.2-{target}-{kind}.zip");
+    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2-202412-1/libcec-v6.0.2-{target}-{kind}.zip");
     dbg!(target, kind, &url);
 
     if !path.as_ref().exists() {
@@ -408,13 +409,18 @@ fn link_to_static() {
     let lib_path = PathBuf::from(env::var_os("OUT_DIR").unwrap()).join("libcec");
     let lib_path_str = lib_path.to_string_lossy();
     let debug_build = cfg!(debug_assertions);
+    let target_triple = target_lexicon::Triple::from_str(
+        &env::var("TARGET").expect("Must have TARGET env variable in build.rs"),
+    )
+    .expect("Failed to parse TARGET env variable");
+    let target_os = target_triple.operating_system;
 
-    dbg!(&lib_path, target_lexicon::HOST, debug_build);
+    dbg!(&lib_path, target_triple, debug_build);
     println!("cargo:rustc-link-search=native={lib_path_str}");
-    println!("cargo:rustc-link-lib=static=cec");
+    println!("cargo:rustc-link-lib=static=cec-static");
     println!("cargo:rustc-link-lib=static=p8-platform");
 
-    match (target_lexicon::HOST.operating_system, debug_build) {
+    match (target_os, debug_build) {
         (OperatingSystem::Windows, true) => {
             println!("cargo:rustc-link-lib=dylib=msvcrtd");
         }
