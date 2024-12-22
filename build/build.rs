@@ -1,5 +1,6 @@
 use fs_extra::dir::copy as copy_dir;
 use fs_extra::dir::CopyOptions;
+use reqwest::StatusCode;
 use std::env;
 use std::fs;
 use std::fs::File;
@@ -389,16 +390,24 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
     let target = env::var("TARGET").expect("Must have TARGET env variable in build.rs");
     let kind = if debug_build { "debug" } else { "release" };
     let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2-202412-1/libcec-v6.0.2-static-{target}-{kind}.zip");
-    dbg!(target, kind, &url);
+    dbg!(&target, kind, &url);
 
-    let file = reqwest::blocking::get(&url)
-        .unwrap_or_else(|_| panic!("failed to download libcec from {url}"))
+    let response = reqwest::blocking::get(&url)
+        .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
+    if response.status() == StatusCode::NOT_FOUND {
+        panic!("Could not find pre-built static libcec for {}", &target);
+    }
+    response
+        .error_for_status_ref()
+        .unwrap_or_else(|e| panic!("Error downloading pre-built static libcec: {}", e));
+    let file = response
         .bytes()
         .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
-    zip_extract::extract(Cursor::new(file), path.as_ref(), true).unwrap_or_else(|_| {
+    zip_extract::extract(Cursor::new(file), path.as_ref(), true).unwrap_or_else(|e| {
         panic!(
-            "failed to extract libcec archive to `{}`",
-            path.as_ref().to_string_lossy()
+            "failed to extract libcec archive to `{}`: {}",
+            path.as_ref().to_string_lossy(),
+            e
         )
     });
     let paths = std::fs::read_dir(path).unwrap();
