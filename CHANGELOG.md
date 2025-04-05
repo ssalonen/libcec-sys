@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 7.0.7
+
+- Fix breakage for systems with libcec7 installed: revert to static prebuilt v6 libcec for now.
+
 ## 7.0.6
 
 - Support for `aarch64-unknown-linux-gnu`

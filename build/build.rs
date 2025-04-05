@@ -317,8 +317,10 @@ fn libcec_installed_pkg_config() -> Result<CecVersion, ()> {
     println!("\n\n==============================================================\nUsing pkg-config to find out if libcec is installed\n==============================================================");
     for abi in CEC_MAJOR_VERSIONS {
         println!("\n\npkg-config with libcec major {}", abi.major());
+        let major = format!("{}.0.0", abi.major()); // inclusive
+        let next_major = format!("{}.0.0", abi.major() + 1); // exclusive
         let pkg_config_result = pkg_config::Config::new()
-            .atleast_version(&abi.major().to_string())
+            .range_version(major.as_str()..next_major.as_str())
             .probe("libcec");
         if pkg_config_result.is_ok() {
             println!("pkg_config(>={}) -> found", abi.major());
