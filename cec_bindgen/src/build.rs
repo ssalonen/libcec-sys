@@ -96,6 +96,19 @@ fn fetch_libcec_source<P: AsRef<Path>>(path: P, major_version: &str) -> Result<(
     Ok(())
 }
 
+fn preprocess_headers<P: AsRef<Path>>(path: P){
+    let cectypes_path = path.as_ref().join("include").join("cectypes.h");
+    let mut cectypes_content =
+    std::fs::read_to_string(&cectypes_path).expect("Failed to read cectypes.h");
+
+    // replace weird comments so they don't end up with the bindgen result and result in clippy issues
+    cectypes_content = cectypes_content.replace("@/*!< ", "/* ");
+    cectypes_content = cectypes_content.replace("//!< ", "// ");
+
+
+    std::fs::write(cectypes_path, cectypes_content).expect("Failed to create cectypes.h");
+}
+
 fn main() -> Result<()> {
     color_eyre::install()?;
     let args: Args = Args::parse();
@@ -129,6 +142,7 @@ fn main() -> Result<()> {
 
     // Only the headers are used, so fetch the release version since it's smaller.
     fetch_libcec_source(&lib_path, &args.major_version).context("failed to fetch libcec source")?;
+    preprocess_headers(&lib_path);
     run_bindgen(&src_path, &lib_path, &out_path).context("failed to run bindgen")?;
     dbg!(&out_path);
 
