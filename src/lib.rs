@@ -11,36 +11,48 @@ mod bindings {
             include!("lib_abi5_x86_64-pc-windows-msvc.rs");
         } else if #[cfg(all(abi6, target_os = "windows", target_arch = "x86_64", target_env = "msvc"))] {
             include!("lib_abi6_x86_64-pc-windows-msvc.rs");
-        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
+        } else if #[cfg(all(abi7, target_os = "windows", target_arch = "x86_64", target_env = "msvc"))] {
+            include!("lib_abi7_x86_64-pc-windows-msvc.rs");
+        }else if #[cfg(all(abi4, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi4_x86_64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi5, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi5_x86_64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
             include!("lib_abi6_x86_64-unknown-linux-gnu.rs");
-        } else if #[cfg(all(abi4, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
+        } else if #[cfg(all(abi7, target_os = "linux", target_arch = "x86_64", target_env = "gnu"))] {
+            include!("lib_abi7_x86_64-unknown-linux-gnu.rs");
+        }else if #[cfg(all(abi4, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi4_armv7-unknown-linux-gnueabihf.rs");
         } else if #[cfg(all(abi5, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi5_armv7-unknown-linux-gnueabihf.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi6_armv7-unknown-linux-gnueabihf.rs");
+        } else if #[cfg(all(abi7, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
+            include!("lib_abi7_armv7-unknown-linux-gnueabihf.rs");
         } else if #[cfg(all(abi4, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi4_arm-unknown-linux-gnueabi.rs");
         } else if #[cfg(all(abi5, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi5_arm-unknown-linux-gnueabi.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
             include!("lib_abi6_arm-unknown-linux-gnueabi.rs");
+        } else if #[cfg(all(abi7, target_os = "linux", target_arch = "arm", target_env = "gnu"))] {
+            include!("lib_abi7_arm-unknown-linux-gnueabi.rs");
         } else if #[cfg(all(abi4, target_os = "linux", target_arch = "aarch64", target_env = "gnu"))] {
             include!("lib_abi4_aarch64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi5, target_os = "linux", target_arch = "aarch64", target_env = "gnu"))] {
             include!("lib_abi5_aarch64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi6, target_os = "linux", target_arch = "aarch64", target_env = "gnu"))] {
             include!("lib_abi6_aarch64-unknown-linux-gnu.rs");
+        } else if #[cfg(all(abi7, target_os = "linux", target_arch = "aarch64", target_env = "gnu"))] {
+            include!("lib_abi7_aarch64-unknown-linux-gnu.rs");
         } else if #[cfg(all(abi4, target_os = "macos", target_arch = "aarch64"))] {
             include!("lib_abi4_aarch64-apple-darwin.rs");
         } else if #[cfg(all(abi5, target_os = "macos", target_arch = "aarch64"))] {
             include!("lib_abi5_aarch64-apple-darwin.rs");
         } else if #[cfg(all(abi6, target_os = "macos", target_arch = "aarch64"))] {
             include!("lib_abi6_aarch64-apple-darwin.rs");
+        } else if #[cfg(all(abi7, target_os = "macos", target_arch = "aarch64"))] {
+            include!("lib_abi7_aarch64-apple-darwin.rs");
         }
         else {
             compile_error!("unsupported platform");
@@ -89,5 +101,11 @@ mod tests {
     #[test]
     fn test_abi6() {
         assert_eq!(CEC_LIB_VERSION_MAJOR, 6);
+    }
+
+    #[cfg(abi7)]
+    #[test]
+    fn test_abi7() {
+        assert_eq!(CEC_LIB_VERSION_MAJOR, 7);
     }
 }
