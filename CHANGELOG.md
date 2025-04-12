@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 8.0.0
+
+- Support linking to libcec v7 shared libraries. Previously only libcec v6 was supported, and build reverted to v6.0.2 static
+- vendored libcec updated to version 7.0.0
+- static libcec updated to version 7.0.0
+
 ## 7.0.7
 
 - Fix breakage for systems with libcec7 installed: revert to static prebuilt v6 libcec for now.
