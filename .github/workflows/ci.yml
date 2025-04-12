@@ -21,7 +21,7 @@ jobs:
                       target: x86_64-pc-windows-msvc
                       use-cross: false
                       libcec: vendored-libcec
-                      expected_libcec_abi: 6
+                      expected_libcec_abi: 7
                     - os: windows-latest
                       target: x86_64-pc-windows-msvc
                       use-cross: false
@@ -33,21 +33,21 @@ jobs:
                       target: arm-unknown-linux-gnueabi
                       use-cross: true
                       libcec: vendored-libcec
-                      expected_libcec_abi: 6
+                      expected_libcec_abi: 7
                       additional_env:
                         LIBCEC_VENDORED: "1"
                     - os: ubuntu-latest
                       target: armv7-unknown-linux-gnueabihf
                       use-cross: true
                       libcec: vendored-libcec
-                      expected_libcec_abi: 6
+                      expected_libcec_abi: 7
                       additional_env:
                         LIBCEC_VENDORED: "1"
                     - os: ubuntu-latest
                       target: x86_64-unknown-linux-gnu
                       use-cross: false # Not run in cross so that EXPECTED_LIBCEC_VERSION_MAJOR shows inside the test
                       libcec: vendored-libcec
-                      expected_libcec_abi: 6
+                      expected_libcec_abi: 7
                       additional_env:
                         LIBCEC_VENDORED: "1"
                     - os: ubuntu-latest
