@@ -31,6 +31,7 @@ enum CecVersion {
     V4,
     V5,
     V6,
+    V7,
 }
 
 impl CecVersion {
@@ -39,6 +40,7 @@ impl CecVersion {
             Self::V4 => 4,
             Self::V5 => 5,
             Self::V6 => 6,
+            Self::V7 => 7,
         }
     }
 }
@@ -50,7 +52,12 @@ enum BuildMode {
 }
 
 // libcec versions that are supported when linking dynamically. In preference order
-const CEC_MAJOR_VERSIONS: [CecVersion; 3] = [CecVersion::V6, CecVersion::V5, CecVersion::V4];
+const CEC_MAJOR_VERSIONS: [CecVersion; 4] = [
+    CecVersion::V7,
+    CecVersion::V6,
+    CecVersion::V5,
+    CecVersion::V4,
+];
 
 fn prepare_vendored_build(dst: &Path) {
     let dst_src = dst.join(LIBCEC_SRC);
