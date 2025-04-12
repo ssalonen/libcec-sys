@@ -8,9 +8,9 @@ FFI bindings for the libcec
 
 ## Finding libcec
 
-This crate works with `libcec` v4.x, v5.x and v6.x (latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). 
+This crate works with `libcec` v4.x, v5.x, v6.x and v7.x(latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). 
 
-As a fallback, static pre-built `libcec` (v6.0.2) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v6.0.2-202412-1). Most common targets are supported.
+As a fallback, static pre-built `libcec` (v7.0.0) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.0.0-202504-1). Most common targets are supported.
 
 There are `vendored` and `static` feature to allow more explicit control. There are also `LIBCEC_VENDORED` and `LIBCEC_STATIC` environment variables, just set them to value `1`.
 
@@ -18,7 +18,7 @@ The crate is tested mainly with Linux and Windows but could work with other plat
 
 ### Linux (general)
 
-On Linux, for most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` (dynamic library), `libp8-platform-dev` and `libp8-platform2` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
+On Linux, for most convenient build process, it is recommended to install `pkg-config`, `libcec-dev` (headers and pkg-config configuration), `libcec6` or `libcec7` (dynamic library), `libp8-platform-dev` and `libp8-platform2` from your package distribution before installing this crate. Exact package names vary between distributions and package managers.
 
 In addition `libudev-dev` might be needed.
 
@@ -43,7 +43,7 @@ For dynamic linking: On Windows, it is recommended to install `libcec` via the [
 For a vendored build: `libcec-sys` will dynamically link to the compiled `cec.dll`. This means you must package your standalone executable with the compiled dynamic library.
 
 #### Vendored Build Prerequisites:
-- Visual Studio 2019 w/ `Desktop Development with C++` and `Universal Windows Platform development`
+- Visual Studio 2022 w/ `Desktop Development with C++` and `Universal Windows Platform development`
 - CMake 3.12+
 - Python 3.6+ with Debug Binaries
 
