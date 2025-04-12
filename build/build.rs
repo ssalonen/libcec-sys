@@ -386,12 +386,12 @@ fn parse_vendored_libcec_major_version(cmakelists: &Path) -> u32 {
 pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
     println!("\n\n==============================================================\nFetching pre-built static libcec\n==============================================================");
     println!("cargo:lib_static=true");
-    println!("cargo:libcec_version_major=6");
-    println!("cargo:rustc-cfg=abi6");
+    println!("cargo:libcec_version_major=7");
+    println!("cargo:rustc-cfg=abi7");
 
     let target = env::var("TARGET").expect("Must have TARGET env variable in build.rs");
     let kind = if debug_build { "debug" } else { "release" };
-    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v6.0.2-202412-1/libcec-v6.0.2-static-{target}-{kind}.zip");
+    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v7.0.0-202504-1/libcec-v7.0.0-static-{target}-{kind}.zip");
     dbg!(&target, kind, &url);
 
     let response = reqwest::blocking::get(&url)
