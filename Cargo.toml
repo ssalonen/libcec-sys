@@ -4,7 +4,7 @@ members = [".", "cec_bindgen"]
 
 [package]
 name = 'libcec-sys'
-version = "7.0.8-alpha.0"
+version = "8.0.0-alpha.0"
 authors = ['Sami Salonen']
 edition = '2021'
 license = 'GPL-2.0'
@@ -48,4 +48,4 @@ static = []
 status = 'passively-maintained'
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abi4)', 'cfg(abi5)', 'cfg(abi6)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abi4)', 'cfg(abi5)', 'cfg(abi6)', 'cfg(abi7)'] }

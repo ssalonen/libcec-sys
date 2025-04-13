@@ -46,6 +46,12 @@ impl From<&str> for CecVersion<'_> {
                 patch: 2,
                 git_tag: "libcec-6.0.2",
             },
+            "7" => Self {
+                major: 7,
+                minor: 0,
+                patch: 0,
+                git_tag: "libcec-7.0.0",
+            },
             _ => panic!("Unexpected major version"),
         }
     }
