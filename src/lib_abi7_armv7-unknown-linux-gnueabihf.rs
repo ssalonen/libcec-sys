@@ -269,6 +269,7 @@ pub const CEC_DEFAULT_BASE_DEVICE: u32 = 0;
 pub const CEC_BUTTON_TIMEOUT: u32 = 500;
 pub const CEC_DOUBLE_TAP_TIMEOUT_MS: u32 = 200;
 pub const CEC_POWER_STATE_REFRESH_TIME: u32 = 30000;
+pub const CEC_AUDIO_STATUS_REFRESH_TIME: u32 = 200;
 pub const CEC_FW_VERSION_UNKNOWN: u32 = 65535;
 pub const CEC_FW_BUILD_UNKNOWN: u32 = 0;
 pub const CEC_CONNECT_TRIES: u32 = 3;
@@ -459,6 +460,7 @@ pub const cec_status_request_OFF: cec_status_request = 2;
 pub const cec_status_request_ONCE: cec_status_request = 3;
 pub const cec_system_audio_status_OFF: cec_system_audio_status = 0;
 pub const cec_system_audio_status_ON: cec_system_audio_status = 1;
+pub const cec_system_audio_status_UNKNOWN: cec_system_audio_status = 2;
 pub const cec_timer_cleared_status_data_TIMER_NOT_CLEARED_RECORDING: cec_timer_cleared_status_data =
     0;
 pub const cec_timer_cleared_status_data_TIMER_NOT_CLEARED_NO_MATCHING:
@@ -727,6 +729,7 @@ pub const cec_vendor_id_PIONEER: cec_vendor_id = 57398;
 pub const cec_vendor_id_LG: cec_vendor_id = 57489;
 pub const cec_vendor_id_SHARP: cec_vendor_id = 524319;
 pub const cec_vendor_id_SONY: cec_vendor_id = 524358;
+pub const cec_vendor_id_TEUFEL: cec_vendor_id = 2303013;
 pub const cec_vendor_id_BROADCOM: cec_vendor_id = 1622150;
 pub const cec_vendor_id_SHARP2: cec_vendor_id = 5458000;
 pub const cec_vendor_id_VIZIO: cec_vendor_id = 7042157;
@@ -1060,7 +1063,7 @@ unsafe extern "C" {
         callbacks: *mut ICECCallbacks,
         cbParam: *mut ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int;
-    pub fn libcec_disabled_callbacks(connection: libcec_connection_t) -> ::std::os::raw::c_int;
+    pub fn libcec_disable_callbacks(connection: libcec_connection_t) -> ::std::os::raw::c_int;
     pub fn libcec_find_adapters(
         connection: libcec_connection_t,
         deviceList: *mut cec_adapter,
@@ -1226,6 +1229,11 @@ unsafe extern "C" {
     pub fn libcec_audio_mute(connection: libcec_connection_t) -> u8;
     pub fn libcec_audio_unmute(connection: libcec_connection_t) -> u8;
     pub fn libcec_audio_get_status(connection: libcec_connection_t) -> u8;
+    pub fn libcec_system_audio_mode(
+        connection: libcec_connection_t,
+        bEnable: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+    pub fn libcec_system_audio_mode_get_status(connection: libcec_connection_t) -> u8;
     pub fn libcec_detect_adapters(
         connection: libcec_connection_t,
         deviceList: *mut cec_adapter_descriptor,
