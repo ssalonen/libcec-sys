@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 9.0.1
+
+- fix static build, nhow using correctly 7.1.1
+
 ## 9.0.0
 
 - API update to libcec (system audio mode request & system audio mode status)
-- `libcec_disabled_callback` -> `libcec_disable_callback` (breaking change in libcec-7.1.0, [libcec commit 0c08188](https://github.com/Pulse-Eight/libcec/commit/0c0818856616d018d88cc3b5d0ee6c1537d80b10))
+- `libcec_disabled_callback` -> `libcec_disable_callback` (breaking change in libcec-7.1.0 without upstream abi version bump, [libcec commit 0c08188](https://github.com/Pulse-Eight/libcec/commit/0c0818856616d018d88cc3b5d0ee6c1537d80b10))
 - vendored libcec updated to version 7.1.1
 - static libcec updated to version 7.1.1
 
