@@ -10,7 +10,7 @@ FFI bindings for the libcec
 
 This crate works with `libcec` v4.x, v5.x, v6.x and v7.x(latest version as time of writing). During the build we try to find `libcec` system library installation using `pkg-config` and compilation using default C compiler (`cc` crate). 
 
-As a fallback, static pre-built `libcec` (v7.0.0) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.0.0-202504-1). Most common targets are supported.
+As a fallback, static pre-built `libcec` (v7.1.1) is downloaded from [ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.1.1-202504-1). Most common targets are supported.
 
 There are `vendored` and `static` feature to allow more explicit control. There are also `LIBCEC_VENDORED` and `LIBCEC_STATIC` environment variables, just set them to value `1`.
 

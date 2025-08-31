@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+- API update to libcec (system audio mode request & system audio mode status)
+- vendored libcec updated to version 7.1.1
+- static libcec updated to version 7.1.1
+
 ## 8.0.0
 
 - Support linking to libcec v7 shared libraries. Previously only libcec v6 was supported, and build reverted to v6.0.2 static
