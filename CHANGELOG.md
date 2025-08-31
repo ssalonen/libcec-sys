@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 9.0.2
+
+- fix static build, [https://github.com/ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.1.1-202508-1) now has `libcec.a`, not `libcec-static.a`
+
 ## 9.0.1
 
-- fix static build, nhow using correctly 7.1.1
+- fix static build, now using correctly 7.1.1
 
 ## 9.0.0
 

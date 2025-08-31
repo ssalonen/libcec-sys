@@ -437,7 +437,7 @@ fn link_to_static() {
 
     dbg!(&lib_path, target_triple, debug_build);
     println!("cargo:rustc-link-search=native={lib_path_str}");
-    println!("cargo:rustc-link-lib=static=cec-static");
+    println!("cargo:rustc-link-lib=static=cec");
     println!("cargo:rustc-link-lib=static=p8-platform");
 
     match (target_os, debug_build) {
