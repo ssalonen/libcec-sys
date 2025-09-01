@@ -4,7 +4,7 @@ members = [".", "cec_bindgen"]
 
 [package]
 name = 'libcec-sys'
-version = "9.0.3"
+version = "9.0.4-dev"
 authors = ['Sami Salonen']
 edition = '2021'
 license = 'GPL-2.0'
