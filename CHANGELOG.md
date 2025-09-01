@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 9.0.3
+
+- Switched to updated [https://github.com/ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.1.1-202509-1) with linux kernel CEC API support also with arm
+
 ## 9.0.2
 
 - fix static build, [https://github.com/ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.1.1-202508-1) now has `libcec.a`, not `libcec-static.a`

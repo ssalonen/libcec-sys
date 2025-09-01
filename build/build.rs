@@ -398,7 +398,7 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
 
     let target = env::var("TARGET").expect("Must have TARGET env variable in build.rs");
     let kind = if debug_build { "debug" } else { "release" };
-    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v7.1.1-202508-1/libcec-v7.1.1-static-{target}-{kind}.zip");
+    let url = format!("https://github.com/ssalonen/libcec-static-builds/releases/download/libcec-v7.1.1-202509-1/libcec-v7.1.1-static-{target}-{kind}.zip");
     dbg!(&target, kind, &url);
 
     let response = reqwest::blocking::get(&url)
