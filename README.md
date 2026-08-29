@@ -4,6 +4,14 @@
 [![Docs.rs](https://docs.rs/libcec-sys/badge.svg)](https://docs.rs/libcec-sys)
 [![CI](https://github.com/ssalonen/libcec-sys/workflows/Continuous%20Integration/badge.svg)](https://github.com/ssalonen/libcec-sys/actions)
 
+> [!WARNING]
+> **This crate is deprecated.** New applications should use the official
+> [Pulse-Eight `libcec` crate](https://crates.io/crates/libcec), whose Rust
+> sources live in [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec/tree/master/src/rust).
+> It replaces both the safe wrapper and raw FFI needs for libCEC 8+.
+> Please direct Rust binding contributions and issues upstream to
+> [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec).
+
 FFI bindings for the libcec
 
 ## Finding libcec
@@ -14,7 +22,7 @@ As a fallback, static pre-built `libcec` (v7.1.1) is downloaded from [ssalonen/l
 
 There are `vendored` and `static` feature to allow more explicit control. There are also `LIBCEC_VENDORED` and `LIBCEC_STATIC` environment variables, just set them to value `1`.
 
-The crate is tested mainly with Linux and Windows but could work with other platforms as well. PRs welcome.
+The crate is tested mainly with Linux and Windows but could work with other platforms as well.
 
 ### Linux (general)
 
@@ -76,6 +84,10 @@ This repo contains content distributed under three different licenses.
       ([LICENSE-CI-docker-sscache-MIT](LICENSE-CI-docker-sscache-MIT) or [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 
 ## Contribution
+
+This repository is deprecated. Please file Rust binding issues and contribute
+to the official [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec)
+repository instead.
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be

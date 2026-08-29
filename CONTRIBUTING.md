@@ -1,20 +1,23 @@
 # Contribution guidelines
 
-First off, thank you for considering contributing to libcec-sys.
+> **This repository is deprecated.** New applications should use the official
+> [Pulse-Eight `libcec` crate](https://crates.io/crates/libcec), with Rust
+> sources in [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec/tree/master/src/rust).
+> It replaces both the safe wrapper and raw FFI needs for libCEC 8+.
+> Please direct Rust binding contributions and issues upstream to
+> [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec).
 
-If your contribution is not straightforward, please first discuss the change you
-wish to make by creating a new issue before making the change.
+This document is retained for historical releases of `libcec-sys`.
 
 ## Reporting issues
 
-Before reporting an issue on the
-[issue tracker](https://github.com/ssalonen/libcec-sys/issues),
-please check that it has not already been reported by searching for some related
-keywords.
+Please report Rust binding issues upstream at
+[Pulse-Eight/libcec issues](https://github.com/Pulse-Eight/libcec/issues).
 
 ## Pull requests
 
-Try to do one pull request per change.
+Please contribute Rust binding changes upstream to
+[Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec).
 
 ### Updating the changelog
 
