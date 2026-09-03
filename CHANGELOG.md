@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## 9.0.4
+
+- Deprecated `libcec-sys` in favor of the official [Pulse-Eight `libcec` crate](https://crates.io/crates/libcec), which covers both the safe wrapper and raw FFI needs for libCEC 8+. Rust binding contributions and issues should be directed upstream to [Pulse-Eight/libcec](https://github.com/Pulse-Eight/libcec).
+
 ## 9.0.3
 
 - Switched to updated [https://github.com/ssalonen/libcec-static-builds](https://github.com/ssalonen/libcec-static-builds/releases/tag/libcec-v7.1.1-202509-1) with linux kernel CEC API support also with arm
