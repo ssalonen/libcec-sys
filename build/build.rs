@@ -80,7 +80,7 @@ fn prepare_vendored_build(dst: &Path) {
     let mut build_info_file = OpenOptions::new()
         .write(true)
         .open(&set_build_info_path)
-        .unwrap_or_else(|_| panic!("Error opening {}", &set_build_info_path.to_string_lossy()));
+        .unwrap_or_else(|_| panic!("Error opening {}", set_build_info_path.to_string_lossy()));
     build_info_file
         .set_len(0)
         .expect("Error truncacting SetBuildInfo.cmake");
@@ -89,7 +89,7 @@ fn prepare_vendored_build(dst: &Path) {
             b"
             set(LIB_INFO \"\")",
         )
-        .unwrap_or_else(|_| panic!("Error writing {}", &set_build_info_path.to_string_lossy()));
+        .unwrap_or_else(|_| panic!("Error writing {}", set_build_info_path.to_string_lossy()));
 
     #[cfg(target_os = "windows")]
     prepare_windows_libcec_cmake_opts(&dst_src);
@@ -404,7 +404,7 @@ pub fn fetch_static_libcec<P: AsRef<Path>>(path: P, debug_build: bool) {
     let response = reqwest::blocking::get(&url)
         .unwrap_or_else(|_| panic!("failed to download libcec from {url}"));
     if response.status() == StatusCode::NOT_FOUND {
-        panic!("Could not find pre-built static libcec for {}", &target);
+        panic!("Could not find pre-built static libcec for {}", target);
     }
     response
         .error_for_status_ref()

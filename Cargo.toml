@@ -8,7 +8,7 @@ version = "9.0.4-dev"
 authors = ['Sami Salonen']
 edition = '2021'
 license = 'GPL-2.0'
-description = 'FFI bindings to libcec'
+description = 'Deprecated FFI bindings to libcec; use the official libcec crate for libCEC 8+'
 documentation = 'https://docs.rs/libcec-sys'
 readme = 'README.md'
 include = [
@@ -45,7 +45,7 @@ vendored = []
 static = []
 
 [badges.maintenance]
-status = 'passively-maintained'
+status = 'deprecated'
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(abi4)', 'cfg(abi5)', 'cfg(abi6)', 'cfg(abi7)'] }
